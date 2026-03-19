@@ -1,0 +1,15 @@
+version: "1"
+skills:
+  - module-plugin
+  - module-scaffold
+  - module-di
+  - module-setup
+  - admin-ui-grid
+  - api-graphql-resolver
+  - hyva-module-compatibility
+  - testing-phpunit
+  - performance-caching
+  - standards-coding
+format: claude
+include_examples: true
+include_antipatterns: true
