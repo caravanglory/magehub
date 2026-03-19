@@ -2,6 +2,8 @@
 
 MageHub is a TypeScript CLI for packaging Magento 2 AI coding skills as reusable context files for tools like Claude Code, OpenCode, Cursor, Codex, Qoder, and Trae.
 
+Project site: [magehub.org](https://magehub.org)
+
 ## Status
 
 MageHub now supports a complete **local v1.0 workflow**:

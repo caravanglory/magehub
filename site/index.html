@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MageHub — Magento 2 AI Coding Skills</title>
+    <meta
+      name="description"
+      content="MageHub is an open-source skill system for Magento 2 AI coding assistants, with structured skills, local CLI workflows, and multi-tool context generation."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar">
+        <a class="brand" href="#hero">
+          <img class="brand-logo" src="./magehub.png" alt="MageHub logo" />
+          <span class="brand-text">MageHub</span>
+        </a>
+        <nav class="topnav">
+          <a href="#skills">Skills</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#formats">Formats</a>
+          <a href="#docs">Docs</a>
+        </nav>
+        <a class="button button-secondary" href="https://github.com/caravanglory/magehub">GitHub</a>
+      </header>
+
+      <main>
+        <section class="hero" id="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Magento 2 × AI coding assistants</p>
+            <h1>Structured Magento 2 skills for tools that normally guess wrong.</h1>
+            <p class="hero-text">
+              MageHub turns Magento 2 architecture, conventions, anti-patterns, and examples into reusable AI skills.
+              Use one local CLI to generate context files for Claude Code, OpenCode, Cursor, Codex, Qoder, Trae, and plain Markdown.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="https://github.com/caravanglory/magehub">View Repository</a>
+              <a class="button button-ghost" href="#quickstart">Quick Start</a>
+            </div>
+            <ul class="hero-points">
+              <li>10 bundled Magento 2 core skills</li>
+              <li>Local-first CLI workflow</li>
+              <li>Schema-validated YAML skill system</li>
+            </ul>
+          </div>
+          <div class="hero-card">
+            <img class="hero-logo" src="./magehub.png" alt="MageHub mark and wordmark" />
+            <div class="terminal-window">
+              <div class="terminal-header">
+                <span></span><span></span><span></span>
+              </div>
+              <pre><code>$ magehub skill:list
+admin-ui-grid
+api-graphql-resolver
+hyva-module-compatibility
+module-di
+module-plugin
+module-scaffold
+module-setup
+performance-caching
+standards-coding
+testing-phpunit
+
+$ magehub generate --format=claude
+Generated: CLAUDE.md</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="metrics-grid">
+          <article>
+            <strong>10</strong>
+            <span>Bundled v1.0 skills</span>
+          </article>
+          <article>
+            <strong>7</strong>
+            <span>Supported output formats</span>
+          </article>
+          <article>
+            <strong>CLI</strong>
+            <span>Local-first, schema-backed workflow</span>
+          </article>
+        </section>
+
+        <section class="section" id="skills">
+          <div class="section-heading">
+            <p class="eyebrow">Bundled skill catalog</p>
+            <h2>The first 10 skills target where Magento AI workflows usually break.</h2>
+          </div>
+          <div class="card-grid skills-grid">
+            <article class="info-card"><h3>module-scaffold</h3><p>Bootstrap valid module structure, registration, and metadata.</p></article>
+            <article class="info-card"><h3>module-plugin</h3><p>Guide plugin design, interception boundaries, and anti-pattern avoidance.</p></article>
+            <article class="info-card"><h3>module-di</h3><p>Keep preferences, constructor injection, and virtual types maintainable.</p></article>
+            <article class="info-card"><h3>module-setup</h3><p>Use declarative schema and patches instead of legacy install scripts.</p></article>
+            <article class="info-card"><h3>admin-ui-grid</h3><p>Build admin listing UI Components without XML spaghetti.</p></article>
+            <article class="info-card"><h3>api-graphql-resolver</h3><p>Keep GraphQL resolvers thin and Magento-native.</p></article>
+            <article class="info-card"><h3>hyva-module-compatibility</h3><p>Convert Luma assumptions into Hyva-friendly frontend behavior.</p></article>
+            <article class="info-card"><h3>testing-phpunit</h3><p>Write focused PHPUnit unit tests around Magento service logic.</p></article>
+            <article class="info-card"><h3>performance-caching</h3><p>Apply cache layers safely without serving broken personalized output.</p></article>
+            <article class="info-card"><h3>standards-coding</h3><p>Encode Magento coding standards into repeatable AI instructions.</p></article>
+          </div>
+        </section>
+
+        <section class="section split-section" id="workflow">
+          <div>
+            <p class="eyebrow">Workflow</p>
+            <h2>One repository, one config, many AI tools.</h2>
+            <p>
+              MageHub treats skills as versioned YAML artifacts, validates them with JSON Schema, and assembles them into a generated context file that matches the target assistant’s expected shape.
+            </p>
+          </div>
+          <div class="workflow-steps">
+            <article><span>1</span><h3>Install skills</h3><p>Select bundled or project-local skills in <code>.magehub.yaml</code>.</p></article>
+            <article><span>2</span><h3>Verify structure</h3><p>Catch bad schema, duplicate IDs, and heading issues before generation.</p></article>
+            <article><span>3</span><h3>Generate context</h3><p>Produce tool-specific prompt/context files from the same skill set.</p></article>
+          </div>
+        </section>
+
+        <section class="section" id="formats">
+          <div class="section-heading">
+            <p class="eyebrow">Output formats</p>
+            <h2>Generate for the tools your team already uses.</h2>
+          </div>
+          <div class="formats-table">
+            <div><span>Claude Code</span><code>CLAUDE.md</code></div>
+            <div><span>OpenCode</span><code>.opencode/skills/magehub.md</code></div>
+            <div><span>Cursor</span><code>.cursorrules</code></div>
+            <div><span>Codex</span><code>AGENTS.md</code></div>
+            <div><span>Qoder</span><code>.qoder/context.md</code></div>
+            <div><span>Trae</span><code>.trae/rules/magehub.md</code></div>
+            <div><span>Markdown</span><code>MAGEHUB.md</code></div>
+          </div>
+        </section>
+
+        <section class="section" id="quickstart">
+          <div class="section-heading">
+            <p class="eyebrow">Quick start</p>
+            <h2>Start locally in a few commands.</h2>
+          </div>
+          <div class="quickstart-panel">
+            <pre><code>npm install
+npm run build
+node ./dist/index.js setup:init --format=claude
+node ./dist/index.js skill:list
+node ./dist/index.js generate</code></pre>
+          </div>
+        </section>
+
+        <section class="section" id="docs">
+          <div class="section-heading">
+            <p class="eyebrow">Documentation</p>
+            <h2>Read the proposal, CLI reference, or author new skills.</h2>
+          </div>
+          <div class="card-grid docs-grid">
+            <a class="doc-card" href="https://github.com/caravanglory/magehub/blob/main/docs/PROPOSAL.md"><h3>Proposal</h3><p>Full project rationale, architecture, schema, and roadmap.</p></a>
+            <a class="doc-card" href="https://github.com/caravanglory/magehub/blob/main/docs/cli-reference.md"><h3>CLI Reference</h3><p>Command-by-command usage and supported formats.</p></a>
+            <a class="doc-card" href="https://github.com/caravanglory/magehub/blob/main/docs/creating-skills.md"><h3>Create Skills</h3><p>Author YAML skills with the right headings, structure, and rules.</p></a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>Open-source Magento 2 AI coding skills for serious local workflows.</p>
+        <div>
+          <a href="https://github.com/caravanglory/magehub">GitHub</a>
+          <a href="https://magehub.org">magehub.org</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
