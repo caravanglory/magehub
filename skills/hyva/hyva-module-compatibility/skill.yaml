@@ -1,0 +1,53 @@
+id: hyva-module-compatibility
+name: Hyva Module Compatibility
+version: "1.0.0"
+category: hyva
+description: Adapt Luma-oriented Magento modules to work cleanly with Hyva themes
+
+tags:
+  - hyva
+  - alpine
+  - compatibility
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### Hyva Compatibility Strategy
+
+  Replace Luma-specific frontend dependencies with Hyva-compatible templates and Alpine.js patterns.
+
+  ### Conversion Focus
+
+  - Remove RequireJS and Knockout assumptions where possible
+  - Use Alpine.js for interaction
+  - Prefer Tailwind-friendly markup and styling patterns
+
+conventions:
+  - rule: Treat Hyva compatibility as a separate frontend implementation, not a partial patch on top of Luma assumptions
+    rationale: Cleaner separation avoids fragile mixed frontend behavior
+
+examples:
+  - title: Alpine interaction
+    language: html
+    code: |
+      <div x-data="{ open: false }">
+          <button @click="open = !open">Toggle</button>
+          <div x-show="open">Panel</div>
+      </div>
+
+anti_patterns:
+  - pattern: Leaving Knockout bindings inside Hyva templates
+    problem: Hyva does not rely on the Luma Knockout stack for rendering
+
+references:
+  - title: Hyva Themes documentation
+    url: https://docs.hyva.io/
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

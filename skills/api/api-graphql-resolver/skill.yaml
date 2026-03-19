@@ -1,0 +1,52 @@
+id: api-graphql-resolver
+name: GraphQL Resolver
+version: "1.0.0"
+category: api
+description: Implement Magento 2 GraphQL resolvers and schema mappings
+
+tags:
+  - graphql
+  - resolver
+  - api
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### GraphQL Resolver Flow
+
+  Define schema fields in `etc/schema.graphqls` and connect them to resolver classes.
+
+  ### Resolver Expectations
+
+  - Implement Magento resolver interfaces correctly
+  - Validate required arguments early
+  - Keep business logic in services, not directly in the resolver
+
+conventions:
+  - rule: Keep resolvers thin and delegate domain logic to service classes
+    rationale: Improves testability and avoids bloated transport-layer classes
+
+examples:
+  - title: Query field resolver
+    language: graphql
+    code: |
+      type Query {
+          customThing(id: Int!): CustomThing @resolver(class: "Vendor\\Module\\Model\\Resolver\\CustomThing")
+      }
+
+anti_patterns:
+  - pattern: Embedding repository and formatting logic directly in the resolver method
+    problem: Makes resolvers hard to test and reuse
+
+references:
+  - title: Adobe Commerce GraphQL development
+    url: https://developer.adobe.com/commerce/webapi/graphql/develop/
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

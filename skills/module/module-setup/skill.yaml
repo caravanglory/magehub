@@ -1,0 +1,55 @@
+id: module-setup
+name: Setup Scripts
+version: "1.0.0"
+category: module
+description: Implement declarative schema and data patches for Magento 2 modules
+
+tags:
+  - db_schema
+  - patch
+  - setup
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### Declarative Setup
+
+  Use declarative schema and data patches instead of legacy install/upgrade scripts.
+
+  ### Setup Workflow
+
+  - Define structure in `etc/db_schema.xml`
+  - Use data patches for seed or migration logic
+  - Keep schema and data changes idempotent
+
+conventions:
+  - rule: Prefer declarative schema over legacy install scripts
+    rationale: Declarative schema is the supported modern Magento pattern
+
+examples:
+  - title: Data patch class
+    language: php
+    code: |
+      class AddInitialConfig implements \Magento\Framework\Setup\Patch\DataPatchInterface
+      {
+          public function apply(): void
+          {
+          }
+      }
+
+anti_patterns:
+  - pattern: Using InstallSchema or UpgradeSchema in new modules
+    problem: Legacy setup scripts are harder to maintain and no longer preferred
+
+references:
+  - title: Declarative schema configuration
+    url: https://developer.adobe.com/commerce/php/development/components/declarative-schema/configuration/
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

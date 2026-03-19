@@ -1,0 +1,51 @@
+id: standards-coding
+name: Coding Standards
+version: "1.0.0"
+category: standards
+description: Follow Magento 2 coding standards and maintainable extension conventions
+
+tags:
+  - standards
+  - phpcs
+  - maintainability
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### Magento Coding Standards
+
+  Follow Magento 2 coding conventions for naming, class structure, XML placement, and dependency usage.
+
+  ### Code Review Priorities
+
+  - Prefer dependency injection over service locator access
+  - Keep module structure and namespaces consistent
+  - Match Magento XML and PHP formatting expectations
+
+conventions:
+  - rule: Prefer small, single-purpose classes over oversized helpers
+    rationale: Easier testing and clearer extension points
+
+examples:
+  - title: Strict types declaration
+    language: php
+    code: |
+      <?php
+      declare(strict_types=1);
+
+anti_patterns:
+  - pattern: Putting unrelated responsibilities into helper classes
+    problem: Creates hard-to-maintain procedural grab-bags
+
+references:
+  - title: Magento coding standard
+    url: https://github.com/magento/magento-coding-standard
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

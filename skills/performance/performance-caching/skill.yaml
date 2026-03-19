@@ -1,0 +1,53 @@
+id: performance-caching
+name: Caching Strategies
+version: "1.0.0"
+category: performance
+description: Apply Magento 2 caching strategies without breaking correctness
+
+tags:
+  - cache
+  - fpc
+  - performance
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### Magento Caching
+
+  Use Magento caching layers deliberately and avoid caching user-specific or volatile data incorrectly.
+
+  ### Caching Priorities
+
+  - Keep pages cacheable whenever possible
+  - Use block caching with valid cache keys and tags
+  - Invalidate cache entries predictably when underlying data changes
+
+conventions:
+  - rule: Always think through invalidation before adding cache storage
+    rationale: Fast stale output is still broken output
+
+examples:
+  - title: Cache interface usage
+    language: php
+    code: |
+      $cached = $this->cache->load($cacheKey);
+      if ($cached !== false) {
+          return $this->serializer->unserialize($cached);
+      }
+
+anti_patterns:
+  - pattern: Caching customer-specific data in full page cache
+    problem: Can leak personalized content across sessions
+
+references:
+  - title: Adobe Commerce cache types
+    url: https://experienceleague.adobe.com/en/docs/commerce-admin/systems/tools/cache-management
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

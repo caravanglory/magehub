@@ -1,0 +1,55 @@
+id: testing-phpunit
+name: PHPUnit Unit Tests
+version: "1.0.0"
+category: testing
+description: Write PHPUnit-based unit tests for Magento 2 services and models
+
+tags:
+  - phpunit
+  - unit-test
+  - testing
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### PHPUnit Strategy
+
+  Write focused unit tests around business logic with mocked direct dependencies.
+
+  ### Test Structure
+
+  - Mirror the production namespace under `Test/Unit`
+  - Use PHPUnit mocks for direct collaborators
+  - Keep Magento framework bootstrapping out of unit tests
+
+conventions:
+  - rule: Mock only direct dependencies of the class under test
+    rationale: Reduces brittle tests and keeps the test focused on behavior
+
+examples:
+  - title: PHPUnit test skeleton
+    language: php
+    code: |
+      class ExampleServiceTest extends \PHPUnit\Framework\TestCase
+      {
+          public function testExecute(): void
+          {
+          }
+      }
+
+anti_patterns:
+  - pattern: Writing integration-style setup inside unit tests
+    problem: Slows tests down and blurs test intent
+
+references:
+  - title: PHPUnit documentation
+    url: https://docs.phpunit.de/
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

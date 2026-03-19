@@ -1,0 +1,52 @@
+id: module-plugin
+name: Plugin Development
+version: "1.0.0"
+category: module
+description: Implement Magento 2 plugins following best practices
+
+tags:
+  - plugin
+  - interceptor
+  - di
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### Plugin Development
+
+  Use before, after, and around plugins carefully.
+
+  ### Implementation Notes
+
+  - Declare plugins in `etc/di.xml`
+  - Prefer before/after over around when possible
+
+conventions:
+  - rule: Prefer before/after plugins over around plugins
+    rationale: Around plugins are harder to maintain and easier to misuse
+
+examples:
+  - title: Basic plugin declaration
+    language: xml
+    code: |
+      <type name="Magento\Catalog\Model\Product">
+          <plugin name="vendor_module_product_plugin"
+                  type="Vendor\Module\Plugin\ProductPlugin"/>
+      </type>
+
+anti_patterns:
+  - pattern: Plugin on __construct
+    problem: Magento does not support constructor plugins
+
+references:
+  - title: Adobe Commerce Plugins
+    url: https://developer.adobe.com/commerce/php/development/components/plugins/
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

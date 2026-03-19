@@ -1,0 +1,51 @@
+id: module-di
+name: Dependency Injection
+version: "1.0.0"
+category: module
+description: Configure Magento 2 dependency injection, preferences, and virtual types safely
+
+tags:
+  - di
+  - preference
+  - virtualtype
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### Dependency Injection
+
+  Use constructor injection and `etc/di.xml` for dependency wiring.
+
+  ### Preferred Patterns
+
+  - Inject interfaces where possible
+  - Use preferences sparingly
+  - Reach for virtual types before copying constructor wiring
+
+conventions:
+  - rule: Prefer constructor injection over service locator usage
+    rationale: Keeps classes testable and aligned with Magento architecture
+
+examples:
+  - title: di.xml preference
+    language: xml
+    code: |
+      <preference for="Vendor\Module\Api\ThingInterface"
+                  type="Vendor\Module\Model\Thing"/>
+
+anti_patterns:
+  - pattern: Direct ObjectManager usage in business classes
+    problem: Hides dependencies and breaks testability
+
+references:
+  - title: Adobe Commerce dependency injection
+    url: https://developer.adobe.com/commerce/php/development/build/dependency-injection-file/
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

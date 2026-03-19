@@ -1,0 +1,52 @@
+id: admin-ui-grid
+name: Admin UI Grid
+version: "1.0.0"
+category: admin
+description: Build Magento 2 admin grids using UI Components and listing XML
+
+tags:
+  - admin
+  - ui-component
+  - grid
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### Admin Grid Structure
+
+  Build admin grids with UI Components, a data provider, and the matching backend route.
+
+  ### Required Pieces
+
+  - Add `view/adminhtml/ui_component/*_listing.xml`
+  - Add an admin controller and layout handle
+  - Configure columns, filters, and data source correctly
+
+conventions:
+  - rule: Keep grid XML and data provider names aligned with the route and entity name
+    rationale: Consistent naming makes admin UI debugging easier
+
+examples:
+  - title: Listing root node
+    language: xml
+    code: |
+      <listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+      </listing>
+
+anti_patterns:
+  - pattern: Mixing form and listing configuration in the same UI component file
+    problem: Leads to invalid or confusing admin UI configuration
+
+references:
+  - title: Adobe Commerce UI Components
+    url: https://developer.adobe.com/commerce/frontend-core/ui-components/
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

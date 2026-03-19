@@ -1,0 +1,53 @@
+id: module-scaffold
+name: Module Scaffolding
+version: "1.0.0"
+category: module
+description: Create standard Magento 2 module structure with required bootstrap files
+
+tags:
+  - module
+  - scaffold
+  - registration
+
+magento_versions:
+  - "2.4.x"
+
+instructions: |
+  ### Module Structure
+
+  Start every custom module with a valid Magento 2 directory structure and required registration files.
+
+  ### Required Files
+
+  - Create `registration.php`
+  - Create `etc/module.xml`
+  - Add `composer.json` with PSR-4 autoloading
+
+conventions:
+  - rule: Use `Vendor_ModuleName` naming in PascalCase
+    rationale: Magento module discovery and conventions depend on this format
+
+examples:
+  - title: registration.php
+    language: php
+    code: |
+      <?php
+      use Magento\Framework\Component\ComponentRegistrar;
+
+      ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Vendor_ModuleName', __DIR__);
+
+anti_patterns:
+  - pattern: Missing module.xml
+    problem: Magento cannot register the module version and sequence data
+
+references:
+  - title: Adobe Commerce module structure
+    url: https://developer.adobe.com/commerce/php/development/build/component-registration/
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae
