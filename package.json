@@ -1,0 +1,45 @@
+{
+  "name": "magehub",
+  "version": "0.1.0",
+  "description": "AI coding skills for Magento 2 development",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "magehub": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "schema",
+    "skills",
+    "templates"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint . --ext .ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "chalk": "^5.4.1",
+    "commander": "^12.1.0",
+    "handlebars": "^4.7.8",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.5.3",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.8"
+  }
+}
