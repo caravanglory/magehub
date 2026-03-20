@@ -1,0 +1,24 @@
+type Query {
+  customEntity(id: Int! @doc(description: "Entity ID")): CustomEntity
+    @resolver(class: "Vendor\\Module\\Model\\Resolver\\CustomEntity")
+    @doc(description: "Retrieve a custom entity by ID")
+}
+
+type Mutation {
+  createCustomEntity(input: CustomEntityInput!): CustomEntity
+    @resolver(class: "Vendor\\Module\\Model\\Resolver\\CreateCustomEntity")
+    @doc(description: "Create a new custom entity")
+}
+
+type CustomEntity @doc(description: "Custom entity type") {
+  id: Int @doc(description: "Entity ID")
+  name: String @doc(description: "Entity name")
+  is_active: Boolean @doc(description: "Active status")
+  created_at: String @doc(description: "Creation timestamp")
+}
+
+input CustomEntityInput
+  @doc(description: "Input for creating a custom entity") {
+  name: String! @doc(description: "Entity name")
+  is_active: Boolean @doc(description: "Active status, defaults to true")
+}

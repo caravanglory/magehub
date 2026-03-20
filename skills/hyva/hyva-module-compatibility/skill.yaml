@@ -15,54 +15,7 @@ tags:
 magento_versions:
   - '2.4.x'
 
-instructions: |
-  ### Hyva Compatibility Overview
-
-  Hyva themes replace Magento's Luma frontend stack entirely. RequireJS,
-  Knockout.js, jQuery UI, and the default LESS compilation pipeline are not
-  loaded. Modules that depend on any of these technologies need a separate set
-  of frontend templates to work under Hyva.
-
-  ### Alpine.js for Interactivity
-
-  Replace Knockout view models and jQuery widgets with Alpine.js components.
-  Declare component state using `x-data` and bind behavior with `@click`,
-  `x-show`, `x-bind`, and `x-transition`. Keep Alpine components small and
-  co-located with their template — avoid centralizing all state into a single
-  massive component.
-
-  ### Tailwind CSS for Styling
-
-  Hyva uses Tailwind CSS instead of LESS/CSS modules. Apply utility classes
-  directly in templates. For module-specific styles, add custom utilities to
-  the Hyva theme's `tailwind.config.js` or use Tailwind's `@apply` directive
-  in a dedicated CSS file. Never ship Luma LESS files or inline styles that
-  conflict with Tailwind's reset.
-
-  ### ViewModels over Block Methods
-
-  Hyva encourages using ViewModels (`Magento\Framework\View\Element\Block\ArgumentInterface`)
-  instead of adding methods to block classes. Inject ViewModels via layout XML
-  and access them in templates with `$block->getData('viewModel')` or the
-  `$viewModels->require()` helper. ViewModels are constructor-injectable
-  services that keep templates clean and logic testable.
-
-  ### Layout XML Compatibility Layer
-
-  Create Hyva-compatible layout overrides in the theme or a compatibility
-  module. Use `<referenceBlock remove="true"/>` to suppress Luma blocks that
-  load RequireJS components, then add replacement blocks that use Alpine.js
-  templates. Place Hyva-specific layout files under the Hyva theme's module
-  override directory or in a dedicated compatibility module that depends on
-  `Hyva_Theme`.
-
-  ### JavaScript Event Integration
-
-  Hyva provides a `private-content-loaded` event and custom `hyva.on()` /
-  `hyva.getBrowserStorage()` utilities. Use these instead of
-  `customerData.get()` and `require(['Magento_Customer/js/...'])` for
-  private content sections. Listen for section updates with Alpine `x-init`
-  or vanilla event listeners.
+instructions_file: instructions.md
 
 conventions:
   - rule: 'Create a separate Hyva compatibility module rather than conditionally branching in the main module'
@@ -81,107 +34,17 @@ examples:
   - title: 'Alpine.js component replacing Knockout widget'
     description: 'Interactive product quantity selector built with Alpine.js x-data, replacing the Luma Knockout-based qty widget'
     language: html
-    code: |
-      <div x-data="initQtySelector()"
-           class="flex items-center gap-2">
-          <button @click="decrement"
-                  :disabled="qty <= 1"
-                  class="px-3 py-1 border rounded disabled:opacity-50"
-                  aria-label="Decrease quantity">
-              -
-          </button>
-          <input type="number"
-                 x-model.number="qty"
-                 min="1"
-                 :max="maxQty"
-                 name="qty"
-                 class="w-16 text-center border rounded py-1"
-                 aria-label="Quantity"/>
-          <button @click="increment"
-                  :disabled="qty >= maxQty"
-                  class="px-3 py-1 border rounded disabled:opacity-50"
-                  aria-label="Increase quantity">
-              +
-          </button>
-      </div>
-
-      <script>
-          function initQtySelector() {
-              return {
-                  qty: 1,
-                  maxQty: 100,
-                  increment() {
-                      if (this.qty < this.maxQty) this.qty++;
-                  },
-                  decrement() {
-                      if (this.qty > 1) this.qty--;
-                  },
-              };
-          }
-      </script>
+    code_file: examples/alpine-js-component-replacing-knockout-widget.html
 
   - title: 'ViewModel with layout XML injection'
     description: 'ViewModel class providing formatted data to templates, injected via layout XML arguments'
     language: php
-    code: |
-      <?php
-      declare(strict_types=1);
-
-      namespace Vendor\Module\ViewModel;
-
-      use Magento\Catalog\Api\ProductRepositoryInterface;
-      use Magento\Framework\Exception\NoSuchEntityException;
-      use Magento\Framework\Pricing\PriceCurrencyInterface;
-      use Magento\Framework\View\Element\Block\ArgumentInterface;
-
-      class ProductData implements ArgumentInterface
-      {
-          public function __construct(
-              private readonly ProductRepositoryInterface $productRepository,
-              private readonly PriceCurrencyInterface $priceCurrency
-          ) {
-          }
-
-          public function getFormattedPrice(int $productId): string
-          {
-              try {
-                  $product = $this->productRepository->getById($productId);
-              } catch (NoSuchEntityException) {
-                  return '';
-              }
-
-              return $this->priceCurrency->format(
-                  (float) $product->getFinalPrice(),
-                  true,
-                  PriceCurrencyInterface::DEFAULT_PRECISION
-              );
-          }
-      }
+    code_file: examples/viewmodel-with-layout-xml-injection.php
 
   - title: 'Hyva-compatible layout XML override'
     description: 'Layout XML that removes Luma blocks relying on RequireJS and adds Hyva-compatible replacements with Alpine.js templates'
     language: xml
-    code: |
-      <?xml version="1.0"?>
-      <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-          <body>
-              <!-- Remove Luma block that depends on RequireJS -->
-              <referenceBlock name="vendor.module.luma.widget" remove="true"/>
-
-              <!-- Add Hyva-compatible replacement with ViewModel -->
-              <referenceContainer name="content">
-                  <block class="Magento\Framework\View\Element\Template"
-                         name="vendor.module.hyva.widget"
-                         template="Vendor_ModuleHyva::widget.phtml">
-                      <arguments>
-                          <argument name="view_model"
-                                    xsi:type="object">Vendor\Module\ViewModel\ProductData</argument>
-                      </arguments>
-                  </block>
-              </referenceContainer>
-          </body>
-      </page>
+    code_file: examples/hyva-compatible-layout-xml-override.xml
 
 anti_patterns:
   - pattern: 'Leaving RequireJS require() calls or Knockout data-bind attributes in Hyva templates'

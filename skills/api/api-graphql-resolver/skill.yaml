@@ -15,49 +15,7 @@ tags:
 magento_versions:
   - '2.4.x'
 
-instructions: |
-  ### Magento 2 GraphQL Architecture
-
-  Magento's GraphQL layer maps schema fields to PHP resolver classes. The
-  framework merges all `etc/schema.graphqls` files from enabled modules into a
-  single schema, then dispatches incoming queries to the resolver class specified
-  in the `@resolver` directive.
-
-  ### Schema Definition
-
-  Define types, queries, and mutations in `etc/schema.graphqls`. Extend existing
-  Magento types using `extend type Query` or `extend type Mutation`. Use
-  `@resolver(class:)` to bind each field to a PHP class. Input types group
-  mutation arguments into a single typed object for cleaner signatures.
-
-  ### Query Resolvers
-
-  Implement `Magento\Framework\GraphQl\Query\ResolverInterface` for query
-  fields. The `resolve()` method receives the field, context, resolution info,
-  and arguments. Return an associative array matching the declared GraphQL type
-  fields. Keep business logic in service classes — resolvers should only
-  translate between GraphQL arguments and service method calls.
-
-  ### Mutation Resolvers
-
-  Mutation resolvers follow the same interface but perform write operations.
-  Validate input arguments early and throw `GraphQlInputException` for user
-  errors. Wrap the service call and return the created or modified entity data
-  as an associative array matching the mutation return type.
-
-  ### Authorization
-
-  Check `$context->getExtensionAttributes()->getIsCustomer()` for customer-only
-  fields. Throw `GraphQlAuthorizationException` when access is denied. For
-  admin-only fields, use bearer token authentication and verify the admin
-  context.
-
-  ### Error Handling
-
-  Use `GraphQlInputException` for validation errors, `GraphQlNoSuchEntityException`
-  for missing resources, and `GraphQlAuthorizationException` for permission
-  failures. These exception types produce structured GraphQL error responses
-  with appropriate HTTP status codes.
+instructions_file: instructions.md
 
 conventions:
   - rule: 'Keep resolvers thin — delegate all business logic to service or repository classes'
@@ -76,134 +34,17 @@ examples:
   - title: 'schema.graphqls with query and mutation'
     description: 'GraphQL schema defining a custom type, a query field with resolver binding, and a mutation with input type'
     language: graphql
-    code: |
-      type Query {
-          customEntity(id: Int! @doc(description: "Entity ID")): CustomEntity
-              @resolver(class: "Vendor\\Module\\Model\\Resolver\\CustomEntity")
-              @doc(description: "Retrieve a custom entity by ID")
-      }
-
-      type Mutation {
-          createCustomEntity(input: CustomEntityInput!): CustomEntity
-              @resolver(class: "Vendor\\Module\\Model\\Resolver\\CreateCustomEntity")
-              @doc(description: "Create a new custom entity")
-      }
-
-      type CustomEntity @doc(description: "Custom entity type") {
-          id: Int @doc(description: "Entity ID")
-          name: String @doc(description: "Entity name")
-          is_active: Boolean @doc(description: "Active status")
-          created_at: String @doc(description: "Creation timestamp")
-      }
-
-      input CustomEntityInput @doc(description: "Input for creating a custom entity") {
-          name: String! @doc(description: "Entity name")
-          is_active: Boolean @doc(description: "Active status, defaults to true")
-      }
+    code_file: examples/schema-graphqls-with-query-and-mutation.graphql
 
   - title: 'Query resolver implementation'
     description: 'Resolver class that fetches a single entity by ID, delegates to a repository, and returns the typed result array'
     language: php
-    code: |
-      <?php
-      declare(strict_types=1);
-
-      namespace Vendor\Module\Model\Resolver;
-
-      use Magento\Framework\Exception\NoSuchEntityException;
-      use Magento\Framework\GraphQl\Config\Element\Field;
-      use Magento\Framework\GraphQl\Exception\GraphQlInputException;
-      use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
-      use Magento\Framework\GraphQl\Query\ResolverInterface;
-      use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-      use Vendor\Module\Api\EntityRepositoryInterface;
-
-      class CustomEntity implements ResolverInterface
-      {
-          public function __construct(
-              private readonly EntityRepositoryInterface $entityRepository
-          ) {
-          }
-
-          public function resolve(
-              Field $field,
-              $context,
-              ResolveInfo $info,
-              ?array $value = null,
-              ?array $args = null
-          ): array {
-              if (!isset($args['id'])) {
-                  throw new GraphQlInputException(__('Entity ID is required.'));
-              }
-
-              try {
-                  $entity = $this->entityRepository->getById((int) $args['id']);
-              } catch (NoSuchEntityException $e) {
-                  throw new GraphQlNoSuchEntityException(
-                      __('Entity with ID "%1" does not exist.', $args['id'])
-                  );
-              }
-
-              return [
-                  'id' => (int) $entity->getId(),
-                  'name' => $entity->getName(),
-                  'is_active' => (bool) $entity->getIsActive(),
-                  'created_at' => $entity->getCreatedAt(),
-              ];
-          }
-      }
+    code_file: examples/query-resolver-implementation.php
 
   - title: 'Mutation resolver with input validation'
     description: 'Resolver that validates input, delegates entity creation to a service class, and returns the new entity data'
     language: php
-    code: |
-      <?php
-      declare(strict_types=1);
-
-      namespace Vendor\Module\Model\Resolver;
-
-      use Magento\Framework\GraphQl\Config\Element\Field;
-      use Magento\Framework\GraphQl\Exception\GraphQlInputException;
-      use Magento\Framework\GraphQl\Query\ResolverInterface;
-      use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-      use Vendor\Module\Api\EntityRepositoryInterface;
-      use Vendor\Module\Api\Data\EntityInterfaceFactory;
-
-      class CreateCustomEntity implements ResolverInterface
-      {
-          public function __construct(
-              private readonly EntityRepositoryInterface $entityRepository,
-              private readonly EntityInterfaceFactory $entityFactory
-          ) {
-          }
-
-          public function resolve(
-              Field $field,
-              $context,
-              ResolveInfo $info,
-              ?array $value = null,
-              ?array $args = null
-          ): array {
-              $input = $args['input'] ?? [];
-
-              if (empty($input['name'])) {
-                  throw new GraphQlInputException(__('Name is required.'));
-              }
-
-              $entity = $this->entityFactory->create();
-              $entity->setName($input['name']);
-              $entity->setIsActive($input['is_active'] ?? true);
-
-              $saved = $this->entityRepository->save($entity);
-
-              return [
-                  'id' => (int) $saved->getId(),
-                  'name' => $saved->getName(),
-                  'is_active' => (bool) $saved->getIsActive(),
-                  'created_at' => $saved->getCreatedAt(),
-              ];
-          }
-      }
+    code_file: examples/mutation-resolver-with-input-validation.php
 
 anti_patterns:
   - pattern: 'Embedding repository calls, data formatting, and business rules directly in the resolver'

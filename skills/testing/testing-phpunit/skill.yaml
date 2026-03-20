@@ -15,50 +15,7 @@ tags:
 magento_versions:
   - '2.4.x'
 
-instructions: |
-  ### Magento 2 Unit Test Strategy
-
-  Unit tests validate individual classes in isolation without the Magento
-  framework, database, or object manager. They run in milliseconds and catch
-  logic errors immediately. Place test classes in `Test/Unit/` mirroring the
-  production namespace.
-
-  ### Test Class Setup
-
-  Extend `PHPUnit\Framework\TestCase`. Create mocks for all constructor
-  dependencies in `setUp()` and instantiate the subject under test with those
-  mocks. Use `createMock()` for interface dependencies and `createPartialMock()`
-  only when testing a class that needs real method behavior alongside stubs.
-
-  ### Mock Configuration
-
-  Configure mock return values with `method()->willReturn()`. Use
-  `expects($this->once())` to verify interaction count when the test's purpose
-  is to confirm a collaborator is called. Avoid over-specifying mock
-  expectations — assert outcomes (return values, state changes) rather than
-  implementation details where possible.
-
-  ### Data Providers
-
-  Use `@dataProvider` to run the same test logic against multiple input/output
-  combinations. Data provider methods are public, return an array of arrays,
-  and are named to describe the data set. Data providers reduce test
-  duplication and make edge case coverage explicit.
-
-  ### Exception Testing
-
-  Call `$this->expectException(ExceptionClass::class)` before the code that
-  should throw. Optionally use `expectExceptionMessage()` to verify the error
-  text. For Magento-specific exceptions like `NoSuchEntityException` or
-  `CouldNotSaveException`, import the full class and test both the exception
-  type and its message.
-
-  ### Avoiding Framework Bootstrap
-
-  Never use `Magento\TestFramework\Helper\Bootstrap` or `ObjectManager` in
-  unit tests. These belong to integration tests. If a class cannot be
-  instantiated without the full framework, it has too many hard dependencies
-  — refactor to inject interfaces that can be mocked.
+instructions_file: instructions.md
 
 conventions:
   - rule: 'Mock only direct constructor dependencies of the class under test'
@@ -77,133 +34,17 @@ examples:
   - title: 'Service test with setUp and mocks'
     description: 'Complete unit test for a service class demonstrating mock creation in setUp, method stubbing, and result assertion'
     language: php
-    code: |
-      <?php
-      declare(strict_types=1);
-
-      namespace Vendor\Module\Test\Unit\Model;
-
-      use Magento\Catalog\Api\Data\ProductInterface;
-      use Magento\Catalog\Api\ProductRepositoryInterface;
-      use PHPUnit\Framework\MockObject\MockObject;
-      use PHPUnit\Framework\TestCase;
-      use Vendor\Module\Model\ProductDataExporter;
-
-      class ProductDataExporterTest extends TestCase
-      {
-          private ProductRepositoryInterface&MockObject $productRepository;
-          private ProductDataExporter $subject;
-
-          protected function setUp(): void
-          {
-              $this->productRepository = $this->createMock(ProductRepositoryInterface::class);
-              $this->subject = new ProductDataExporter($this->productRepository);
-          }
-
-          public function testGetProductNameReturnsNameFromRepository(): void
-          {
-              $product = $this->createMock(ProductInterface::class);
-              $product->method('getName')->willReturn('Test Product');
-
-              $this->productRepository
-                  ->method('getById')
-                  ->with(42)
-                  ->willReturn($product);
-
-              $result = $this->subject->getProductName(42);
-
-              $this->assertSame('Test Product', $result);
-          }
-      }
+    code_file: examples/service-test-with-setup-and-mocks.php
 
   - title: 'Exception testing'
     description: 'Test that verifies a service throws the expected exception with a specific message when given invalid input'
     language: php
-    code: |
-      <?php
-      declare(strict_types=1);
-
-      namespace Vendor\Module\Test\Unit\Model;
-
-      use Magento\Framework\Exception\NoSuchEntityException;
-      use Magento\Catalog\Api\ProductRepositoryInterface;
-      use PHPUnit\Framework\MockObject\MockObject;
-      use PHPUnit\Framework\TestCase;
-      use Vendor\Module\Model\ProductDataExporter;
-
-      class ProductDataExporterExceptionTest extends TestCase
-      {
-          private ProductRepositoryInterface&MockObject $productRepository;
-          private ProductDataExporter $subject;
-
-          protected function setUp(): void
-          {
-              $this->productRepository = $this->createMock(ProductRepositoryInterface::class);
-              $this->subject = new ProductDataExporter($this->productRepository);
-          }
-
-          public function testGetProductNameThrowsWhenProductNotFound(): void
-          {
-              $this->productRepository
-                  ->method('getById')
-                  ->with(999)
-                  ->willThrowException(
-                      new NoSuchEntityException(__('No such entity with id = 999'))
-                  );
-
-              $this->expectException(NoSuchEntityException::class);
-              $this->expectExceptionMessage('No such entity with id = 999');
-
-              $this->subject->getProductName(999);
-          }
-      }
+    code_file: examples/exception-testing.php
 
   - title: 'Data provider for input validation'
     description: 'Test using a data provider to verify validation logic against multiple invalid input scenarios'
     language: php
-    code: |
-      <?php
-      declare(strict_types=1);
-
-      namespace Vendor\Module\Test\Unit\Model;
-
-      use PHPUnit\Framework\TestCase;
-      use Vendor\Module\Model\InputValidator;
-
-      class InputValidatorTest extends TestCase
-      {
-          private InputValidator $subject;
-
-          protected function setUp(): void
-          {
-              $this->subject = new InputValidator();
-          }
-
-          /**
-           * @dataProvider invalidInputProvider
-           */
-          public function testValidateRejectsInvalidInput(
-              string $input,
-              string $expectedError
-          ): void {
-              $result = $this->subject->validate($input);
-
-              $this->assertFalse($result->isValid());
-              $this->assertSame($expectedError, $result->getError());
-          }
-
-          /**
-           * @return array<string, array{string, string}>
-           */
-          public static function invalidInputProvider(): array
-          {
-              return [
-                  'empty string' => ['', 'Input cannot be empty'],
-                  'exceeds max length' => [str_repeat('a', 256), 'Input exceeds 255 characters'],
-                  'contains HTML' => ['<script>alert(1)</script>', 'Input contains invalid characters'],
-              ];
-          }
-      }
+    code_file: examples/data-provider-for-input-validation.php
 
 anti_patterns:
   - pattern: 'Using ObjectManager or Bootstrap in unit tests'

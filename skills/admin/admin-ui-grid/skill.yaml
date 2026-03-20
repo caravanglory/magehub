@@ -15,50 +15,7 @@ tags:
 magento_versions:
   - '2.4.x'
 
-instructions: |
-  ### Admin Grid Architecture
-
-  Admin grids in Magento 2 are built with the UI Component framework. A grid
-  requires three coordinated pieces: a listing XML file that defines columns and
-  filters, a data provider that supplies the collection, and a controller action
-  with a layout handle that loads the UI component.
-
-  ### Listing XML Structure
-
-  Create the listing file at `view/adminhtml/ui_component/<entity>_listing.xml`.
-  The root `<listing>` element contains `<dataSource>`, `<listingToolbar>`, and
-  `<columns>` sections. The data source binds to a data provider class. The
-  toolbar configures bookmarks, column controls, filters, paging, and mass
-  actions. Each `<column>` defines the field name, data type, label, and
-  optional filter/sorting configuration.
-
-  ### Data Provider
-
-  The data provider class extends
-  `Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider` or
-  implements `DataProviderInterface`. Register it via `di.xml` by adding the
-  collection to `Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory`
-  arguments. The collection name in di.xml must match the `<dataSource>` name in
-  the listing XML suffixed with `_data_source`.
-
-  ### Controller and Layout
-
-  Create an admin controller at `Controller/Adminhtml/<Entity>/Index.php` that
-  returns a `resultPageFactory->create()` response. The layout handle
-  `view/adminhtml/layout/<route>_<entity>_index.xml` must reference the listing
-  UI component via `<uiComponent name="<entity>_listing"/>`.
-
-  ### ACL and Menu Integration
-
-  Define ACL resources in `etc/acl.xml` and reference them in the controller's
-  `ADMIN_RESOURCE` constant. Add a menu item in `etc/adminhtml/menu.xml` that
-  maps to the controller route so the grid is accessible from the admin sidebar.
-
-  ### Mass Actions and Inline Editing
-
-  Add mass actions to the toolbar for bulk operations like delete or status
-  change. Each mass action maps to a dedicated controller action. Enable inline
-  editing by adding the `editor` configuration to columns that support it.
+instructions_file: instructions.md
 
 conventions:
   - rule: 'Name the listing XML file as <entity>_listing.xml matching the database entity name'
@@ -77,124 +34,17 @@ examples:
   - title: 'Listing XML with toolbar and columns'
     description: 'Complete admin grid UI component defining data source, toolbar with filters and paging, and typed columns with sorting'
     language: xml
-    code: |
-      <?xml version="1.0" encoding="UTF-8"?>
-      <listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-               xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
-          <argument name="data" xsi:type="array">
-              <item name="js_config" xsi:type="array">
-                  <item name="provider"
-                        xsi:type="string">vendor_module_entity_listing.vendor_module_entity_listing_data_source</item>
-              </item>
-          </argument>
-
-          <settings>
-              <spinner>vendor_module_entity_columns</spinner>
-              <deps>
-                  <dep>vendor_module_entity_listing.vendor_module_entity_listing_data_source</dep>
-              </deps>
-          </settings>
-
-          <dataSource name="vendor_module_entity_listing_data_source" component="Magento_Ui/js/grid/provider">
-              <settings>
-                  <updateUrl path="mui/index/render"/>
-              </settings>
-              <aclResource>Vendor_Module::entity_view</aclResource>
-              <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider"
-                            name="vendor_module_entity_listing_data_source">
-                  <settings>
-                      <requestFieldName>id</requestFieldName>
-                      <primaryFieldName>entity_id</primaryFieldName>
-                  </settings>
-              </dataProvider>
-          </dataSource>
-
-          <listingToolbar name="listing_top">
-              <bookmark name="bookmarks"/>
-              <columnsControls name="columns_controls"/>
-              <filterSearch name="fulltext"/>
-              <filters name="listing_filters"/>
-              <paging name="listing_paging"/>
-          </listingToolbar>
-
-          <columns name="vendor_module_entity_columns">
-              <selectionsColumn name="ids" sortOrder="10">
-                  <settings>
-                      <indexField>entity_id</indexField>
-                  </settings>
-              </selectionsColumn>
-              <column name="entity_id" sortOrder="20">
-                  <settings>
-                      <filter>textRange</filter>
-                      <label translate="true">ID</label>
-                      <sorting>asc</sorting>
-                  </settings>
-              </column>
-              <column name="name" sortOrder="30">
-                  <settings>
-                      <filter>text</filter>
-                      <label translate="true">Name</label>
-                  </settings>
-              </column>
-              <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date"
-                      component="Magento_Ui/js/grid/columns/date" sortOrder="40">
-                  <settings>
-                      <filter>dateRange</filter>
-                      <dataType>date</dataType>
-                      <label translate="true">Created At</label>
-                  </settings>
-              </column>
-          </columns>
-      </listing>
+    code_file: examples/listing-xml-with-toolbar-and-columns.xml
 
   - title: 'Admin controller with ACL'
     description: 'Index controller that loads the admin page layout and enforces ACL-based access control'
     language: php
-    code: |
-      <?php
-      declare(strict_types=1);
-
-      namespace Vendor\Module\Controller\Adminhtml\Entity;
-
-      use Magento\Backend\App\Action;
-      use Magento\Backend\App\Action\Context;
-      use Magento\Framework\View\Result\PageFactory;
-      use Magento\Framework\View\Result\Page;
-
-      class Index extends Action
-      {
-          public const ADMIN_RESOURCE = 'Vendor_Module::entity_manage';
-
-          public function __construct(
-              Context $context,
-              private readonly PageFactory $resultPageFactory
-          ) {
-              parent::__construct($context);
-          }
-
-          public function execute(): Page
-          {
-              $resultPage = $this->resultPageFactory->create();
-              $resultPage->setActiveMenu('Vendor_Module::entity');
-              $resultPage->getConfig()->getTitle()->prepend(__('Manage Entities'));
-
-              return $resultPage;
-          }
-      }
+    code_file: examples/admin-controller-with-acl.php
 
   - title: 'Layout handle referencing UI component'
     description: 'Admin layout XML that loads the listing UI component into the page content area'
     language: xml
-    code: |
-      <?xml version="1.0"?>
-      <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-          <body>
-              <referenceContainer name="content">
-                  <uiComponent name="vendor_module_entity_listing"/>
-              </referenceContainer>
-          </body>
-      </page>
+    code_file: examples/layout-handle-referencing-ui-component.xml
 
 anti_patterns:
   - pattern: 'Missing data source registration in di.xml CollectionFactory arguments'

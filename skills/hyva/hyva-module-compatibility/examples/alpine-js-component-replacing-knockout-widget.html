@@ -1,0 +1,42 @@
+<div x-data="initQtySelector()" class="flex items-center gap-2">
+  <button
+    @click="decrement"
+    :disabled="qty <= 1"
+    class="px-3 py-1 border rounded disabled:opacity-50"
+    aria-label="Decrease quantity"
+  >
+    -
+  </button>
+  <input
+    type="number"
+    x-model.number="qty"
+    min="1"
+    :max="maxQty"
+    name="qty"
+    class="w-16 text-center border rounded py-1"
+    aria-label="Quantity"
+  />
+  <button
+    @click="increment"
+    :disabled="qty >= maxQty"
+    class="px-3 py-1 border rounded disabled:opacity-50"
+    aria-label="Increase quantity"
+  >
+    +
+  </button>
+</div>
+
+<script>
+  function initQtySelector() {
+    return {
+      qty: 1,
+      maxQty: 100,
+      increment() {
+        if (this.qty < this.maxQty) this.qty++;
+      },
+      decrement() {
+        if (this.qty > 1) this.qty--;
+      },
+    };
+  }
+</script>
