@@ -2,7 +2,11 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://magehub.dev/schema/skill.schema.json",
   "type": "object",
-  "required": ["id", "name", "version", "category", "description", "instructions"],
+  "required": ["id", "name", "version", "category", "description"],
+  "oneOf": [
+    { "required": ["instructions"] },
+    { "required": ["instructions_file"] }
+  ],
   "properties": {
     "id": {
       "type": "string",
@@ -56,6 +60,9 @@
     "instructions": {
       "type": "string"
     },
+    "instructions_file": {
+      "type": "string"
+    },
     "conventions": {
       "type": "array",
       "items": {
@@ -79,7 +86,8 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["title", "code"],
+        "required": ["title"],
+        "oneOf": [{ "required": ["code"] }, { "required": ["code_file"] }],
         "properties": {
           "title": {
             "type": "string"
@@ -88,6 +96,9 @@
             "type": "string"
           },
           "code": {
+            "type": "string"
+          },
+          "code_file": {
             "type": "string"
           },
           "language": {
