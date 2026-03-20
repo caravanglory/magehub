@@ -18,9 +18,15 @@ export function makeSkillYaml(
     category?: string;
     description?: string;
     instructions?: string;
+    instructions_file?: string;
     tags?: string[];
     conventions?: Array<{ rule: string }>;
-    examples?: Array<{ title: string; code: string; language?: string }>;
+    examples?: Array<{
+      title: string;
+      code?: string;
+      code_file?: string;
+      language?: string;
+    }>;
     anti_patterns?: Array<{ pattern: string; problem: string }>;
     references?: Array<{ title: string; url: string }>;
     compatibility?: string[];
@@ -32,6 +38,7 @@ export function makeSkillYaml(
   const category = overrides.category ?? 'module';
   const description = overrides.description ?? 'A test skill';
   const instructions = overrides.instructions ?? '### Test\n\nDo something.';
+  const instructionsFile = overrides.instructions_file;
   const tags = overrides.tags ?? ['test'];
   const conventions = overrides.conventions ?? [{ rule: 'Be consistent' }];
   const examples = overrides.examples ?? [
@@ -53,8 +60,9 @@ export function makeSkillYaml(
     `description: ${description}`,
     'tags:',
     ...tags.map((t) => `  - ${t}`),
-    `instructions: |`,
-    ...instructions.split('\n').map((l) => `  ${l}`),
+    ...(instructionsFile !== undefined
+      ? [`instructions_file: ${instructionsFile}`]
+      : [`instructions: |`, ...instructions.split('\n').map((l) => `  ${l}`)]),
     'conventions:',
     ...conventions.map((c) => `  - rule: "${c.rule}"`),
     'examples:',
@@ -62,8 +70,12 @@ export function makeSkillYaml(
       [
         `  - title: "${e.title}"`,
         e.language ? `    language: ${e.language}` : undefined,
-        `    code: |`,
-        ...e.code.split('\n').map((l) => `      ${l}`),
+        ...(e.code_file !== undefined
+          ? [`    code_file: ${e.code_file}`]
+          : [
+              `    code: |`,
+              ...(e.code ?? '').split('\n').map((l) => `      ${l}`),
+            ]),
       ]
         .filter(Boolean)
         .join('\n'),
@@ -124,7 +136,12 @@ export function makeConfigYaml(
  */
 export async function createFixtureRepo(
   options: {
-    skills?: Array<{ category: string; id: string; yaml: string }>;
+    skills?: Array<{
+      category: string;
+      id: string;
+      yaml: string;
+      extraFiles?: Array<{ relativePath: string; content: string }>;
+    }>;
     config?: string;
     templates?: boolean;
   } = {},
@@ -159,6 +176,13 @@ export async function createFixtureRepo(
       const skillDir = path.join(rootDir, 'skills', skill.category, skill.id);
       await mkdir(skillDir, { recursive: true });
       await writeFile(path.join(skillDir, 'skill.yaml'), skill.yaml, 'utf8');
+      if (skill.extraFiles) {
+        for (const extra of skill.extraFiles) {
+          const extraPath = path.join(skillDir, extra.relativePath);
+          await mkdir(path.dirname(extraPath), { recursive: true });
+          await writeFile(extraPath, extra.content, 'utf8');
+        }
+      }
     }
   }
 
