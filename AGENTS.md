@@ -10,7 +10,7 @@ npm install            # Install dependencies
 npm run build          # Build with tsup (ESM, node18 target) -> dist/
 npm run lint           # ESLint with TypeScript type-checking
 npm run format:check   # Prettier check (no auto-fix)
-npm run test           # Vitest -- run all tests (220 tests, 12 files)
+npm run test           # Vitest -- run all tests (232 tests, 13 files)
 npm run test:watch     # Vitest in watch mode
 ```
 
@@ -152,4 +152,6 @@ describe('module-name', () => {
 - **Schema validation** uses Ajv with a module-level `Map` cache for compiled validators
 - **All filesystem ops** use `node:fs/promises` -- no synchronous I/O
 - **YAML config** (`.magehub.yaml`) -- not JSON, not TOML
-- **Handlebars templates** for output format rendering (`templates/*.hbs`)
+- **Format metadata** (`formats.ts`) separates per-skill-file vs single-file strategies, default paths, and auto-detection
+- **Handlebars templates** for output format rendering (`templates/*.skill.hbs` for per-skill, `templates/*.hbs` for single-file)
+- **Renderer/Writer split** -- renderer produces a `RenderArtifact`; writer persists it to disk
