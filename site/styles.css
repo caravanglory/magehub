@@ -110,6 +110,12 @@ body {
   -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 50%, #000 20%, transparent 70%);
 }
 
+.bg-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
 .bg-vignette {
   position: absolute;
   inset: 0;
@@ -200,7 +206,7 @@ body {
 .topnav a {
   padding: 8px 14px;
   border-radius: 10px;
-  color: var(--fg-dim);
+  color: var(--fg-muted);
   font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.3s var(--ease-out-expo);
