@@ -78,7 +78,9 @@ export async function runGenerateCommand(
   if (result.targetKind === 'file') {
     info(`Generated: ${result.targetPath}`);
   } else {
-    info(`Generated ${result.written.length} skill file(s) under ${result.targetPath}`);
+    info(
+      `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+    );
   }
 }
 

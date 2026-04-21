@@ -55,7 +55,9 @@ export async function runSetupInitCommand(
     );
     if (added) {
       const relative = target.path.slice(effectiveRootDir.length + 1);
-      info(`Updated .gitignore with ${relative}${target.kind === 'directory' ? '/' : ''}`);
+      info(
+        `Updated .gitignore with ${relative}${target.kind === 'directory' ? '/' : ''}`,
+      );
     }
   }
 
@@ -66,7 +68,9 @@ export function registerSetupInitCommand(program: Command): void {
   program
     .command('setup:init')
     .alias('init')
-    .description('Initialize MageHub in the current project (optional — skill:install auto-bootstraps)')
+    .description(
+      'Initialize MageHub in the current project (optional — skill:install auto-bootstraps)',
+    )
     .option('--format <format>', 'Default output format')
     .option('--no-gitignore', 'Skip updating .gitignore')
     .action(async (options: { format?: string; gitignore?: boolean }) =>

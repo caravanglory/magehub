@@ -19,7 +19,10 @@ export async function readUtf8(filePath: string): Promise<string> {
   return readFile(filePath, 'utf8');
 }
 
-export async function writeUtf8(filePath: string, content: string): Promise<void> {
+export async function writeUtf8(
+  filePath: string,
+  content: string,
+): Promise<void> {
   await ensureDirectory(path.dirname(filePath));
   await writeFile(filePath, content, 'utf8');
 }

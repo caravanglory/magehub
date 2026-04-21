@@ -101,15 +101,15 @@ magehub generate [--format=<format>] [--output=<path>] [--skills=<id,id>] [--no-
 
 ## Output Layout by Format
 
-| Format     | Strategy         | Default output                        |
-| ---------- | ---------------- | ------------------------------------- |
-| `claude`   | per-skill file   | `.claude/skills/<id>/SKILL.md`        |
-| `opencode` | per-skill file   | `.opencode/skills/<id>/SKILL.md`      |
-| `trae`     | per-skill file   | `.trae/rules/<id>.md`                 |
-| `cursor`   | single file      | `.cursorrules`                        |
-| `codex`    | single file      | `AGENTS.md`                           |
-| `qoder`    | single file      | `.qoder/context.md`                   |
-| `markdown` | single file      | `MAGEHUB.md`                          |
+| Format     | Strategy       | Default output                   |
+| ---------- | -------------- | -------------------------------- |
+| `claude`   | per-skill file | `.claude/skills/<id>/SKILL.md`   |
+| `opencode` | per-skill file | `.opencode/skills/<id>/SKILL.md` |
+| `trae`     | per-skill file | `.trae/rules/<id>.md`            |
+| `cursor`   | single file    | `.cursorrules`                   |
+| `codex`    | single file    | `AGENTS.md`                      |
+| `qoder`    | single file    | `.qoder/context.md`              |
+| `markdown` | single file    | `MAGEHUB.md`                     |
 
 Per-skill formats write one file per installed skill with YAML frontmatter. Single-file formats concatenate all skills into one document.
 

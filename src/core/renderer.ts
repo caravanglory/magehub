@@ -183,7 +183,10 @@ function buildPerSkillContext(
   };
 }
 
-async function loadTemplate(format: OutputFormat, variant?: string): Promise<string> {
+async function loadTemplate(
+  format: OutputFormat,
+  variant?: string,
+): Promise<string> {
   const templatePath = resolveBundledTemplatePath(format, variant);
   return readFile(templatePath, 'utf8');
 }
@@ -205,7 +208,10 @@ export async function renderArtifact(
       .join('\n\n---\n\n');
     return {
       kind: 'single-file',
-      content: renderTemplate(template, buildSingleFileContext(skills, content)),
+      content: renderTemplate(
+        template,
+        buildSingleFileContext(skills, content),
+      ),
     };
   }
 

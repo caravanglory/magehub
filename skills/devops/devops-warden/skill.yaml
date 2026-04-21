@@ -23,7 +23,7 @@ instructions_file: instructions.md
 conventions:
   - rule: 'Never run php, composer, or bin/magento on the host — always enter the container first with `warden shell`'
     example: 'warden shell  # then inside: bin/magento setup:upgrade'
-    rationale: "The host machine usually has a different PHP version, no Magento extensions (sodium, intl, bcmath at the right versions), and no access to the MySQL/Redis/OpenSearch services on the internal Docker network. Running commands on the host either fails outright or — worse — succeeds with the wrong toolchain and corrupts generated/, var/cache, or composer.lock in ways that only show up later."
+    rationale: 'The host machine usually has a different PHP version, no Magento extensions (sodium, intl, bcmath at the right versions), and no access to the MySQL/Redis/OpenSearch services on the internal Docker network. Running commands on the host either fails outright or — worse — succeeds with the wrong toolchain and corrupts generated/, var/cache, or composer.lock in ways that only show up later.'
 
   - rule: 'Use `warden debug` when you need Xdebug — `warden shell` starts a non-debug PHP-FPM session'
     example: 'warden debug  # Xdebug auto-connects to the IDE on the configured port'

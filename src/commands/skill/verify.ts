@@ -21,7 +21,10 @@ export async function runSkillVerifyCommand(
     skillIds = registry.list().map((skill) => skill.id);
   } else {
     const loaded = await loadConfig(effectiveRootDir).catch(() => {
-      throw new CliError('Missing or invalid .magehub.yaml. Run `magehub setup:init` first.', 2);
+      throw new CliError(
+        'Missing or invalid .magehub.yaml. Run `magehub setup:init` first.',
+        2,
+      );
     });
     skillIds = loaded.config.skills;
   }
@@ -58,7 +61,9 @@ export async function runSkillVerifyCommand(
     }
   }
 
-  info(`All skills verified${warningCount > 0 ? ` (${warningCount} warning${warningCount === 1 ? '' : 's'})` : ''}`);
+  info(
+    `All skills verified${warningCount > 0 ? ` (${warningCount} warning${warningCount === 1 ? '' : 's'})` : ''}`,
+  );
 }
 
 export function registerSkillVerifyCommand(program: Command): void {
@@ -68,5 +73,7 @@ export function registerSkillVerifyCommand(program: Command): void {
     .description('Verify skill YAML files against schema')
     .option('--all', 'Verify all skills available in the local registry')
     .option('--skill <skillId>', 'Verify a specific skill ID')
-    .action(async (options: { all?: boolean; skill?: string }) => runSkillVerifyCommand(options));
+    .action(async (options: { all?: boolean; skill?: string }) =>
+      runSkillVerifyCommand(options),
+    );
 }

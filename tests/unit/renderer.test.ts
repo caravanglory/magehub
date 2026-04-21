@@ -276,7 +276,9 @@ describe('renderer', () => {
       });
 
       expect(artifact.files[0].content).toContain('### References');
-      expect(artifact.files[0].content).toContain('[Docs](https://example.com)');
+      expect(artifact.files[0].content).toContain(
+        '[Docs](https://example.com)',
+      );
     });
 
     it('emits separate files for each skill', async () => {

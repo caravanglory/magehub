@@ -5,7 +5,10 @@ import YAML from 'yaml';
 import type { MageHubConfig, OutputFormat } from '../types/config.js';
 import { detectFormat } from './formats.js';
 import { createMageHubPaths } from './paths.js';
-import { isPathInsideProject, resolveProjectRelativePath } from './runtime-assets.js';
+import {
+  isPathInsideProject,
+  resolveProjectRelativePath,
+} from './runtime-assets.js';
 import { validateConfigSchema } from './schema-validator.js';
 
 export interface ConfigLoadResult {
@@ -13,7 +16,9 @@ export interface ConfigLoadResult {
   filePath: string;
 }
 
-export function createDefaultConfig(format: OutputFormat = 'claude'): MageHubConfig {
+export function createDefaultConfig(
+  format: OutputFormat = 'claude',
+): MageHubConfig {
   return {
     version: '1',
     skills: [],
@@ -23,7 +28,9 @@ export function createDefaultConfig(format: OutputFormat = 'claude'): MageHubCon
   };
 }
 
-export async function createBootstrapConfig(rootDir: string): Promise<MageHubConfig> {
+export async function createBootstrapConfig(
+  rootDir: string,
+): Promise<MageHubConfig> {
   const format = await detectFormat(rootDir);
   return createDefaultConfig(format);
 }
@@ -35,7 +42,9 @@ export async function loadConfig(rootDir: string): Promise<ConfigLoadResult> {
   const validation = await validateConfigSchema(parsed);
 
   if (!validation.valid || validation.data === undefined) {
-    throw new Error(`Invalid config file ${configFile}: ${validation.errors.join('; ')}`);
+    throw new Error(
+      `Invalid config file ${configFile}: ${validation.errors.join('; ')}`,
+    );
   }
 
   return {
@@ -44,7 +53,9 @@ export async function loadConfig(rootDir: string): Promise<ConfigLoadResult> {
   };
 }
 
-export async function validateConfigFile(rootDir: string): Promise<{ filePath: string; errors: string[]; valid: boolean }> {
+export async function validateConfigFile(
+  rootDir: string,
+): Promise<{ filePath: string; errors: string[]; valid: boolean }> {
   const { configFile } = createMageHubPaths(rootDir);
   const content = await readFile(configFile, 'utf8');
   const parsed: unknown = YAML.parse(content);
@@ -57,17 +68,29 @@ export async function validateConfigFile(rootDir: string): Promise<{ filePath: s
   };
 }
 
-export async function saveConfig(rootDir: string, config: MageHubConfig): Promise<void> {
+export async function saveConfig(
+  rootDir: string,
+  config: MageHubConfig,
+): Promise<void> {
   const { configFile } = createMageHubPaths(rootDir);
   await writeFile(configFile, YAML.stringify(config), 'utf8');
 }
 
-export function resolveCustomSkillsPath(rootDir: string, config: MageHubConfig): string | undefined {
-  if (config.custom_skills_path === undefined || config.custom_skills_path.trim() === '') {
+export function resolveCustomSkillsPath(
+  rootDir: string,
+  config: MageHubConfig,
+): string | undefined {
+  if (
+    config.custom_skills_path === undefined ||
+    config.custom_skills_path.trim() === ''
+  ) {
     return undefined;
   }
 
-  const resolved = resolveProjectRelativePath(rootDir, config.custom_skills_path);
+  const resolved = resolveProjectRelativePath(
+    rootDir,
+    config.custom_skills_path,
+  );
   if (!isPathInsideProject(rootDir, resolved)) {
     throw new Error('custom_skills_path must stay within the project root');
   }

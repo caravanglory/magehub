@@ -50,15 +50,15 @@ magehub setup:init --format=cursor     # optional: create .magehub.yaml without 
 
 Generated output layout by format:
 
-| Format     | Strategy         | Default output                        |
-| ---------- | ---------------- | ------------------------------------- |
-| `claude`   | per-skill file   | `.claude/skills/<id>/SKILL.md`        |
-| `opencode` | per-skill file   | `.opencode/skills/<id>/SKILL.md`      |
-| `trae`     | per-skill file   | `.trae/rules/<id>.md`                 |
-| `cursor`   | single file      | `.cursorrules`                        |
-| `codex`    | single file      | `AGENTS.md`                           |
-| `qoder`    | single file      | `.qoder/context.md`                   |
-| `markdown` | single file      | `MAGEHUB.md`                          |
+| Format     | Strategy       | Default output                   |
+| ---------- | -------------- | -------------------------------- |
+| `claude`   | per-skill file | `.claude/skills/<id>/SKILL.md`   |
+| `opencode` | per-skill file | `.opencode/skills/<id>/SKILL.md` |
+| `trae`     | per-skill file | `.trae/rules/<id>.md`            |
+| `cursor`   | single file    | `.cursorrules`                   |
+| `codex`    | single file    | `AGENTS.md`                      |
+| `qoder`    | single file    | `.qoder/context.md`              |
+| `markdown` | single file    | `MAGEHUB.md`                     |
 
 ## Bundled v1.0 Skills
 

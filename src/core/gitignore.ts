@@ -10,7 +10,10 @@ export async function ensureGitignoreEntry(
   kind: 'file' | 'directory',
 ): Promise<boolean> {
   const gitignorePath = path.join(rootDir, '.gitignore');
-  const relative = path.relative(rootDir, absolutePath).split(path.sep).join('/');
+  const relative = path
+    .relative(rootDir, absolutePath)
+    .split(path.sep)
+    .join('/');
   const normalized = kind === 'directory' ? `${relative}/` : relative;
 
   if (await pathExists(gitignorePath)) {

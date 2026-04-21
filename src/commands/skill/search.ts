@@ -11,7 +11,10 @@ export async function runSkillSearchCommand(
   rootDir?: string,
 ): Promise<void> {
   const registry = await createSkillRegistry(rootDir ?? process.cwd());
-  const results = registry.search(keyword, parseSkillCategory(options.category));
+  const results = registry.search(
+    keyword,
+    parseSkillCategory(options.category),
+  );
 
   if (results.length === 0) {
     info(`No skills matching "${keyword}".`);
@@ -28,5 +31,7 @@ export function registerSkillSearchCommand(program: Command): void {
     .description('Search skills by keyword')
     .argument('<keyword>', 'Keyword to search')
     .option('--category <category>', 'Filter by category')
-    .action(async (keyword: string, options: { category?: string }) => runSkillSearchCommand(keyword, options));
+    .action(async (keyword: string, options: { category?: string }) =>
+      runSkillSearchCommand(keyword, options),
+    );
 }

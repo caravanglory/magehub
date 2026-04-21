@@ -26,8 +26,8 @@ describe('resolveShorthand', () => {
   });
 
   it('throws on ambiguity', () => {
-    expect(() => resolveShorthand('skill:s', ['skill:search', 'skill:show'])).toThrow(
-      'Ambiguous shorthand: skill:s',
-    );
+    expect(() =>
+      resolveShorthand('skill:s', ['skill:search', 'skill:show']),
+    ).toThrow('Ambiguous shorthand: skill:s');
   });
 });

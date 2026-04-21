@@ -47,7 +47,10 @@ export async function removePerSkillFiles(
   skillIds: string[],
 ): Promise<string[]> {
   const metadata = getFormatMetadata(format);
-  if (metadata.strategy !== 'per-skill-file' || metadata.skillFileName === undefined) {
+  if (
+    metadata.strategy !== 'per-skill-file' ||
+    metadata.skillFileName === undefined
+  ) {
     return [];
   }
 
@@ -57,7 +60,8 @@ export async function removePerSkillFiles(
   for (const skillId of skillIds) {
     const filePath = resolveSkillOutputPath(target.path, format, skillId);
     const relativeEntry = metadata.skillFileName(skillId);
-    const isNestedEntry = relativeEntry.includes(path.sep) || relativeEntry.includes('/');
+    const isNestedEntry =
+      relativeEntry.includes(path.sep) || relativeEntry.includes('/');
     const candidate = isNestedEntry ? path.dirname(filePath) : filePath;
 
     if (await pathExists(candidate)) {

@@ -19,12 +19,16 @@ export class SkillRegistry {
       throw new Error(`Duplicate skill ID detected: ${duplicate}`);
     }
 
-    this.entries = [...entries].sort((left, right) => left.skill.id.localeCompare(right.skill.id));
+    this.entries = [...entries].sort((left, right) =>
+      left.skill.id.localeCompare(right.skill.id),
+    );
   }
 
   public list(category?: SkillCategory): Skill[] {
     return this.entries
-      .filter((entry) => (category === undefined ? true : entry.skill.category === category))
+      .filter((entry) =>
+        category === undefined ? true : entry.skill.category === category,
+      )
       .map((entry) => entry.skill);
   }
 
@@ -32,10 +36,17 @@ export class SkillRegistry {
     const normalized = keyword.toLowerCase();
 
     return this.entries
-      .filter((entry) => (category === undefined ? true : entry.skill.category === category))
+      .filter((entry) =>
+        category === undefined ? true : entry.skill.category === category,
+      )
       .map((entry) => entry.skill)
       .filter((skill) => {
-        const haystack = [skill.id, skill.name, skill.description, ...(skill.tags ?? [])]
+        const haystack = [
+          skill.id,
+          skill.name,
+          skill.description,
+          ...(skill.tags ?? []),
+        ]
           .join(' ')
           .toLowerCase();
 
@@ -52,7 +63,9 @@ export class SkillRegistry {
   }
 }
 
-export async function createSkillRegistry(rootDir: string): Promise<SkillRegistry> {
+export async function createSkillRegistry(
+  rootDir: string,
+): Promise<SkillRegistry> {
   const paths = createMageHubPaths(rootDir);
   const skillDirs = [paths.skillsDir];
   const loadedConfig = await loadConfig(rootDir).catch(() => undefined);

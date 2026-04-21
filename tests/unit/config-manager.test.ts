@@ -92,7 +92,11 @@ describe('config-manager', () => {
     });
 
     it('honors an absolute override for single-file formats', () => {
-      const target = resolveOutputTarget('/project', 'codex', '/tmp/elsewhere.md');
+      const target = resolveOutputTarget(
+        '/project',
+        'codex',
+        '/tmp/elsewhere.md',
+      );
       expect(target.kind).toBe('file');
       expect(target.path).toBe('/tmp/elsewhere.md');
     });

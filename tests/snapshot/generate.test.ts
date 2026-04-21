@@ -89,7 +89,12 @@ const twoSkills: Skill[] = [
 ];
 
 const perSkillFormats: OutputFormat[] = ['claude', 'opencode', 'trae'];
-const singleFileFormats: OutputFormat[] = ['cursor', 'codex', 'qoder', 'markdown'];
+const singleFileFormats: OutputFormat[] = [
+  'cursor',
+  'codex',
+  'qoder',
+  'markdown',
+];
 
 async function snapshotFor(
   skills: Skill[],
@@ -204,8 +209,11 @@ describe('generate snapshot tests', () => {
         includeExamples: true,
         includeAntipatterns: true,
       });
-      if (artifact.kind !== 'single-file') throw new Error('expected single-file');
-      expect(artifact.content).toContain('# MageHub — Magento 2 Agent Instructions');
+      if (artifact.kind !== 'single-file')
+        throw new Error('expected single-file');
+      expect(artifact.content).toContain(
+        '# MageHub — Magento 2 Agent Instructions',
+      );
     });
 
     it('cursor format has frontmatter', async () => {
@@ -214,7 +222,8 @@ describe('generate snapshot tests', () => {
         includeExamples: true,
         includeAntipatterns: true,
       });
-      if (artifact.kind !== 'single-file') throw new Error('expected single-file');
+      if (artifact.kind !== 'single-file')
+        throw new Error('expected single-file');
       expect(artifact.content).toContain('description: MageHub');
       expect(artifact.content).toContain('alwaysApply: true');
     });
@@ -225,7 +234,8 @@ describe('generate snapshot tests', () => {
         includeExamples: true,
         includeAntipatterns: true,
       });
-      if (artifact.kind !== 'single-file') throw new Error('expected single-file');
+      if (artifact.kind !== 'single-file')
+        throw new Error('expected single-file');
       expect(artifact.content).toContain('# MageHub');
     });
   });

@@ -15,7 +15,15 @@
     },
     "format": {
       "type": "string",
-      "enum": ["claude", "opencode", "cursor", "codex", "qoder", "trae", "markdown"],
+      "enum": [
+        "claude",
+        "opencode",
+        "cursor",
+        "codex",
+        "qoder",
+        "trae",
+        "markdown"
+      ],
       "default": "claude"
     },
     "output": {

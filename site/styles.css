@@ -65,11 +65,15 @@ body {
 .bg-grid {
   position: absolute;
   inset: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, #000 70%, transparent 100%);
+  mask-image: radial-gradient(
+    ellipse 60% 60% at 50% 50%,
+    #000 70%,
+    transparent 100%
+  );
 }
 
 a {
@@ -122,7 +126,11 @@ pre {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-glow))
+  );
   color: white;
 }
 
@@ -165,7 +173,11 @@ pre {
 }
 
 .button-primary {
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-glow))
+  );
   color: white;
   box-shadow: 0 0 30px hsl(var(--primary) / 0.3);
 }
@@ -232,7 +244,11 @@ pre {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-glow))
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -262,9 +278,18 @@ pre {
   inset: -1px;
   border-radius: 20px;
   padding: 1px;
-  background: linear-gradient(135deg, hsl(var(--primary) / 0.5), transparent, hsl(var(--primary-glow) / 0.3));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.5),
+    transparent,
+    hsl(var(--primary-glow) / 0.3)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
@@ -320,7 +345,11 @@ pre {
   display: block;
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-glow))
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -385,8 +414,12 @@ pre {
   border-radius: 16px;
   padding: 1px;
   background: linear-gradient(135deg, hsl(var(--primary) / 0.3), transparent);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
@@ -467,7 +500,11 @@ pre {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-glow))
+  );
   color: white;
   font-weight: 800;
   font-size: 1.1rem;

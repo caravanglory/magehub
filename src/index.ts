@@ -14,7 +14,8 @@ void main().catch((reason: unknown) => {
     return;
   }
 
-  const message = reason instanceof Error ? reason.message : 'Unknown CLI failure';
+  const message =
+    reason instanceof Error ? reason.message : 'Unknown CLI failure';
   error(message);
   process.exitCode = 1;
 });

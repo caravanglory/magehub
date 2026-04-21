@@ -1,10 +1,19 @@
 import type { OutputFormat } from '../types/config.js';
-import { skillCategories, supportedTools, type SkillCategory } from '../types/skill.js';
+import {
+  skillCategories,
+  supportedTools,
+  type SkillCategory,
+} from '../types/skill.js';
 import { CliError } from './cli-error.js';
 
-const outputFormats = [...supportedTools, 'markdown'] as const satisfies readonly OutputFormat[];
+const outputFormats = [
+  ...supportedTools,
+  'markdown',
+] as const satisfies readonly OutputFormat[];
 
-export function parseSkillCategory(value: string | undefined): SkillCategory | undefined {
+export function parseSkillCategory(
+  value: string | undefined,
+): SkillCategory | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -16,7 +25,10 @@ export function parseSkillCategory(value: string | undefined): SkillCategory | u
   return value as SkillCategory;
 }
 
-export function parseOutputFormat(value: string | undefined, fallback: OutputFormat): OutputFormat {
+export function parseOutputFormat(
+  value: string | undefined,
+  fallback: OutputFormat,
+): OutputFormat {
   const candidate = value ?? fallback;
 
   if (!outputFormats.includes(candidate as OutputFormat)) {

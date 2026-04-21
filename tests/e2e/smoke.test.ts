@@ -1,9 +1,25 @@
-import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import {
+  cp,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import { runGenerateCommand } from '../../src/commands/generate.js';
 import { runSetupInitCommand } from '../../src/commands/setup/init.js';
@@ -161,7 +177,8 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
         skillCount: result.files.length > 1 ? result.files.length : h2Count,
         hasFrontMatter:
           result.files.length === 1
-            ? Object.keys(parseFrontMatter(result.files[0].content).data).length > 0
+            ? Object.keys(parseFrontMatter(result.files[0].content).data)
+                .length > 0
             : result.files.every(
                 (file) =>
                   Object.keys(parseFrontMatter(file.content).data).length > 0,

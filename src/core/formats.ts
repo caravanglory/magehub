@@ -79,7 +79,10 @@ export function resolveSkillOutputPath(
   return path.join(outputDir, metadata.skillFileName(skillId));
 }
 
-const FORMAT_DETECTION_ORDER: ReadonlyArray<{ format: OutputFormat; marker: string }> = [
+const FORMAT_DETECTION_ORDER: ReadonlyArray<{
+  format: OutputFormat;
+  marker: string;
+}> = [
   { format: 'claude', marker: '.claude' },
   { format: 'opencode', marker: '.opencode' },
   { format: 'cursor', marker: '.cursor' },

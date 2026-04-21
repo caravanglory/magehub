@@ -13,7 +13,10 @@ import { writeArtifact } from '../../core/writer.js';
 import type { MageHubConfig } from '../../types/config.js';
 import { CliError } from '../../utils/cli-error.js';
 import { info } from '../../utils/logger.js';
-import { parseOutputFormat, parseSkillCategory } from '../../utils/validation.js';
+import {
+  parseOutputFormat,
+  parseSkillCategory,
+} from '../../utils/validation.js';
 
 function mergeUnique(existing: string[], additions: string[]): string[] {
   return [...new Set([...existing, ...additions])];
@@ -47,14 +50,22 @@ async function loadOrBootstrapConfig(
 
   const bootstrap = await createBootstrapConfig(rootDir);
   if (formatOverride !== undefined) {
-    bootstrap.format = parseOutputFormat(formatOverride, bootstrap.format ?? 'claude');
+    bootstrap.format = parseOutputFormat(
+      formatOverride,
+      bootstrap.format ?? 'claude',
+    );
   }
   return { config: bootstrap, bootstrapped: true };
 }
 
 export async function runSkillInstallCommand(
   skillIds: string[],
-  options: { category?: string; format?: string; write?: boolean; gitignore?: boolean },
+  options: {
+    category?: string;
+    format?: string;
+    write?: boolean;
+    gitignore?: boolean;
+  },
   rootDir?: string,
 ): Promise<void> {
   const effectiveRootDir = rootDir ?? process.cwd();
@@ -125,7 +136,9 @@ export async function runSkillInstallCommand(
   if (result.targetKind === 'file') {
     info(`Generated: ${result.targetPath}`);
   } else {
-    info(`Generated ${result.written.length} skill file(s) under ${result.targetPath}`);
+    info(
+      `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+    );
   }
 
   if (options.gitignore !== false) {
@@ -137,7 +150,9 @@ export async function runSkillInstallCommand(
     );
     if (added) {
       const relative = result.targetPath.slice(effectiveRootDir.length + 1);
-      info(`Updated .gitignore with ${relative}${result.targetKind === 'directory' ? '/' : ''}`);
+      info(
+        `Updated .gitignore with ${relative}${result.targetKind === 'directory' ? '/' : ''}`,
+      );
     }
   }
 }
