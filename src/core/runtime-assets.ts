@@ -20,6 +20,14 @@ function resolveAssetRoot(): string {
 
 const packageRoot = resolveAssetRoot();
 
+export function getPackageRoot(): string {
+  return packageRoot;
+}
+
+export function resolveBundledSkillsPath(): string {
+  return path.join(packageRoot, 'skills');
+}
+
 export function resolveBundledSchemaPath(fileName: string): string {
   return path.join(packageRoot, 'schema', fileName);
 }

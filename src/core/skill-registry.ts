@@ -3,6 +3,7 @@ import path from 'node:path';
 import type { Skill, SkillCategory } from '../types/skill.js';
 import { loadConfig, resolveCustomSkillsPath } from './config-manager.js';
 import { createMageHubPaths } from './paths.js';
+import { resolveBundledSkillsPath } from './runtime-assets.js';
 import { loadSkillsFromDirectories, type LoadedSkill } from './skill-loader.js';
 
 export interface SkillRegistryEntry extends LoadedSkill {}
@@ -52,11 +53,30 @@ export class SkillRegistry {
   }
 }
 
-export async function createSkillRegistry(rootDir: string): Promise<SkillRegistry> {
-  const paths = createMageHubPaths(rootDir);
-  const skillDirs = [paths.skillsDir];
-  const loadedConfig = await loadConfig(rootDir).catch(() => undefined);
+function deduplicateDirs(dirs: string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const dir of dirs) {
+    const resolved = path.resolve(dir);
+    if (!seen.has(resolved)) {
+      seen.add(resolved);
+      result.push(dir);
+    }
+  }
+  return result;
+}
 
+export async function createSkillRegistry(rootDir: string): Promise<SkillRegistry> {
+  // Always start with bundled skills from the npm package directory
+  const bundledSkillsDir = resolveBundledSkillsPath();
+  const skillDirs: string[] = [bundledSkillsDir];
+
+  // Add project-local skills dir if different from bundled (user's own skills/)
+  const paths = createMageHubPaths(rootDir);
+  skillDirs.push(paths.skillsDir);
+
+  // Add custom skills path from config if specified
+  const loadedConfig = await loadConfig(rootDir).catch(() => undefined);
   if (loadedConfig?.config.custom_skills_path !== undefined) {
     const customPath = resolveCustomSkillsPath(rootDir, loadedConfig.config);
     if (customPath !== undefined) {
@@ -64,7 +84,7 @@ export async function createSkillRegistry(rootDir: string): Promise<SkillRegistr
     }
   }
 
-  const entries = await loadSkillsFromDirectories(skillDirs);
+  const entries = await loadSkillsFromDirectories(deduplicateDirs(skillDirs));
   return new SkillRegistry(entries);
 }
 

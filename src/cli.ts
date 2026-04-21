@@ -10,6 +10,7 @@ import { registerSkillRemoveCommand } from './commands/skill/remove.js';
 import { registerSkillSearchCommand } from './commands/skill/search.js';
 import { registerSkillShowCommand } from './commands/skill/show.js';
 import { registerSkillVerifyCommand } from './commands/skill/verify.js';
+import { registerMcpStartCommand } from './commands/mcp/start.js';
 
 export function createCli(): Command {
   const program = new Command();
@@ -29,6 +30,7 @@ export function createCli(): Command {
   registerConfigShowCommand(program);
   registerConfigValidateCommand(program);
   registerGenerateCommand(program);
+  registerMcpStartCommand(program);
 
   return program;
 }
