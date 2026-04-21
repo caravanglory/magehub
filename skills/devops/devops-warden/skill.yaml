@@ -1,0 +1,105 @@
+id: devops-warden
+name: Warden Local Environment
+version: '1.0.0'
+category: devops
+description: Run PHP, Composer, bin/magento, Redis, Valkey, Varnish, and database commands through Warden's containerized local development environment
+
+tags:
+  - warden
+  - docker
+  - local-dev
+  - cli
+  - shell
+  - redis
+  - valkey
+  - varnish
+  - database
+
+magento_versions:
+  - '2.4.x'
+
+instructions_file: instructions.md
+
+conventions:
+  - rule: 'Never run php, composer, or bin/magento on the host — always enter the container first with `warden shell`'
+    example: 'warden shell  # then inside: bin/magento setup:upgrade'
+    rationale: "The host machine usually has a different PHP version, no Magento extensions (sodium, intl, bcmath at the right versions), and no access to the MySQL/Redis/OpenSearch services on the internal Docker network. Running commands on the host either fails outright or — worse — succeeds with the wrong toolchain and corrupts generated/, var/cache, or composer.lock in ways that only show up later."
+
+  - rule: 'Use `warden debug` when you need Xdebug — `warden shell` starts a non-debug PHP-FPM session'
+    example: 'warden debug  # Xdebug auto-connects to the IDE on the configured port'
+    rationale: 'Xdebug adds measurable overhead on every request, so the default shell omits it. Opening a debug shell is an explicit opt-in that isolates slow paths to the session that actually needs the debugger.'
+
+  - rule: 'Pipe gzipped SQL dumps into `warden db import` rather than copying the file into the container first'
+    example: 'pv /path/to/dump.sql.gz | gunzip -c | warden db import'
+    rationale: 'Streaming avoids materializing a multi-gigabyte SQL file inside the db container volume. `pv` also shows a progress bar so long imports are observable; fall back to `cat` when `pv` is not installed.'
+
+  - rule: 'Flush Redis/Valkey after configuration changes or cache-related debugging, not just bin/magento cache:flush'
+    example: 'warden redis flushall   # or: warden valkey flushall'
+    rationale: "bin/magento cache:flush only clears the cache types Magento knows about. Session data, page cache entries written by Varnish/Redis directly, and keys from third-party modules can persist and mask the change you just made. A full flush is the only way to know you're seeing fresh state."
+
+  - rule: 'Invalidate Varnish with a ban rule rather than restarting the container'
+    example: "warden env exec -T varnish varnishadm 'ban req.url ~ .'"
+    rationale: 'Restarting Varnish drops warm connections and evicts every object. A ban with `req.url ~ .` matches every URL and lets Varnish rebuild lazily as traffic returns, which is faster and less disruptive than a cold start.'
+
+  - rule: 'Run `warden env down -v` only when you intentionally want to discard volumes (database, Redis, Elasticsearch data)'
+    example: 'warden env down -v   # destructive — wipes all env volumes'
+    rationale: 'The `-v` flag removes named volumes. Use `warden env stop` for a reversible pause. Reach for `down -v` only when resetting a corrupted DB or freeing disk — and confirm there is no unsaved state first.'
+
+examples:
+  - title: 'Entering the shell and running Magento commands'
+    description: 'Canonical flow for any bin/magento, composer, or php task — enter the container, run the command, exit'
+    language: bash
+    code_file: examples/shell-workflow.sh
+
+  - title: 'Importing a gzipped database dump'
+    description: 'Stream a compressed SQL file into the db container with a progress bar'
+    language: bash
+    code_file: examples/db-import.sh
+
+  - title: 'Redis and Valkey operations'
+    description: 'Connect, flush, and monitor Redis or Valkey through Warden'
+    language: bash
+    code_file: examples/redis-operations.sh
+
+  - title: 'Varnish cache invalidation'
+    description: 'Tail Varnish activity and ban all cached objects without restarting the service'
+    language: bash
+    code_file: examples/varnish-operations.sh
+
+  - title: 'Environment lifecycle and diagnostics'
+    description: 'Start, stop, inspect logs, resolve config, and run warden doctor'
+    language: bash
+    code_file: examples/env-lifecycle.sh
+
+anti_patterns:
+  - pattern: 'Running `composer install` or `bin/magento setup:upgrade` on the host machine'
+    problem: 'The host PHP binary and extensions almost never match the container. Composer resolves platform requirements against the wrong PHP version, writes an incompatible composer.lock, and Magento setup writes generated code (generated/code, generated/metadata) built for the host toolchain. The app then fails to boot inside the container with cryptic class-loading errors.'
+    solution: 'Always `warden shell` first. Run composer, bin/magento, and any php script from inside the php-fpm container so the toolchain, extensions, and file ownership match what the running application sees.'
+
+  - pattern: 'Copying a SQL dump into the db container with `docker cp` before importing'
+    problem: 'Large dumps balloon the container filesystem, slow down disk I/O for the live DB, and leave orphan files that are easy to forget. The copy step also doubles the time to import.'
+    solution: 'Stream directly: `pv dump.sql.gz | gunzip -c | warden db import`. Nothing is written to disk inside the container, and `pv` reports throughput so you know the import is making progress.'
+
+  - pattern: 'Restarting containers to clear caches'
+    problem: 'Container restarts drop all in-memory state (Redis keys, Varnish objects, OPcache), break active debugging sessions, and take far longer than targeted cache operations. They also mask real bugs by forcing a cold-start that hides stale-config issues.'
+    solution: 'Use the targeted tool: `warden redis flushall` for Redis, `warden valkey flushall` for Valkey, the varnishadm ban for Varnish, and `bin/magento cache:flush` for Magento-managed caches. Restart only when a service is actually unhealthy.'
+
+  - pattern: 'Debugging silent failures without checking `warden doctor`'
+    problem: "Warden depends on Docker, mutagen, DNS resolution, and traefik routing. When one piece drifts (expired certs, stale resolver, Docker Desktop update), commands fail in confusing ways — `warden shell` hangs, URLs 502, or env vars don't load. Hours get spent chasing application-layer causes for an environment-layer problem."
+    solution: 'Run `warden doctor` (or `warden doctor -v` for environment variables) at the first sign of unexplained environment behavior. It reports Docker state, DNS resolver config, root certificate trust, and mutagen session health in one pass.'
+
+references:
+  - title: 'Warden documentation'
+    url: 'https://docs.warden.dev/'
+  - title: 'Warden environment commands'
+    url: 'https://docs.warden.dev/environments/commands.html'
+  - title: 'Warden database import'
+    url: 'https://docs.warden.dev/environments/databases.html'
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae
