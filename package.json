@@ -17,12 +17,21 @@
   "engines": {
     "node": ">=18"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caravanglory/magehub.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsup",
     "lint": "eslint . --ext .ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepublishOnly": "npm run lint && npm test && npm run build"
   },
   "dependencies": {
     "ajv": "^8.17.1",
