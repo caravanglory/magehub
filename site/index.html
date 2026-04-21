@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
@@ -19,13 +19,16 @@
   <body>
     <!-- Background effects -->
     <div class="bg-effects">
-      <div class="bg-glow bg-glow-1"></div>
-      <div class="bg-glow bg-glow-2"></div>
+      <div class="bg-aurora"></div>
+      <div class="bg-noise"></div>
       <div class="bg-grid"></div>
+      <div class="bg-grid-fine"></div>
+      <canvas class="bg-particles" id="particles"></canvas>
+      <div class="bg-vignette"></div>
     </div>
 
     <div class="site-shell">
-      <header class="topbar">
+      <header class="topbar" id="topbar">
         <a class="brand" href="#hero">
           <div class="brand-icon">
             <svg
@@ -96,7 +99,7 @@
                   d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
                 ></path>
               </svg>
-              <span>Magento 2 × AI coding assistants</span>
+              <span>Magento 2 x AI coding assistants</span>
             </div>
             <h1>
               Structured Magento 2 skills for tools that normally
@@ -155,35 +158,37 @@
               <div class="terminal-header">
                 <span></span><span></span><span></span>
               </div>
-              <pre><code>$ magehub skill:list
-admin-ui-grid
-api-graphql-resolver
-hyva-module-compatibility
-module-di
-module-plugin
-module-scaffold
-module-setup
-performance-caching
-standards-coding
-testing-phpunit
+              <pre><code><span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">module-plugin</span> <span class="t-arg">performance-caching</span>
+<span class="t-success">&#10003;</span> module-plugin installed
+<span class="t-success">&#10003;</span> performance-caching installed
 
-$ magehub generate --format=claude
-Generated: CLAUDE.md</code></pre>
+<span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:list</span>
+<span class="t-skill">admin-ui-grid</span>
+<span class="t-skill">api-graphql-resolver</span>
+<span class="t-skill">devops-warden</span>
+<span class="t-skill">hyva-module-compatibility</span>
+<span class="t-skill">module-di</span>
+<span class="t-skill">module-plugin</span>
+<span class="t-skill">module-scaffold</span>
+<span class="t-skill">module-setup</span>
+<span class="t-skill">performance-caching</span>
+<span class="t-skill">standards-coding</span>
+<span class="t-skill">testing-phpunit</span></code></pre>
             </div>
           </div>
         </section>
 
         <!-- Metrics -->
-        <section class="metrics-grid">
-          <article>
-            <strong>10</strong>
+        <section class="metrics-grid reveal">
+          <article class="metric-card reveal reveal-delay-1">
+            <strong data-count="11">0</strong>
             <span>Bundled v1.0 skills</span>
           </article>
-          <article>
-            <strong>7</strong>
+          <article class="metric-card reveal reveal-delay-2">
+            <strong data-count="7">0</strong>
             <span>Supported output formats</span>
           </article>
-          <article>
+          <article class="metric-card reveal reveal-delay-3">
             <strong>CLI</strong>
             <span>Local-first, schema-backed workflow</span>
           </article>
@@ -191,15 +196,15 @@ Generated: CLAUDE.md</code></pre>
 
         <!-- Skills Section -->
         <section class="section" id="skills">
-          <div class="section-heading">
+          <div class="section-heading reveal">
             <p class="eyebrow">Bundled skill catalog</p>
             <h2>
-              The first 10 skills target where Magento AI workflows usually
+              The first 11 skills target where Magento AI workflows usually
               <span class="text-gradient">break</span>.
             </h2>
           </div>
           <div class="card-grid skills-grid">
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-1">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -223,7 +228,7 @@ Generated: CLAUDE.md</code></pre>
                 Bootstrap valid module structure, registration, and metadata.
               </p>
             </article>
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-2">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -247,7 +252,7 @@ Generated: CLAUDE.md</code></pre>
                 avoidance.
               </p>
             </article>
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-3">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -273,7 +278,7 @@ Generated: CLAUDE.md</code></pre>
                 maintainable.
               </p>
             </article>
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-4">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -298,7 +303,7 @@ Generated: CLAUDE.md</code></pre>
                 scripts.
               </p>
             </article>
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-1">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -319,7 +324,7 @@ Generated: CLAUDE.md</code></pre>
               <h3>admin-ui-grid</h3>
               <p>Build admin listing UI Components without XML spaghetti.</p>
             </article>
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-2">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -341,7 +346,32 @@ Generated: CLAUDE.md</code></pre>
               <h3>api-graphql-resolver</h3>
               <p>Keep GraphQL resolvers thin and Magento-native.</p>
             </article>
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-3">
+              <div class="card-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                  <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                  <line x1="6" x2="6.01" y1="6" y2="6"></line>
+                  <line x1="6" x2="6.01" y1="18" y2="18"></line>
+                </svg>
+              </div>
+              <h3>devops-warden</h3>
+              <p>
+                Run Magento commands through Warden's containerized local dev
+                environment.
+              </p>
+            </article>
+            <article class="info-card reveal reveal-delay-4">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -366,7 +396,7 @@ Generated: CLAUDE.md</code></pre>
                 Convert Luma assumptions into Hyva-friendly frontend behavior.
               </p>
             </article>
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-1">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -391,7 +421,7 @@ Generated: CLAUDE.md</code></pre>
                 Write focused PHPUnit unit tests around Magento service logic.
               </p>
             </article>
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-2">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -413,7 +443,7 @@ Generated: CLAUDE.md</code></pre>
                 output.
               </p>
             </article>
-            <article class="info-card">
+            <article class="info-card reveal reveal-delay-3">
               <div class="card-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -440,7 +470,7 @@ Generated: CLAUDE.md</code></pre>
 
         <!-- Workflow Section -->
         <section class="section split-section" id="workflow">
-          <div class="split-content">
+          <div class="split-content reveal">
             <p class="eyebrow">Workflow</p>
             <h2>
               One repository, one config,
@@ -453,7 +483,7 @@ Generated: CLAUDE.md</code></pre>
             </p>
           </div>
           <div class="workflow-steps">
-            <article class="workflow-step">
+            <article class="workflow-step reveal reveal-delay-1">
               <span class="step-number">1</span>
               <div>
                 <h3>Install skills</h3>
@@ -463,7 +493,7 @@ Generated: CLAUDE.md</code></pre>
                 </p>
               </div>
             </article>
-            <article class="workflow-step">
+            <article class="workflow-step reveal reveal-delay-2">
               <span class="step-number">2</span>
               <div>
                 <h3>Verify structure</h3>
@@ -473,7 +503,7 @@ Generated: CLAUDE.md</code></pre>
                 </p>
               </div>
             </article>
-            <article class="workflow-step">
+            <article class="workflow-step reveal reveal-delay-3">
               <span class="step-number">3</span>
               <div>
                 <h3>Generate context</h3>
@@ -488,7 +518,7 @@ Generated: CLAUDE.md</code></pre>
 
         <!-- Formats Section -->
         <section class="section" id="formats">
-          <div class="section-heading">
+          <div class="section-heading reveal">
             <p class="eyebrow">Output formats</p>
             <h2>
               Generate for the tools your team
@@ -496,31 +526,35 @@ Generated: CLAUDE.md</code></pre>
             </h2>
           </div>
           <div class="formats-grid">
-            <div class="format-card">
+            <div class="format-card reveal reveal-delay-1">
               <span class="format-name">Claude Code</span>
-              <code class="format-file">CLAUDE.md</code>
+              <code class="format-file"
+                >.claude/skills/&lt;id&gt;/SKILL.md</code
+              >
             </div>
-            <div class="format-card">
+            <div class="format-card reveal reveal-delay-2">
               <span class="format-name">OpenCode</span>
-              <code class="format-file">.opencode/skills/magehub.md</code>
+              <code class="format-file"
+                >.opencode/skills/&lt;id&gt;/SKILL.md</code
+              >
             </div>
-            <div class="format-card">
+            <div class="format-card reveal reveal-delay-3">
               <span class="format-name">Cursor</span>
               <code class="format-file">.cursorrules</code>
             </div>
-            <div class="format-card">
+            <div class="format-card reveal reveal-delay-1">
               <span class="format-name">Codex</span>
               <code class="format-file">AGENTS.md</code>
             </div>
-            <div class="format-card">
+            <div class="format-card reveal reveal-delay-2">
               <span class="format-name">Qoder</span>
               <code class="format-file">.qoder/context.md</code>
             </div>
-            <div class="format-card">
+            <div class="format-card reveal reveal-delay-3">
               <span class="format-name">Trae</span>
-              <code class="format-file">.trae/rules/magehub.md</code>
+              <code class="format-file">.trae/rules/&lt;id&gt;.md</code>
             </div>
-            <div class="format-card format-card-wide">
+            <div class="format-card format-card-wide reveal reveal-delay-4">
               <span class="format-name">Markdown</span>
               <code class="format-file">MAGEHUB.md</code>
             </div>
@@ -529,28 +563,31 @@ Generated: CLAUDE.md</code></pre>
 
         <!-- Quick Start Section -->
         <section class="section" id="quickstart">
-          <div class="section-heading">
+          <div class="section-heading reveal">
             <p class="eyebrow">Quick start</p>
             <h2>
               Start locally in
               <span class="text-gradient">a few commands</span>.
             </h2>
           </div>
-          <div class="quickstart-panel">
+          <div class="quickstart-panel reveal reveal-delay-1">
             <div class="terminal-header">
               <span></span><span></span><span></span>
             </div>
-            <pre><code>npm install
-npm run build
-node ./dist/index.js setup:init --format=claude
-node ./dist/index.js skill:list
-node ./dist/index.js generate</code></pre>
+            <pre><code><span class="t-comment"># Install skills directly with npx — no global install needed</span>
+<span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">module-plugin performance-caching</span>
+
+<span class="t-comment"># Browse all available skills</span>
+<span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:list</span>
+
+<span class="t-comment"># Search for skills by keyword</span>
+<span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:search</span> <span class="t-file">caching</span></code></pre>
           </div>
         </section>
 
         <!-- Docs Section -->
         <section class="section" id="docs">
-          <div class="section-heading">
+          <div class="section-heading reveal">
             <p class="eyebrow">Documentation</p>
             <h2>
               Read the proposal, CLI reference, or
@@ -559,7 +596,7 @@ node ./dist/index.js generate</code></pre>
           </div>
           <div class="card-grid docs-grid">
             <a
-              class="doc-card"
+              class="doc-card reveal reveal-delay-1"
               href="https://github.com/caravanglory/magehub/blob/main/docs/PROPOSAL.md"
             >
               <div class="card-icon">
@@ -584,7 +621,7 @@ node ./dist/index.js generate</code></pre>
               <p>Full project rationale, architecture, schema, and roadmap.</p>
             </a>
             <a
-              class="doc-card"
+              class="doc-card reveal reveal-delay-2"
               href="https://github.com/caravanglory/magehub/blob/main/docs/cli-reference.md"
             >
               <div class="card-icon">
@@ -609,7 +646,7 @@ node ./dist/index.js generate</code></pre>
               <p>Command-by-command usage and supported formats.</p>
             </a>
             <a
-              class="doc-card"
+              class="doc-card reveal reveal-delay-3"
               href="https://github.com/caravanglory/magehub/blob/main/docs/creating-skills.md"
             >
               <div class="card-icon">
@@ -668,8 +705,8 @@ node ./dist/index.js generate</code></pre>
           <a href="https://github.com/caravanglory/magehub">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -687,8 +724,8 @@ node ./dist/index.js generate</code></pre>
           <a href="https://magehub.org">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -707,5 +744,192 @@ node ./dist/index.js generate</code></pre>
         </div>
       </footer>
     </div>
+
+    <script>
+      // Scroll reveal observer
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' },
+      );
+
+      document
+        .querySelectorAll('.reveal')
+        .forEach((el) => revealObserver.observe(el));
+
+      // Topbar scroll effect
+      const topbar = document.getElementById('topbar');
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (window.scrollY > 20) {
+            topbar.classList.add('scrolled');
+          } else {
+            topbar.classList.remove('scrolled');
+          }
+        },
+        { passive: true },
+      );
+
+      // Animated counter for metrics
+      const countObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const el = entry.target;
+              const target = parseInt(el.dataset.count, 10);
+              if (!isNaN(target)) {
+                animateCount(el, target, 1200);
+              }
+              countObserver.unobserve(el);
+            }
+          });
+        },
+        { threshold: 0.5 },
+      );
+
+      document
+        .querySelectorAll('[data-count]')
+        .forEach((el) => countObserver.observe(el));
+
+      function animateCount(el, target, duration) {
+        const start = performance.now();
+        const easeOutExpo = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
+        function step(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          el.textContent = Math.round(easeOutExpo(progress) * target);
+          if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      // Mouse-following glow on skill cards
+      document.querySelectorAll('.info-card').forEach((card) => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          card.style.setProperty('--mouse-x', x + '%');
+          card.style.setProperty('--mouse-y', y + '%');
+        });
+      });
+
+      // ── Particle Flow System ──
+      (function () {
+        const canvas = document.getElementById('particles');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        let w,
+          h,
+          particles = [];
+        const PARTICLE_COUNT = 60;
+        const CONNECTION_DIST = 120;
+        const MOUSE_DIST = 200;
+        let mouse = { x: null, y: null };
+
+        function resize() {
+          w = canvas.width = window.innerWidth;
+          h = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        document.addEventListener('mousemove', (e) => {
+          mouse.x = e.clientX;
+          mouse.y = e.clientY;
+        });
+        document.addEventListener('mouseleave', () => {
+          mouse.x = mouse.y = null;
+        });
+
+        class Particle {
+          constructor() {
+            this.reset();
+          }
+          reset() {
+            this.x = Math.random() * w;
+            this.y = Math.random() * h;
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.vy = (Math.random() - 0.5) * 0.4;
+            this.radius = Math.random() * 1.5 + 0.5;
+            this.alpha = Math.random() * 0.4 + 0.1;
+          }
+          update() {
+            // Gentle drift
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Mouse repulsion
+            if (mouse.x !== null) {
+              const dx = this.x - mouse.x;
+              const dy = this.y - mouse.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < MOUSE_DIST && dist > 0) {
+                const force = ((MOUSE_DIST - dist) / MOUSE_DIST) * 0.02;
+                this.x += (dx / dist) * force;
+                this.y += (dy / dist) * force;
+              }
+            }
+
+            // Wrap around
+            if (this.x < -10) this.x = w + 10;
+            if (this.x > w + 10) this.x = -10;
+            if (this.y < -10) this.y = h + 10;
+            if (this.y > h + 10) this.y = -10;
+
+            // Subtle twinkle
+            this.alpha += (Math.random() - 0.5) * 0.005;
+            this.alpha = Math.max(0.05, Math.min(0.5, this.alpha));
+          }
+          draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(167, 139, 250, ${this.alpha})`;
+            ctx.fill();
+          }
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push(new Particle());
+        }
+
+        function drawConnections() {
+          for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+              const dx = particles[i].x - particles[j].x;
+              const dy = particles[i].y - particles[j].y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < CONNECTION_DIST) {
+                const alpha = (1 - dist / CONNECTION_DIST) * 0.08;
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle = `rgba(139, 92, 246, ${alpha})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        function animate() {
+          ctx.clearRect(0, 0, w, h);
+          particles.forEach((p) => {
+            p.update();
+            p.draw();
+          });
+          drawConnections();
+          requestAnimationFrame(animate);
+        }
+        animate();
+      })();
+    </script>
   </body>
 </html>
