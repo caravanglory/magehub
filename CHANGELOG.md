@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.1.1](https://github.com/caravanglory/magehub/compare/magehub-v0.1.0...magehub-v0.1.1) (2026-04-21)
+
+
+### Features
+
+* add bundled MageHub core skills ([775bf82](https://github.com/caravanglory/magehub/commit/775bf82d65462b1481daa10df69250fcc98a3f73))
+* add core CLI source and validation pipeline ([085c830](https://github.com/caravanglory/magehub/commit/085c8303cfe472be22a738769ef056127a0ef667))
+* add devops-warden skill for Warden local environment ([#3](https://github.com/caravanglory/magehub/issues/3)) ([b76ff55](https://github.com/caravanglory/magehub/commit/b76ff55ef30e644af7e40abe74dfcb449cb51f37))
+* add GitHub Pages project site ([7dc5eb9](https://github.com/caravanglory/magehub/commit/7dc5eb9b6bc7c4d25a674a1567d0f7f462676f90))
+* add RawSkill and RawSkillExample types for hybrid skill format ([124a0b2](https://github.com/caravanglory/magehub/commit/124a0b2ad0b237b1965d496a5538164cf54d6a66))
+* add skill normalizer for resolving external file references ([2df1c89](https://github.com/caravanglory/magehub/commit/2df1c896b53a0c5e29aa09267fdfaac6f8ed87e5))
+* enrich all 10 bundled skills with detailed instructions, examples, conventions, and anti-patterns ([036614c](https://github.com/caravanglory/magehub/commit/036614c5586ea384752d46f7054579aef7bc972c))
+* extend test helpers to support file-reference skill format ([83a18a8](https://github.com/caravanglory/magehub/commit/83a18a803ca647c9d4409ac1cad6d12928394d9a))
+* per-skill rendering, auto-bootstrap, and CI/CD pipeline ([#4](https://github.com/caravanglory/magehub/issues/4)) ([5a13be4](https://github.com/caravanglory/magehub/commit/5a13be4baa4071ea1a31d5a0dbefa74c3795e189))
+* redesign site with aurora effects and particle background ([#5](https://github.com/caravanglory/magehub/issues/5)) ([7cf5c83](https://github.com/caravanglory/magehub/commit/7cf5c83da41bd9e51818cec5354ff4523eea731b))
+* update skill schema to support instructions_file and code_file ([a205d68](https://github.com/caravanglory/magehub/commit/a205d68eda65735279f02ee0e31ddfc5e9323afb))
+* wire skill normalizer into loader and validator pipelines ([eae5698](https://github.com/caravanglory/magehub/commit/eae569810c4e5d08481e7d99df1c71f863856aa2))
+
+
+### Bug Fixes
+
+* address code review issues in init, smoke test, and vitest config ([ef99f46](https://github.com/caravanglory/magehub/commit/ef99f46ff19dc284300ffdacc649daa321731237))
+* resolve ESLint no-unused-vars errors in skill normalizer ([d744ab5](https://github.com/caravanglory/magehub/commit/d744ab5c6f6251bb78e6b405b62536dd5f60a695))
+
+## Changelog
+
 ## Unreleased
 
 - Bootstrap Node.js/TypeScript CLI skeleton
