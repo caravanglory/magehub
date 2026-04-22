@@ -10,6 +10,7 @@ import { registerSkillRemoveCommand } from './commands/skill/remove.js';
 import { registerSkillSearchCommand } from './commands/skill/search.js';
 import { registerSkillShowCommand } from './commands/skill/show.js';
 import { registerSkillVerifyCommand } from './commands/skill/verify.js';
+import { getPackageVersion } from './core/runtime-assets.js';
 
 export function createCli(): Command {
   const program = new Command();
@@ -17,7 +18,7 @@ export function createCli(): Command {
   program
     .name('magehub')
     .description('Magento 2 AI coding skills CLI')
-    .version('0.1.0');
+    .version(getPackageVersion());
 
   registerSetupInitCommand(program);
   registerSkillListCommand(program);

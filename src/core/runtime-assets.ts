@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
@@ -25,6 +25,13 @@ function resolveAssetRoot(): string {
 }
 
 const packageRoot = resolveAssetRoot();
+
+export function getPackageVersion(): string {
+  const pkg = JSON.parse(
+    readFileSync(path.join(packageRoot, 'package.json'), 'utf8'),
+  ) as { version: string };
+  return pkg.version;
+}
 
 export function resolveBundledSchemaPath(fileName: string): string {
   return path.join(packageRoot, 'schema', fileName);
