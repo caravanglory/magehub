@@ -5,7 +5,7 @@
 The fastest path is one command:
 
 ```bash
-magehub install module-plugin performance-caching
+magehub install module-plugin performance
 ```
 
 This auto-detects your AI tool, creates `.magehub.yaml` if missing, renders the selected skills to disk, and updates `.gitignore`.

@@ -63,7 +63,7 @@ const ALL_SKILL_IDS = [
   'module-plugin',
   'module-scaffold',
   'module-setup',
-  'performance-caching',
+  'performance',
   'standards-coding',
   'testing-phpunit',
 ];

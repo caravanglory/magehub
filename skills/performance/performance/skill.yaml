@@ -1,0 +1,242 @@
+id: performance
+name: Performance
+version: '1.0.0'
+category: performance
+description: Profile, diagnose, and optimize Magento 2 performance — caching strategies, database query analysis, APM tools (New Relic, Blackfire), and frontend performance auditing
+
+tags:
+  - performance
+  - cache
+  - fpc
+  - varnish
+  - block-cache
+  - cache-invalidation
+  - profiling
+  - optimization
+  - debugging
+  - new-relic
+  - blackfire
+  - mysql
+  - slow-query
+  - lighthouse
+
+magento_versions:
+  - '2.4.x'
+
+dependencies: []
+
+instructions_file: instructions.md
+
+conventions:
+  - rule: 'Always reproduce performance issues in production-like conditions before profiling'
+    example: 'Use production database snapshot, disable developer mode, enable all caches and minification'
+    rationale: 'Profiling in developer mode or with small datasets produces misleading results that do not reflect real bottlenecks'
+
+  - rule: 'Profile before and after any optimization to measure actual impact'
+    example: 'Record baseline TTFB and query count, apply index, re-profile and compare'
+    rationale: 'Without measured before/after data, optimizations may hurt performance or solve the wrong problem'
+
+  - rule: 'Never enable profiler or SQL logging on production storefront traffic'
+    example: 'Use profiler via CLI command (bin/magento dev:query-log:enable) or isolated staging environment'
+    rationale: 'Profiler overhead adds 20-50% latency and can leak sensitive query data to responses'
+
+  - rule: 'Prioritize database query optimization over PHP micro-optimizations'
+    example: 'A missing index causing 500ms queries will yield more improvement than caching a 2ms PHP loop'
+    rationale: 'Database queries are the dominant bottleneck in most Magento deployments; PHP runtime is rarely the limiting factor'
+
+  - rule: 'Define the invalidation strategy before adding any cache storage'
+    example: 'Document which cache tags will be cleaned and which events trigger the clean before writing cache save logic'
+    rationale: 'Caching without a clear invalidation plan leads to stale data that is difficult to debug and erodes trust in the cache layer'
+
+  - rule: 'Implement IdentityInterface on every block that renders entity-dependent cached content'
+    example: 'class ProductList extends AbstractBlock implements IdentityInterface'
+    rationale: 'Without IdentityInterface the framework cannot associate cache tags with block HTML, causing stale fragments to persist after entity updates'
+
+  - rule: 'Use specific cache tags to group related cache entries instead of flushing entire cache types'
+    example: "clean([Product::CACHE_TAG . '_' . $productId]) instead of TypeListInterface::cleanType('full_page')"
+    rationale: 'Targeted invalidation preserves the majority of cached data and avoids the thundering herd problem that full cache flushes cause under load'
+
+examples:
+  - title: 'Enable Magento built-in profiler and read output'
+    description: 'Configure profiler in env.php and interpret the HTML output to identify slow code paths'
+    language: php
+    code_file: examples/profiler-configuration.php
+
+  - title: 'Analyze slow MySQL queries with EXPLAIN'
+    description: 'Identify missing indexes and inefficient queries from the slow query log or Magento query log'
+    language: sql
+    code_file: examples/slow-query-analysis.sql
+
+  - title: 'New Relic APM transaction trace configuration'
+    description: 'Configure New Relic to segment Magento transactions and identify controller-level bottlenecks'
+    language: php
+    code_file: examples/newrelic-transaction-naming.php
+
+  - title: 'Blackfire probe integration for CI profiling'
+    description: 'Add Blackfire assertions to CI pipeline for automated performance regression detection'
+    language: yaml
+    code_file: examples/blackfire-ci-scenario.yaml
+
+  - title: 'Block implementing IdentityInterface with cache key info'
+    description: 'Complete block class that declares cache tags, cache key components, and a finite cache lifetime for block_html caching'
+    language: php
+    code_file: examples/block-implementing-identity-interface-with-cache-key-info.php
+
+  - title: 'Custom cache type registration (cache.xml + di.xml)'
+    description: 'Declare a custom cache type so it appears in the admin cache management grid and can be flushed independently'
+    language: xml
+    code_file: examples/custom-cache-type-registration.xml
+
+  - title: 'Programmatic cache operations with TypeListInterface'
+    description: 'Service class that performs targeted cache invalidation and direct cache load/save using the framework cache interfaces'
+    language: php
+    code_file: examples/programmatic-cache-operations-with-type-list-interface.php
+
+anti_patterns:
+  - pattern: 'Running profiler on production customer-facing requests'
+    problem: 'Profiler output is embedded in HTML responses, exposing internal paths, query strings, and potentially sensitive data. The profiling overhead also degrades customer experience.'
+    solution: |
+      Enable profiler only via CLI commands, admin-restricted routes, or dedicated staging:
+      bin/magento dev:profiler:enable html
+      bin/magento dev:query-log:enable
+      Use IP whitelisting or admin session checks before emitting profile data.
+
+  - pattern: 'Optimizing without a clear bottleneck identified'
+    problem: 'Blindly adding indexes, caching layers, or code changes without profiling data often introduces complexity without measurable benefit, and can mask the real issue.'
+    solution: |
+      Follow the measurement-driven workflow:
+      1. Establish baseline (response time, query count, memory)
+      2. Profile to identify the top bottleneck
+      3. Apply targeted fix to that bottleneck only
+      4. Re-measure to confirm improvement
+
+  - pattern: 'Caching as a substitute for fixing slow queries'
+    problem: 'Adding cache layers on top of N+1 queries or missing indexes defers the root cause. When cache invalidates, the underlying slowness returns and may cascade.'
+    solution: |
+      Fix the query first, then add caching:
+      - Use EXPLAIN to find missing indexes
+      - Eliminate N+1 queries with joins or collection preloading
+      - Add caching only after the data access layer is optimized
+
+  - pattern: 'Embedding customer-specific data in full page cache output'
+    problem: 'FPC stores one response per URL regardless of session. Customer names, prices, or cart contents rendered in cacheable blocks leak across visitors and violate privacy regulations.'
+    solution: |
+      Move personalized data to private content sections loaded via AJAX after page render:
+      <!-- etc/frontend/sections.xml -->
+      <action name="customer/account/login">
+          <section name="customer"/>
+      </action>
+      Use customer-data JS components to render personalized blocks client-side.
+
+  - pattern: 'Cacheable block missing IdentityInterface and cache tags'
+    problem: 'Without IdentityInterface the block HTML cache entry has no tags. Entity updates cannot trigger targeted invalidation, causing stale output until the entire block_html cache type is flushed.'
+    solution: |
+      Implement IdentityInterface and return entity-specific tags:
+      public function getIdentities(): array
+      {
+          return [Product::CACHE_TAG . '_' . $this->getProductId()];
+      }
+
+  - pattern: 'Flushing all caches instead of targeted tag-based invalidation'
+    problem: 'Calling bin/magento cache:flush or cleaning an entire cache type purges all entries, triggering a thundering herd of uncached requests that can saturate backend servers under load.'
+    solution: |
+      Use tag-based invalidation to remove only affected entries:
+      $this->cache->clean([Product::CACHE_TAG . '_' . $productId]);
+      For cache type-level invalidation, prefer invalidate() over cleanType()
+      because invalidate() marks the type as outdated without immediate purge.
+
+files:
+  - path: 'etc/env.php'
+    description: 'Debug logging configuration for staging/development only (profiler is enabled via CLI or MAGE_PROFILER env var, not env.php)'
+    template: |
+      <?php
+      return [
+          'system' => [
+              'default' => [
+                  'dev' => [
+                      'debug' => [
+                          'debug_logging' => '1',
+                          'template_hints' => '0',
+                      ],
+                  ],
+              ],
+          ],
+      ];
+      // Enable profiler via CLI: bin/magento dev:profiler:enable html
+      // Or set environment variable: MAGE_PROFILER=html
+
+  - path: 'Block/{{blockName}}.php'
+    description: 'Cacheable block implementing IdentityInterface with cache key info and lifetime'
+    template: |
+      <?php
+      declare(strict_types=1);
+
+      namespace {{vendor}}\{{module}}\Block;
+
+      use Magento\Framework\DataObject\IdentityInterface;
+      use Magento\Framework\View\Element\Template;
+
+      class {{blockName}} extends Template implements IdentityInterface
+      {
+          private const CACHE_TAG = '{{cacheTag}}';
+          private const CACHE_LIFETIME_SECONDS = 3600;
+
+          public function getIdentities(): array
+          {
+              $id = $this->getData('entity_id');
+
+              return $id !== null ? [self::CACHE_TAG . '_' . $id] : [];
+          }
+
+          public function getCacheKeyInfo(): array
+          {
+              return [
+                  self::CACHE_TAG,
+                  (string) $this->_storeManager->getStore()->getId(),
+                  $this->getTemplate(),
+              ];
+          }
+
+          public function getCacheLifetime(): int
+          {
+              return self::CACHE_LIFETIME_SECONDS;
+          }
+      }
+
+  - path: 'etc/cache.xml'
+    description: 'Custom cache type registration for module-specific cached data'
+    template: |
+      <?xml version="1.0"?>
+      <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:framework:Cache/etc/cache.xsd">
+          <type name="{{cacheTypeName}}"
+                translate="label,description"
+                instance="Magento\Framework\Cache\Frontend\Decorator\TagScope">
+              <label>{{cacheTypeLabel}}</label>
+              <description>{{cacheTypeDescription}}</description>
+          </type>
+      </config>
+
+references:
+  - title: 'Adobe Commerce: Configure the profiler'
+    url: 'https://experienceleague.adobe.com/en/docs/commerce-operations/configuration-guide/setup/config-services'
+  - title: 'Adobe Commerce: Slow query and slow processing logs'
+    url: 'https://experienceleague.adobe.com/en/docs/commerce-operations/configuration-guide/setup/config-services'
+  - title: 'Blackfire.io Magento Documentation'
+    url: 'https://blackfire.io/docs/introduction'
+  - title: 'New Relic APM for Adobe Commerce'
+    url: 'https://experienceleague.adobe.com/en/docs/commerce-operations/tools/site-wide-analysis-tools/new-relic'
+  - title: 'MySQL EXPLAIN Output Format'
+    url: 'https://dev.mysql.com/doc/refman/8.0/en/explain-output.html'
+  - title: 'Adobe Commerce: Cache overview and types'
+    url: 'https://developer.adobe.com/commerce/php/development/cache/'
+  - title: 'Adobe Commerce: Full page caching'
+    url: 'https://developer.adobe.com/commerce/php/development/cache/page/public-content/'
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae

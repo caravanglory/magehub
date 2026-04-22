@@ -161,7 +161,7 @@ Skills can be combined for comprehensive coverage:
 skills:
   - module-plugin
   - module-di
-  - performance-caching
+  - performance
   - standards-coding
 ```
 
@@ -247,7 +247,7 @@ magehub skill:update
 | 6   | `api-graphql-resolver`      | api         | Modern headless/PWA standard API; unique resolver patterns                    |
 | 7   | `hyva-module-compatibility` | hyva        | #1 Hyva ecosystem pain point: Luma-to-Hyva conversion                         |
 | 8   | `testing-phpunit`           | testing     | Quality foundation; Magento's test setup is unique                            |
-| 9   | `performance-caching`       | performance | #1 performance lever; incorrect caching causes both perf and correctness bugs |
+| 9   | `performance`               | performance | #1 performance lever; incorrect caching causes both perf and correctness bugs |
 | 10  | `standards-coding`          | standards   | Affects every file; baseline for all other skills                             |
 
 ### 3.1 Module Development (`module`)
@@ -706,7 +706,7 @@ MFTF is Adobe/Magento's official end-to-end (E2E) testing framework for testing 
 
 | Skill ID                  | Name                  | Description                                 | Release  |
 | ------------------------- | --------------------- | ------------------------------------------- | -------- |
-| `performance-caching`     | Caching Strategies    | FPC, block cache, config cache optimization | **v1.0** |
+| `performance`             | Caching Strategies    | FPC, block cache, config cache optimization | **v1.0** |
 | `performance-audit`       | Performance Audit     | Identify and diagnose performance issues    | v1.1     |
 | `performance-indexer`     | Indexer Optimization  | Custom indexers and reindex strategies      | v1.1     |
 | `performance-database`    | Database Optimization | Query optimization, indexing                | v1.1     |
@@ -771,7 +771,7 @@ MFTF is Adobe/Magento's official end-to-end (E2E) testing framework for testing 
 
 ---
 
-#### 3.7.2 Skill Detail: `performance-caching`
+#### 3.7.2 Skill Detail: `performance`
 
 **Purpose:** Implement effective caching strategies.
 
@@ -1525,16 +1525,16 @@ magehub skill:install <skill-id...> [--category=<category>]
 **Example:**
 
 ```bash
-$ magehub skill:install module-plugin performance-caching
+$ magehub skill:install module-plugin performance
 
 Installing skills...
   ✓ module-plugin (v1.0.0)
-  ✓ performance-caching (v1.0.0)
+  ✓ performance (v1.0.0)
 
 Updated .magehub.yaml:
   skills:
     - module-plugin
-    - performance-caching
+    - performance
 
 Run 'magehub generate' to create context file.
 ```
@@ -1568,10 +1568,10 @@ magehub skill:remove <skill-id...>
 **Example:**
 
 ```bash
-$ magehub skill:remove performance-caching
+$ magehub skill:remove performance
 
 Removed skills:
-  ✓ performance-caching
+  ✓ performance
 
 Updated .magehub.yaml
 ```
@@ -1617,7 +1617,7 @@ Generating context file...
 
 Skills included:
   • module-plugin
-  • performance-caching
+  • performance
   • standards-coding
 
 Output: CLAUDE.md (12.4 KB)
@@ -2084,7 +2084,7 @@ magehub/
 │   │   └── testing-phpunit/
 │   │       └── skill.yaml
 │   ├── performance/
-│   │   └── performance-caching/
+│   │   └── performance/
 │   │       └── skill.yaml
 │   └── standards/
 │       └── standards-coding/
@@ -2383,7 +2383,7 @@ export default defineConfig({
 #### 4.4 Quality & Standards Skills (3)
 
 - [ ] `testing-phpunit` — PHPUnit testing for Magento
-- [ ] `performance-caching` — Caching strategies (FPC, block, custom)
+- [ ] `performance` — Caching strategies (FPC, block, custom)
 - [ ] `standards-coding` — Magento 2 coding standards
 
 **Deliverables:**
