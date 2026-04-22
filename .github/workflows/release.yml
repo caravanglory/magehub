@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      publish_tag:
+        description: 'Existing git tag to publish (e.g. v0.1.2). Leave blank to only run release-please.'
+        required: false
+        type: string
 
 concurrency:
   group: release-${{ github.ref }}
@@ -34,19 +39,22 @@ jobs:
   publish:
     name: Publish to npm
     needs: release-please
-    if: needs.release-please.outputs.release_created == 'true'
+    if: needs.release-please.outputs.release_created == 'true' || inputs.publish_tag != ''
     runs-on: ubuntu-latest
     steps:
       - name: Checkout tagged release
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.release-please.outputs.tag_name }}
+          ref: ${{ inputs.publish_tag != '' && inputs.publish_tag || needs.release-please.outputs.tag_name }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
+
+      - name: Upgrade npm for Trusted Publisher OIDC
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: npm ci
