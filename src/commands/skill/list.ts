@@ -1,5 +1,6 @@
 import type { Command } from 'commander';
 
+import { loadGlobalConfig } from '../../core/global-config.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { renderSkillListTable } from '../../core/renderer.js';
 import { info } from '../../utils/logger.js';
@@ -7,11 +8,19 @@ import { CliError } from '../../utils/cli-error.js';
 import { parseSkillCategory } from '../../utils/validation.js';
 
 export async function runSkillListCommand(
-  options: { category?: string; format: string },
+  options: { category?: string; format: string; global?: boolean },
   rootDir?: string,
 ): Promise<void> {
   const effectiveRootDir = rootDir ?? process.cwd();
-  const registry = await createSkillRegistry(effectiveRootDir);
+  const globalConfig = options.global
+    ? undefined
+    : await loadGlobalConfig();
+  const registry = await createSkillRegistry(
+    options.global
+      ? (await import('../../core/global-config.js')).getGlobalConfigDir()
+      : effectiveRootDir,
+    options.global ? undefined : globalConfig,
+  );
   const category = parseSkillCategory(options.category);
   const skills = registry.list(category);
 
@@ -44,7 +53,12 @@ export function registerSkillListCommand(program: Command): void {
     .description('List available skills')
     .option('--category <category>', 'Filter by category')
     .option('--format <format>', 'Output format: table or json', 'table')
-    .action(async (options: { category?: string; format: string }) =>
-      runSkillListCommand(options),
+    .option('-g, --global', 'List globally installed skills')
+    .action(
+      async (options: {
+        category?: string;
+        format: string;
+        global?: boolean;
+      }) => runSkillListCommand(options),
     );
 }

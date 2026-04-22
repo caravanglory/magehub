@@ -1,5 +1,6 @@
 import type { Command } from 'commander';
 
+import { loadGlobalConfig } from '../../core/global-config.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { renderSkillSearchResults } from '../../core/renderer.js';
 import { info } from '../../utils/logger.js';
@@ -10,7 +11,11 @@ export async function runSkillSearchCommand(
   options: { category?: string },
   rootDir?: string,
 ): Promise<void> {
-  const registry = await createSkillRegistry(rootDir ?? process.cwd());
+  const globalConfig = await loadGlobalConfig();
+  const registry = await createSkillRegistry(
+    rootDir ?? process.cwd(),
+    globalConfig,
+  );
   const results = registry.search(
     keyword,
     parseSkillCategory(options.category),

@@ -1,12 +1,20 @@
 import type { Command } from 'commander';
+import os from 'node:os';
 
 import {
   createBootstrapConfig,
   loadConfig,
+  mergeConfigs,
   saveConfig,
 } from '../../core/config-manager.js';
 import { ensureGitExcludeEntry } from '../../core/git-exclude.js';
 import { resolveOutputTarget } from '../../core/formats.js';
+import {
+  createDefaultGlobalConfig,
+  getGlobalConfigDir,
+  loadGlobalConfig,
+  saveGlobalConfig,
+} from '../../core/global-config.js';
 import { renderArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { writeArtifact } from '../../core/writer.js';
@@ -58,6 +66,90 @@ async function loadOrBootstrapConfig(
   return { config: bootstrap, bootstrapped: true };
 }
 
+async function runGlobalInstall(
+  skillIds: string[],
+  options: {
+    category?: string;
+    format?: string;
+  },
+): Promise<void> {
+  if (options.format === undefined) {
+    throw new CliError(
+      '--format is required for global install (e.g. --format claude)',
+      1,
+    );
+  }
+
+  const format = parseOutputFormat(options.format, 'claude');
+  const globalConfigDir = getGlobalConfigDir();
+
+  let config = await loadGlobalConfig();
+  const isNew = config === undefined;
+  if (isNew) {
+    config = createDefaultGlobalConfig(format);
+  } else {
+    config.format = format;
+  }
+
+  const registry = await createSkillRegistry(globalConfigDir, config);
+
+  const parsedCategory = parseSkillCategory(options.category);
+  const categorySkillIds =
+    parsedCategory !== undefined
+      ? registry.list(parsedCategory).map((skill) => skill.id)
+      : [];
+  const targetIds = mergeUnique(skillIds, categorySkillIds);
+
+  if (targetIds.length === 0) {
+    throw new CliError('No skills specified for installation.', 1);
+  }
+
+  for (const skillId of targetIds) {
+    if (registry.getById(skillId) === undefined) {
+      throw new CliError(`Unknown skill ID: ${skillId}`, 3);
+    }
+  }
+
+  const previous = new Set(config.skills);
+  config.skills = mergeUnique(config.skills, targetIds);
+  await saveGlobalConfig(config);
+
+  if (isNew) {
+    info('Created ~/.magehub/config.yaml');
+  } else {
+    info('Updated ~/.magehub/config.yaml');
+  }
+
+  for (const skillId of targetIds) {
+    info(`${previous.has(skillId) ? '•' : '✓'} ${skillId}`);
+  }
+
+  const targetSkills = config.skills.map((skillId) => {
+    const skill = registry.getById(skillId);
+    if (skill === undefined) {
+      throw new CliError(`Unknown skill ID: ${skillId}`, 3);
+    }
+    return skill;
+  });
+
+  const artifact = await renderArtifact(targetSkills, {
+    format,
+    includeExamples: config.include_examples ?? true,
+    includeAntipatterns: config.include_antipatterns ?? true,
+  });
+
+  const homeDir = os.homedir();
+  const result = await writeArtifact(homeDir, format, undefined, artifact);
+
+  if (result.targetKind === 'file') {
+    info(`Generated: ${result.targetPath}`);
+  } else {
+    info(
+      `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+    );
+  }
+}
+
 export async function runSkillInstallCommand(
   skillIds: string[],
   options: {
@@ -65,11 +157,17 @@ export async function runSkillInstallCommand(
     format?: string;
     write?: boolean;
     gitExclude?: boolean;
+    global?: boolean;
   },
   rootDir?: string,
 ): Promise<void> {
+  if (options.global) {
+    return runGlobalInstall(skillIds, options);
+  }
+
   const effectiveRootDir = rootDir ?? process.cwd();
-  const registry = await createSkillRegistry(effectiveRootDir);
+  const globalConfig = await loadGlobalConfig();
+  const registry = await createSkillRegistry(effectiveRootDir, globalConfig);
 
   const { config, bootstrapped } = await loadOrBootstrapConfig(
     effectiveRootDir,
@@ -111,8 +209,10 @@ export async function runSkillInstallCommand(
     return;
   }
 
-  const format = config.format ?? 'claude';
-  const targetSkills = config.skills.map((skillId) => {
+  const merged = mergeConfigs(globalConfig, config);
+  const format = merged.format ?? 'claude';
+  const allSkillIds = merged.skills;
+  const targetSkills = allSkillIds.map((skillId) => {
     const skill = registry.getById(skillId);
     if (skill === undefined) {
       throw new CliError(`Unknown skill ID: ${skillId}`, 3);
@@ -122,14 +222,14 @@ export async function runSkillInstallCommand(
 
   const artifact = await renderArtifact(targetSkills, {
     format,
-    includeExamples: config.include_examples ?? true,
-    includeAntipatterns: config.include_antipatterns ?? true,
+    includeExamples: merged.include_examples ?? true,
+    includeAntipatterns: merged.include_antipatterns ?? true,
   });
 
   const result = await writeArtifact(
     effectiveRootDir,
     format,
-    config.output,
+    merged.output,
     artifact,
   );
 
@@ -142,7 +242,11 @@ export async function runSkillInstallCommand(
   }
 
   if (options.gitExclude !== false) {
-    const target = resolveOutputTarget(effectiveRootDir, format, config.output);
+    const target = resolveOutputTarget(
+      effectiveRootDir,
+      format,
+      merged.output,
+    );
     const added = await ensureGitExcludeEntry(
       effectiveRootDir,
       target.path,
@@ -165,6 +269,7 @@ export function registerSkillInstallCommand(program: Command): void {
     .argument('[skillIds...]', 'Skill identifiers to install')
     .option('--category <category>', 'Install all skills from a category')
     .option('--format <format>', 'Override output format (persisted to config)')
+    .option('-g, --global', 'Install skill globally (~/.magehub/config.yaml)')
     .option('--no-write', 'Skip writing rendered output files')
     .option('--no-git-exclude', 'Skip updating .git/info/exclude')
     .action(
@@ -175,6 +280,7 @@ export function registerSkillInstallCommand(program: Command): void {
           format?: string;
           write?: boolean;
           gitExclude?: boolean;
+          global?: boolean;
         },
       ) => runSkillInstallCommand(skillIds, options),
     );

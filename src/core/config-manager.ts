@@ -97,3 +97,47 @@ export function resolveCustomSkillsPath(
 
   return resolved;
 }
+
+export function mergeConfigs(
+  global: MageHubConfig | undefined,
+  project: MageHubConfig,
+): MageHubConfig {
+  if (global === undefined) {
+    return project;
+  }
+
+  const merged: MageHubConfig = {
+    version: project.version,
+    skills: [...new Set([...project.skills, ...global.skills])],
+    format: project.format ?? global.format,
+    output: project.output ?? global.output,
+    include_examples: project.include_examples ?? global.include_examples,
+    include_antipatterns:
+      project.include_antipatterns ?? global.include_antipatterns,
+    custom_skills_path: project.custom_skills_path,
+  };
+
+  if (project.registries || global.registries) {
+    const allRegistries = [
+      ...(project.registries ?? []),
+      ...(global.registries ?? []),
+    ];
+    const seen = new Set<string>();
+    merged.registries = allRegistries.filter((reg) => {
+      const key = `${reg.name}:${reg.url}`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  }
+
+  if (project.allowlist || global.allowlist) {
+    merged.allowlist = [
+      ...new Set([...(project.allowlist ?? []), ...(global.allowlist ?? [])]),
+    ];
+  }
+
+  return merged;
+}

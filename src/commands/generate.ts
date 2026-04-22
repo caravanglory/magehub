@@ -1,6 +1,7 @@
 import type { Command } from 'commander';
 
-import { loadConfig } from '../core/config-manager.js';
+import { loadConfig, mergeConfigs } from '../core/config-manager.js';
+import { loadGlobalConfig } from '../core/global-config.js';
 import { renderArtifact } from '../core/renderer.js';
 import { createSkillRegistry } from '../core/skill-registry.js';
 import { writeArtifact } from '../core/writer.js';
@@ -26,17 +27,20 @@ export async function runGenerateCommand(
       2,
     );
   });
-  const registry = await createSkillRegistry(effectiveRootDir);
+
+  const globalConfig = await loadGlobalConfig();
+  const merged = mergeConfigs(globalConfig, loaded.config);
+  const registry = await createSkillRegistry(effectiveRootDir, globalConfig);
 
   const format = parseOutputFormat(
     options.format,
-    loaded.config.format ?? 'claude',
+    merged.format ?? 'claude',
   );
   const selectedSkillIds =
     options.skills
       ?.split(',')
       .map((value) => value.trim())
-      .filter(Boolean) ?? loaded.config.skills;
+      .filter(Boolean) ?? merged.skills;
 
   if (selectedSkillIds.length === 0) {
     throw new CliError('No skills configured for generation.', 1);
@@ -63,15 +67,16 @@ export async function runGenerateCommand(
 
   const artifact = await renderArtifact(skills, {
     format,
-    includeExamples: options.examples ?? loaded.config.include_examples ?? true,
+    includeExamples:
+      options.examples ?? merged.include_examples ?? true,
     includeAntipatterns:
-      options.antipatterns ?? loaded.config.include_antipatterns ?? true,
+      options.antipatterns ?? merged.include_antipatterns ?? true,
   });
 
   const result = await writeArtifact(
     effectiveRootDir,
     format,
-    options.output ?? loaded.config.output,
+    options.output ?? merged.output,
     artifact,
   );
 

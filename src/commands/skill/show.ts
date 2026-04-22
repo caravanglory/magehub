@@ -1,5 +1,6 @@
 import type { Command } from 'commander';
 
+import { loadGlobalConfig } from '../../core/global-config.js';
 import { renderSkillDetail } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { CliError } from '../../utils/cli-error.js';
@@ -8,7 +9,11 @@ export async function runSkillShowCommand(
   skillId: string,
   rootDir?: string,
 ): Promise<void> {
-  const registry = await createSkillRegistry(rootDir ?? process.cwd());
+  const globalConfig = await loadGlobalConfig();
+  const registry = await createSkillRegistry(
+    rootDir ?? process.cwd(),
+    globalConfig,
+  );
   const skill = registry.getById(skillId);
 
   if (skill === undefined) {

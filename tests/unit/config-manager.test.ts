@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   createDefaultConfig,
   loadConfig,
+  mergeConfigs,
   resolveCustomSkillsPath,
   saveConfig,
   validateConfigFile,
@@ -241,6 +242,110 @@ describe('config-manager', () => {
       expect(() => resolveCustomSkillsPath(rootDir, config)).toThrow(
         'custom_skills_path must stay within the project root',
       );
+    });
+  });
+
+  describe('mergeConfigs', () => {
+    it('returns project config when global is undefined', () => {
+      const project = createDefaultConfig();
+      project.skills = ['a'];
+
+      const result = mergeConfigs(undefined, project);
+      expect(result).toBe(project);
+    });
+
+    it('merges skill lists with project-first ordering and dedup', () => {
+      const global = createDefaultConfig();
+      global.skills = ['shared', 'global-only'];
+
+      const project = createDefaultConfig();
+      project.skills = ['shared', 'project-only'];
+
+      const result = mergeConfigs(global, project);
+      expect(result.skills).toEqual(['shared', 'project-only', 'global-only']);
+    });
+
+    it('project format overrides global format', () => {
+      const global = createDefaultConfig('cursor');
+      const project = createDefaultConfig('claude');
+
+      const result = mergeConfigs(global, project);
+      expect(result.format).toBe('claude');
+    });
+
+    it('falls back to global format when project format is undefined', () => {
+      const global = createDefaultConfig('cursor');
+      const project = createDefaultConfig();
+      delete project.format;
+
+      const result = mergeConfigs(global, project);
+      expect(result.format).toBe('cursor');
+    });
+
+    it('project include_examples overrides global', () => {
+      const global = createDefaultConfig();
+      global.include_examples = false;
+
+      const project = createDefaultConfig();
+      project.include_examples = true;
+
+      const result = mergeConfigs(global, project);
+      expect(result.include_examples).toBe(true);
+    });
+
+    it('falls back to global include_examples when project is undefined', () => {
+      const global = createDefaultConfig();
+      global.include_examples = false;
+
+      const project = createDefaultConfig();
+      delete project.include_examples;
+
+      const result = mergeConfigs(global, project);
+      expect(result.include_examples).toBe(false);
+    });
+
+    it('uses project custom_skills_path only', () => {
+      const global = createDefaultConfig();
+      global.custom_skills_path = 'global-skills';
+
+      const project = createDefaultConfig();
+      project.custom_skills_path = 'project-skills';
+
+      const result = mergeConfigs(global, project);
+      expect(result.custom_skills_path).toBe('project-skills');
+    });
+
+    it('merges registries with dedup', () => {
+      const global = createDefaultConfig();
+      global.registries = [
+        { name: 'official', url: 'https://example.com/registry' },
+        { name: 'community', url: 'https://community.example.com' },
+      ];
+
+      const project = createDefaultConfig();
+      project.registries = [
+        { name: 'official', url: 'https://example.com/registry' },
+        { name: 'private', url: 'https://private.example.com' },
+      ];
+
+      const result = mergeConfigs(global, project);
+      expect(result.registries).toHaveLength(3);
+      expect(result.registries!.map((r) => r.name)).toEqual([
+        'official',
+        'private',
+        'community',
+      ]);
+    });
+
+    it('merges allowlist with dedup', () => {
+      const global = createDefaultConfig();
+      global.allowlist = ['a', 'b'];
+
+      const project = createDefaultConfig();
+      project.allowlist = ['b', 'c'];
+
+      const result = mergeConfigs(global, project);
+      expect(result.allowlist).toEqual(['b', 'c', 'a']);
     });
   });
 });

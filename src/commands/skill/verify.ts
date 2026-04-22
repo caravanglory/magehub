@@ -1,6 +1,7 @@
 import type { Command } from 'commander';
 
 import { loadConfig } from '../../core/config-manager.js';
+import { loadGlobalConfig } from '../../core/global-config.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { validateSkillFile } from '../../core/skill-validator.js';
 import { CliError } from '../../utils/cli-error.js';
@@ -11,7 +12,8 @@ export async function runSkillVerifyCommand(
   rootDir?: string,
 ): Promise<void> {
   const effectiveRootDir = rootDir ?? process.cwd();
-  const registry = await createSkillRegistry(effectiveRootDir);
+  const globalConfig = await loadGlobalConfig();
+  const registry = await createSkillRegistry(effectiveRootDir, globalConfig);
 
   let skillIds: string[];
 

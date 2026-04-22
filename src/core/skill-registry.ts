@@ -1,7 +1,12 @@
 import path from 'node:path';
 
+import type { MageHubConfig } from '../types/config.js';
 import type { Skill, SkillCategory } from '../types/skill.js';
 import { loadConfig, resolveCustomSkillsPath } from './config-manager.js';
+import {
+  getGlobalSkillsDir,
+  resolveGlobalCustomSkillsPath,
+} from './global-config.js';
 import { createMageHubPaths } from './paths.js';
 import { resolveBundledSkillsPath } from './runtime-assets.js';
 import {
@@ -70,6 +75,7 @@ export class SkillRegistry {
 
 export async function createSkillRegistry(
   rootDir: string,
+  globalConfig?: MageHubConfig,
 ): Promise<SkillRegistry> {
   const paths = createMageHubPaths(rootDir);
   const localSkillFiles = await listSkillFiles(paths.skillsDir);
@@ -77,6 +83,21 @@ export async function createSkillRegistry(
     localSkillFiles.length > 0
       ? [paths.skillsDir]
       : [resolveBundledSkillsPath()];
+
+  if (globalConfig !== undefined) {
+    const globalCustomPath = resolveGlobalCustomSkillsPath(globalConfig);
+    if (globalCustomPath !== undefined) {
+      skillDirs.push(globalCustomPath);
+    }
+    const globalSkillsDir = getGlobalSkillsDir();
+    const globalFiles = await listSkillFiles(globalSkillsDir).catch(
+      () => [],
+    );
+    if (globalFiles.length > 0 && !skillDirs.includes(globalSkillsDir)) {
+      skillDirs.push(globalSkillsDir);
+    }
+  }
+
   const loadedConfig = await loadConfig(rootDir).catch(() => undefined);
 
   if (loadedConfig?.config.custom_skills_path !== undefined) {
