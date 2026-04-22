@@ -19,13 +19,13 @@ Every finding must include a concrete fix. Do not write "this is slow" — write
 
 Rate every finding 1-10:
 
-| Score | Meaning | Action |
-|-------|---------|--------|
-| 9-10 | Verified by reading specific code. Concrete bug demonstrated. | Show normally |
-| 7-8 | High-confidence pattern match. Very likely correct. | Show normally |
-| 5-6 | Moderate. Possible false positive. | Show with caveat: "verify this" |
-| 3-4 | Low confidence. Suspicious but may be fine. | Appendix only |
-| 1-2 | Speculation. | Suppress unless P0 severity |
+| Score | Meaning                                                       | Action                          |
+| ----- | ------------------------------------------------------------- | ------------------------------- |
+| 9-10  | Verified by reading specific code. Concrete bug demonstrated. | Show normally                   |
+| 7-8   | High-confidence pattern match. Very likely correct.           | Show normally                   |
+| 5-6   | Moderate. Possible false positive.                            | Show with caveat: "verify this" |
+| 3-4   | Low confidence. Suspicious but may be fine.                   | Appendix only                   |
+| 1-2   | Speculation.                                                  | Suppress unless P0 severity     |
 
 Format: `[SEVERITY] (confidence: N/10) file:line — description`
 
@@ -38,6 +38,7 @@ Name the exact file, function, and line. Show the exact command to run, not "you
 ### Verify or Flag
 
 Before producing the final review output:
+
 - If you claim "this pattern is safe" → cite the specific line proving safety
 - If you claim "this is handled elsewhere" → read and cite the handling code
 - If you claim "tests cover this" → name the test file and method
@@ -46,6 +47,7 @@ Before producing the final review output:
 ### Adversarial Mindset
 
 Think like an attacker and a chaos engineer. Look for:
+
 - Edge cases that bypass validation
 - Race conditions in status transitions
 - Resource leaks in loops or batch operations
@@ -79,7 +81,16 @@ Project slug is derived from the git remote URL or directory name: `owner-repo` 
 #### Record Format (JSONL)
 
 ```json
-{"timestamp":"2026-04-22T10:30:00Z","type":"pattern","key":"missing-acl-admin-controller","insight":"Every admin controller extending Action\\Adminhtml\\Action must override _isAllowed(). Magento does not enforce this at the framework level.","confidence":9,"source":"observed","files":["Controller/Admin/Export.php"],"branch":"feature/export"}
+{
+  "timestamp": "2026-04-22T10:30:00Z",
+  "type": "pattern",
+  "key": "missing-acl-admin-controller",
+  "insight": "Every admin controller extending Action\\Adminhtml\\Action must override _isAllowed(). Magento does not enforce this at the framework level.",
+  "confidence": 9,
+  "source": "observed",
+  "files": ["Controller/Admin/Export.php"],
+  "branch": "feature/export"
+}
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference` (user stated), `architecture` (structural decision), `operational` (project-specific quirk)
@@ -109,6 +120,7 @@ fi
 ```
 
 If learnings are found, incorporate them into the review:
+
 - When a finding matches a past learning, display: `**Prior learning applied: [key] (confidence N/10)**`
 - Adjust confidence upward for known patterns
 - Skip explaining patterns the learning already documents
@@ -116,6 +128,7 @@ If learnings are found, incorporate them into the review:
 #### Logging (after review)
 
 After the review completes, reflect on the session:
+
 - Did you discover a non-obvious pattern or pitfall?
 - Did you encounter a project-specific quirk (build order, env vars, timing)?
 - Did a finding you reported with low confidence turn out to be a real issue?
@@ -171,14 +184,17 @@ git remote get-url origin 2>/dev/null
 Determine which branch this PR/MR targets, or the repo's default branch if no PR/MR exists. Use the result as "the base branch" in all subsequent steps.
 
 **If GitHub:**
+
 1. `gh pr view --json baseRefName -q .baseRefName` — if succeeds, use it
 2. `gh repo view --json defaultBranchRef -q .defaultBranchRef.name` — if succeeds, use it
 
 **If GitLab:**
+
 1. `glab mr view -F json 2>/dev/null` and extract the `target_branch` field — if succeeds, use it
 2. `glab repo view -F json 2>/dev/null` and extract the `default_branch` field — if succeeds, use it
 
 **Git-native fallback (if unknown platform, or CLI commands fail):**
+
 1. `git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||'`
 2. If that fails: `git rev-parse --verify origin/main 2>/dev/null` → use `main`
 3. If that fails: `git rev-parse --verify origin/master 2>/dev/null` → use `master`
@@ -196,6 +212,7 @@ Use AskUserQuestion:
 > What branch should I compare against?
 
 Options:
+
 - A) `main` (or `master`) — the repository default branch
 - B) Another branch — please specify
 - C) The parent feature branch of the current branch
@@ -226,6 +243,7 @@ fi
 ```
 
 If learnings are shown:
+
 - Read them for context on known patterns and pitfalls
 - Apply them during the review (adjust confidence, skip redundant explanations)
 - When a finding matches a prior learning, display: `**Prior learning applied: [key] (confidence N/10, from [date])**`
@@ -260,6 +278,7 @@ Apply the following categories against the diff. These are the issues that can c
 #### 4.1 SQL & Data Safety
 
 Check every location where SQL is built or executed:
+
 - String interpolation in where clauses, order by, or limit expressions
 - User input passed directly to addFieldToFilter without type validation
 - Raw SQL in resource models or setup scripts without parameter binding
@@ -271,6 +290,7 @@ Check every location where SQL is built or executed:
 #### 4.2 Race Conditions & Concurrency
 
 Check state transitions and shared resource access:
+
 - Plugin that modifies an entity after save without checking if another process changed it
 - Status transitions (pending → processing → complete) without optimistic locking
 - Inventory decrement without row-level locking
@@ -281,6 +301,7 @@ Check state transitions and shared resource access:
 #### 4.3 LLM Output Trust Boundary (if applicable)
 
 If the code integrates with LLM APIs or processes AI-generated content:
+
 - LLM output written to database without validation or sanitization
 - AI-generated SQL or code executed without review
 - User prompts passed to LLM without input length limits or injection guards
@@ -290,6 +311,7 @@ If the code integrates with LLM APIs or processes AI-generated content:
 #### 4.4 Shell Injection
 
 Check all `exec()`, `shell_exec()`, `system()`, and backtick usage:
+
 - User input in shell command strings
 - File paths passed to shell commands without basename/realpath validation
 - Environment variables read and passed to shell without sanitization
@@ -299,6 +321,7 @@ Check all `exec()`, `shell_exec()`, `system()`, and backtick usage:
 #### 4.5 Enum & Value Completeness
 
 When the diff introduces a new enum value, status, or type constant:
+
 - Grep for all files referencing sibling values of the same enum
 - Check switches, if-else chains, validation rules, and UI mappings
 - Verify the new value has a human-readable label in i18n files
@@ -309,6 +332,7 @@ When the diff introduces a new enum value, status, or type constant:
 #### 4.6 Input Validation & XSS
 
 Check all entry points (controllers, API endpoints, GraphQL resolvers):
+
 - Request parameters used without validation or type casting
 - User input rendered in HTML without escaping
 - File uploads without type, size, or path validation
@@ -319,6 +343,7 @@ Check all entry points (controllers, API endpoints, GraphQL resolvers):
 #### 4.7 Authorization & ACL
 
 Check every admin-facing entry point:
+
 - Controller extends `Action\Adminhtml\Action` but does not override `_isAllowed()`
 - API endpoint in `webapi.xml` without `aclResource` attribute
 - GraphQL resolver performs admin-only operations without ACL check
@@ -331,6 +356,7 @@ Check every admin-facing entry point:
 Apply these categories. Findings here do not block shipping but should be addressed in follow-up.
 
 #### 5.1 DI & Architecture
+
 - Concrete class injection instead of interface
 - ObjectManager usage in business logic
 - Empty subclass when virtual type would suffice
@@ -338,18 +364,21 @@ Apply these categories. Findings here do not block shipping but should be addres
 - Constructor with 10+ parameters (consider factory or builder)
 
 #### 5.2 Plugin Safety
+
 - Plugin modifies the return value of a method whose contract specifies void
 - Around plugin does not return `$proceed()` result
 - Plugin on a method that is already heavily pluginized (check with grep)
 - Before plugin throws exception without proper type (should be LocalizedException)
 
 #### 5.3 Observer Usage
+
 - Observer on generic events (`controller_action_predispatch`) doing heavy work
 - Observer modifies shared state without transaction safety
 - Observer fires additional events that could loop
 - No corresponding `events.xml` entry for the observer class
 
 #### 5.4 Caching
+
 - Cacheable block missing `IdentityInterface`
 - Hardcoded cache keys without store/context differentiation
 - Full cache type flush instead of tag-based invalidation
@@ -357,6 +386,7 @@ Apply these categories. Findings here do not block shipping but should be addres
 - Personalized data in FPC-cached blocks
 
 #### 5.5 Database & Schema
+
 - `db_schema.xml` column added without default value (breaks existing rows)
 - Index missing on foreign key column
 - Nullable foreign key without business justification
@@ -364,6 +394,7 @@ Apply these categories. Findings here do not block shipping but should be addres
 - Direct table name strings instead of constants
 
 #### 5.6 Collections & Performance
+
 - `getCollection()->load()` without `setPageSize()` in API or grid context
 - Collection loaded inside a loop (N+1)
 - `addAttributeToSelect('*')` instead of specific fields
@@ -371,6 +402,7 @@ Apply these categories. Findings here do not block shipping but should be addres
 - EAV attribute loaded individually instead of preloaded with collection
 
 #### 5.7 API & GraphQL
+
 - Resolver bypasses repository and queries collection directly
 - Web API returns internal objects instead of data interfaces
 - GraphQL schema change breaks backward compatibility
@@ -378,6 +410,7 @@ Apply these categories. Findings here do not block shipping but should be addres
 - No rate limiting on public endpoints
 
 #### 5.8 Frontend
+
 - Inline JavaScript in PHTML templates
 - Knockout component without proper observable disposal
 - RequireJS dependency missing from `requirejs-config.js`
@@ -385,12 +418,14 @@ Apply these categories. Findings here do not block shipping but should be addres
 - Hardcoded URLs instead of `$block->getUrl()`
 
 #### 5.9 i18n
+
 - User-facing string not wrapped in `__()`
 - Translation key contains dynamic content (should be `__('Hello %1', $name)`)
 - No translation file (`i18n/en_US.csv`) for new strings
 - Hardcoded currency or date formats
 
 #### 5.10 Testing
+
 - Business logic without unit test coverage
 - Database interaction without integration test
 - API endpoint without functional test
@@ -398,6 +433,7 @@ Apply these categories. Findings here do not block shipping but should be addres
 - Test names do not describe the behavior being verified
 
 #### 5.11 Documentation Staleness
+
 - README describes a workflow that the diff changes
 - CHANGELOG does not mention the changes
 - `CLAUDE.md` or developer docs reference modified APIs
@@ -503,12 +539,14 @@ echo '{"timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","type":"pitfall","key":"mi
 ```
 
 **What to log:**
+
 - `pattern` — reusable approach that worked well
 - `pitfall` — what NOT to do, with evidence of where it happened
 - `operational` — project-specific quirks (CLI flags, env vars, build order)
 - `architecture` — structural decisions that affect review strategy
 
 **What NOT to log:**
+
 - Obvious things (e.g., "SQL injection is bad")
 - One-off transient errors (network blips, rate limits)
 - Things the user already knows
