@@ -286,6 +286,76 @@ body {
   transform: translateX(-50%) scaleX(1);
 }
 
+/* ── Language Switcher ── */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.lang-switcher button {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--fg-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-out-expo);
+  font-family: inherit;
+}
+
+.lang-switcher button:hover {
+  color: var(--fg);
+}
+
+.lang-switcher button.active {
+  color: var(--fg);
+  background: rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.1);
+}
+
+/* ── Language display control ── */
+.lang-en,
+.lang-zh {
+  display: none;
+}
+
+html[lang='en'] .lang-en {
+  display: block;
+}
+
+html[lang='en'] span.lang-en,
+html[lang='en'] a .lang-en,
+html[lang='en'] button .lang-en,
+html[lang='en'] h1 .lang-en,
+html[lang='en'] h2 .lang-en,
+html[lang='en'] h3 .lang-en,
+html[lang='en'] p .lang-en,
+html[lang='en'] strong .lang-en {
+  display: inline;
+}
+
+html[lang='zh'] .lang-zh {
+  display: block;
+}
+
+html[lang='zh'] span.lang-zh,
+html[lang='zh'] a .lang-zh,
+html[lang='zh'] button .lang-zh,
+html[lang='zh'] h1 .lang-zh,
+html[lang='zh'] h2 .lang-zh,
+html[lang='zh'] h3 .lang-zh,
+html[lang='zh'] p .lang-zh,
+html[lang='zh'] strong .lang-zh {
+  display: inline;
+}
+
 /* ── Buttons ── */
 .button {
   display: inline-flex;

@@ -8,7 +8,7 @@ Project site: [magehub.org](https://magehub.org)
 
 MageHub now supports a complete **local v1.0 workflow**:
 
-- 11 bundled Magento 2 core skills
+- 12 bundled Magento 2 core skills
 - skill listing, search, show, install, remove, and verification
 - config init/show/validate
 - context generation for multiple AI tool formats
@@ -72,6 +72,7 @@ Generated output layout by format:
 - `testing-phpunit`
 - `performance`
 - `standards-coding`
+- `mage-review`
 - `devops-warden`
 
 ## Supported Commands

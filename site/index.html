@@ -50,33 +50,51 @@
           <span class="brand-text">MageHub</span>
         </a>
         <nav class="topnav">
-          <a href="#skills">Skills</a>
-          <a href="#workflow">Workflow</a>
-          <a href="#formats">Formats</a>
-          <a href="#docs">Docs</a>
+          <a href="#skills">
+            <span class="lang-en">Skills</span>
+            <span class="lang-zh">技能</span>
+          </a>
+          <a href="#workflow">
+            <span class="lang-en">Workflow</span>
+            <span class="lang-zh">工作流</span>
+          </a>
+          <a href="#formats">
+            <span class="lang-en">Formats</span>
+            <span class="lang-zh">格式</span>
+          </a>
+          <a href="#docs">
+            <span class="lang-en">Docs</span>
+            <span class="lang-zh">文档</span>
+          </a>
         </nav>
-        <a
-          class="button button-primary"
-          href="https://github.com/caravanglory/magehub"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="lang-switcher">
+            <button class="active" data-lang="en" onclick="setLang('en')">EN</button>
+            <button data-lang="zh" onclick="setLang('zh')">中文</button>
+          </div>
+          <a
+            class="button button-primary"
+            href="https://github.com/caravanglory/magehub"
           >
-            <path
-              d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"
-            ></path>
-            <path d="M9 18c-4.51 2-5-2-7-2"></path>
-          </svg>
-          GitHub
-        </a>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"
+              ></path>
+              <path d="M9 18c-4.51 2-5-2-7-2"></path>
+            </svg>
+            GitHub
+          </a>
+        </div>
       </header>
 
       <main>
@@ -99,24 +117,36 @@
                   d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
                 ></path>
               </svg>
-              <span>Magento 2 x AI coding assistants</span>
+              <span class="lang-en">Magento 2 x AI coding assistants</span>
+              <span class="lang-zh">Magento 2 x AI 编程助手</span>
             </div>
             <h1>
-              Structured Magento 2 skills for tools that normally
-              <span class="text-gradient">guess wrong</span>.
+              <span class="lang-en">
+                Structured Magento 2 skills for tools that normally
+                <span class="text-gradient">guess wrong</span>.
+              </span>
+              <span class="lang-zh">
+                为那些通常会<span class="text-gradient">猜错</span>的工具，提供结构化的 Magento 2 技能。
+              </span>
             </h1>
             <p class="hero-text">
-              MageHub turns Magento 2 architecture, conventions, anti-patterns,
-              and examples into reusable AI skills. Use one local CLI to
-              generate context files for Claude Code, OpenCode, Cursor, Codex,
-              Qoder, Trae, and plain Markdown.
+              <span class="lang-en">
+                MageHub turns Magento 2 architecture, conventions, anti-patterns,
+                and examples into reusable AI skills. Use one local CLI to
+                generate context files for Claude Code, OpenCode, Cursor, Codex,
+                Qoder, Trae, and plain Markdown.
+              </span>
+              <span class="lang-zh">
+                MageHub 将 Magento 2 的架构、约定、反模式和示例转化为可复用的 AI 技能。通过一个本地 CLI 为 Claude Code、OpenCode、Cursor、Codex、Qoder、Trae 和纯 Markdown 生成上下文文件。
+              </span>
             </p>
             <div class="hero-actions">
               <a
                 class="button button-primary button-lg"
                 href="https://github.com/caravanglory/magehub"
               >
-                View Repository
+                <span class="lang-en">View Repository</span>
+                <span class="lang-zh">查看仓库</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="18"
@@ -149,7 +179,8 @@
                   <path d="M5 12h14"></path>
                   <path d="M5 4v16"></path>
                 </svg>
-                Quick Start
+                <span class="lang-en">Quick Start</span>
+                <span class="lang-zh">快速开始</span>
               </a>
             </div>
           </div>
@@ -167,6 +198,7 @@
 <span class="t-skill">api-graphql-resolver</span>
 <span class="t-skill">devops-warden</span>
 <span class="t-skill">hyva-module-compatibility</span>
+<span class="t-skill">mage-review</span>
 <span class="t-skill">module-di</span>
 <span class="t-skill">module-plugin</span>
 <span class="t-skill">module-scaffold</span>
@@ -181,26 +213,37 @@
         <!-- Metrics -->
         <section class="metrics-grid reveal">
           <article class="metric-card reveal reveal-delay-1">
-            <strong data-count="11">0</strong>
-            <span>Bundled v1.0 skills</span>
+            <strong data-count="12">0</strong>
+            <span class="lang-en">Bundled v1.0 skills</span>
+            <span class="lang-zh">v1.0 内置技能</span>
           </article>
           <article class="metric-card reveal reveal-delay-2">
             <strong data-count="7">0</strong>
-            <span>Supported output formats</span>
+            <span class="lang-en">Supported output formats</span>
+            <span class="lang-zh">支持的输出格式</span>
           </article>
           <article class="metric-card reveal reveal-delay-3">
             <strong>CLI</strong>
-            <span>Local-first, schema-backed workflow</span>
+            <span class="lang-en">Local-first, schema-backed workflow</span>
+            <span class="lang-zh">本地优先、Schema 驱动的工作流</span>
           </article>
         </section>
 
         <!-- Skills Section -->
         <section class="section" id="skills">
           <div class="section-heading reveal">
-            <p class="eyebrow">Bundled skill catalog</p>
+            <p class="eyebrow">
+              <span class="lang-en">Bundled skill catalog</span>
+              <span class="lang-zh">内置技能目录</span>
+            </p>
             <h2>
-              The first 11 skills target where Magento AI workflows usually
-              <span class="text-gradient">break</span>.
+              <span class="lang-en">
+                The first 12 skills target where Magento AI workflows usually
+                <span class="text-gradient">break</span>.
+              </span>
+              <span class="lang-zh">
+                前12个技能针对 Magento AI 工作流通常<span class="text-gradient">出问题</span>的地方。
+              </span>
             </h2>
           </div>
           <div class="card-grid skills-grid">
@@ -225,7 +268,12 @@
               </div>
               <h3>module-scaffold</h3>
               <p>
-                Bootstrap valid module structure, registration, and metadata.
+                <span class="lang-en">
+                  Bootstrap valid module structure, registration, and metadata.
+                </span>
+                <span class="lang-zh">
+                  搭建有效的模块结构、注册和元数据。
+                </span>
               </p>
             </article>
             <article class="info-card reveal reveal-delay-2">
@@ -248,8 +296,13 @@
               </div>
               <h3>module-plugin</h3>
               <p>
-                Guide plugin design, interception boundaries, and anti-pattern
-                avoidance.
+                <span class="lang-en">
+                  Guide plugin design, interception boundaries, and anti-pattern
+                  avoidance.
+                </span>
+                <span class="lang-zh">
+                  指导插件设计、拦截边界和反模式规避。
+                </span>
               </p>
             </article>
             <article class="info-card reveal reveal-delay-3">
@@ -274,8 +327,13 @@
               </div>
               <h3>module-di</h3>
               <p>
-                Keep preferences, constructor injection, and virtual types
-                maintainable.
+                <span class="lang-en">
+                  Keep preferences, constructor injection, and virtual types
+                  maintainable.
+                </span>
+                <span class="lang-zh">
+                  保持偏好设置、构造函数注入和虚拟类型的可维护性。
+                </span>
               </p>
             </article>
             <article class="info-card reveal reveal-delay-4">
@@ -299,8 +357,13 @@
               </div>
               <h3>module-setup</h3>
               <p>
-                Use declarative schema and patches instead of legacy install
-                scripts.
+                <span class="lang-en">
+                  Use declarative schema and patches instead of legacy install
+                  scripts.
+                </span>
+                <span class="lang-zh">
+                  使用声明式 Schema 和补丁，替代传统的安装脚本。
+                </span>
               </p>
             </article>
             <article class="info-card reveal reveal-delay-1">
@@ -322,7 +385,10 @@
                 </svg>
               </div>
               <h3>admin-ui-grid</h3>
-              <p>Build admin listing UI Components without XML spaghetti.</p>
+              <p>
+                <span class="lang-en">Build admin listing UI Components without XML spaghetti.</span>
+                <span class="lang-zh">构建管理后台列表 UI 组件，告别 XML 意大利面。</span>
+              </p>
             </article>
             <article class="info-card reveal reveal-delay-2">
               <div class="card-icon">
@@ -344,7 +410,10 @@
                 </svg>
               </div>
               <h3>api-graphql-resolver</h3>
-              <p>Keep GraphQL resolvers thin and Magento-native.</p>
+              <p>
+                <span class="lang-en">Keep GraphQL resolvers thin and Magento-native.</span>
+                <span class="lang-zh">保持 GraphQL 解析器精简且符合 Magento 原生规范。</span>
+              </p>
             </article>
             <article class="info-card reveal reveal-delay-3">
               <div class="card-icon">
@@ -367,8 +436,13 @@
               </div>
               <h3>devops-warden</h3>
               <p>
-                Run Magento commands through Warden's containerized local dev
-                environment.
+                <span class="lang-en">
+                  Run Magento commands through Warden's containerized local dev
+                  environment.
+                </span>
+                <span class="lang-zh">
+                  通过 Warden 的容器化本地开发环境运行 Magento 命令。
+                </span>
               </p>
             </article>
             <article class="info-card reveal reveal-delay-4">
@@ -393,7 +467,12 @@
               </div>
               <h3>hyva-module-compatibility</h3>
               <p>
-                Convert Luma assumptions into Hyva-friendly frontend behavior.
+                <span class="lang-en">
+                  Convert Luma assumptions into Hyva-friendly frontend behavior.
+                </span>
+                <span class="lang-zh">
+                  将 Luma 假设转换为 Hyva 友好的前端行为。
+                </span>
               </p>
             </article>
             <article class="info-card reveal reveal-delay-1">
@@ -418,7 +497,12 @@
               </div>
               <h3>testing-phpunit</h3>
               <p>
-                Write focused PHPUnit unit tests around Magento service logic.
+                <span class="lang-en">
+                  Write focused PHPUnit unit tests around Magento service logic.
+                </span>
+                <span class="lang-zh">
+                  围绕 Magento 服务逻辑编写专注的 PHPUnit 单元测试。
+                </span>
               </p>
             </article>
             <article class="info-card reveal reveal-delay-2">
@@ -439,8 +523,13 @@
               </div>
               <h3>performance</h3>
               <p>
-                Apply cache layers safely without serving broken personalized
-                output.
+                <span class="lang-en">
+                  Apply cache layers safely without serving broken personalized
+                  output.
+                </span>
+                <span class="lang-zh">
+                  安全地应用缓存层，避免提供损坏的个性化输出。
+                </span>
               </p>
             </article>
             <article class="info-card reveal reveal-delay-3">
@@ -462,7 +551,42 @@
               </div>
               <h3>standards-coding</h3>
               <p>
-                Encode Magento coding standards into repeatable AI instructions.
+                <span class="lang-en">
+                  Encode Magento coding standards into repeatable AI instructions.
+                </span>
+                <span class="lang-zh">
+                  将 Magento 编码标准编码为可重复的 AI 指令。
+                </span>
+              </p>
+            </article>
+            <article class="info-card reveal reveal-delay-4">
+              <div class="card-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+              </div>
+              <h3>mage-review</h3>
+              <p>
+                <span class="lang-en">
+                  Structured code review workflow with confidence scoring, covering DI, security, performance, and more.
+                </span>
+                <span class="lang-zh">
+                  结构化代码审查工作流，带置信度评分，涵盖 DI、安全、性能等领域。
+                </span>
               </p>
             </article>
           </div>
@@ -471,45 +595,82 @@
         <!-- Workflow Section -->
         <section class="section split-section" id="workflow">
           <div class="split-content reveal">
-            <p class="eyebrow">Workflow</p>
+            <p class="eyebrow">
+              <span class="lang-en">Workflow</span>
+              <span class="lang-zh">工作流</span>
+            </p>
             <h2>
-              One repository, one config,
-              <span class="text-gradient">many AI tools</span>.
+              <span class="lang-en">
+                One repository, one config,
+                <span class="text-gradient">many AI tools</span>.
+              </span>
+              <span class="lang-zh">
+                一个仓库，一个配置，<span class="text-gradient">多种 AI 工具</span>。
+              </span>
             </h2>
             <p>
-              MageHub treats skills as versioned YAML artifacts, validates them
-              with JSON Schema, and assembles them into a generated context file
-              that matches the target assistant's expected shape.
+              <span class="lang-en">
+                MageHub treats skills as versioned YAML artifacts, validates them
+                with JSON Schema, and assembles them into a generated context file
+                that matches the target assistant's expected shape.
+              </span>
+              <span class="lang-zh">
+                MageHub 将技能视为版本化的 YAML 构件，通过 JSON Schema 验证，并将其组装成符合目标助手预期格式的生成上下文文件。
+              </span>
             </p>
           </div>
           <div class="workflow-steps">
             <article class="workflow-step reveal reveal-delay-1">
               <span class="step-number">1</span>
               <div>
-                <h3>Install skills</h3>
+                <h3>
+                  <span class="lang-en">Install skills</span>
+                  <span class="lang-zh">安装技能</span>
+                </h3>
                 <p>
-                  Select bundled or project-local skills in
-                  <code>.magehub.yaml</code>.
+                  <span class="lang-en">
+                    Select bundled or project-local skills in
+                    <code>.magehub.yaml</code>.
+                  </span>
+                  <span class="lang-zh">
+                    在 <code>.magehub.yaml</code> 中选择内置或项目本地技能。
+                  </span>
                 </p>
               </div>
             </article>
             <article class="workflow-step reveal reveal-delay-2">
               <span class="step-number">2</span>
               <div>
-                <h3>Verify structure</h3>
+                <h3>
+                  <span class="lang-en">Verify structure</span>
+                  <span class="lang-zh">验证结构</span>
+                </h3>
                 <p>
-                  Catch bad schema, duplicate IDs, and heading issues before
-                  generation.
+                  <span class="lang-en">
+                    Catch bad schema, duplicate IDs, and heading issues before
+                    generation.
+                  </span>
+                  <span class="lang-zh">
+                    在生成前捕获错误的 Schema、重复 ID 和标题问题。
+                  </span>
                 </p>
               </div>
             </article>
             <article class="workflow-step reveal reveal-delay-3">
               <span class="step-number">3</span>
               <div>
-                <h3>Generate context</h3>
+                <h3>
+                  <span class="lang-en">Generate context</span>
+                  <span class="lang-zh">生成上下文</span>
+                </h3>
                 <p>
-                  Produce tool-specific prompt/context files from the same skill
-                  set.
+                  <span class="lang-en">
+                    Produce tool-specific prompt/context files from the same skill
+                    set.
+                  </span>
+                  <span class="lang-zh">
+                    从同一套技能集生成工具特定的提示/上下文文件。
+                  </span>
                 </p>
               </div>
             </article>
@@ -519,10 +680,18 @@
         <!-- Formats Section -->
         <section class="section" id="formats">
           <div class="section-heading reveal">
-            <p class="eyebrow">Output formats</p>
+            <p class="eyebrow">
+              <span class="lang-en">Output formats</span>
+              <span class="lang-zh">输出格式</span>
+            </p>
             <h2>
-              Generate for the tools your team
-              <span class="text-gradient">already uses</span>.
+              <span class="lang-en">
+                Generate for the tools your team
+                <span class="text-gradient">already uses</span>.
+              </span>
+              <span class="lang-zh">
+                为你的团队<span class="text-gradient">已在使用的</span>工具生成。
+              </span>
             </h2>
           </div>
           <div class="formats-grid">
@@ -564,34 +733,57 @@
         <!-- Quick Start Section -->
         <section class="section" id="quickstart">
           <div class="section-heading reveal">
-            <p class="eyebrow">Quick start</p>
+            <p class="eyebrow">
+              <span class="lang-en">Quick start</span>
+              <span class="lang-zh">快速开始</span>
+            </p>
             <h2>
-              Start locally in
-              <span class="text-gradient">a few commands</span>.
+              <span class="lang-en">
+                Start locally in
+                <span class="text-gradient">a few commands</span>.
+              </span>
+              <span class="lang-zh">
+                用<span class="text-gradient">几个命令</span>在本地开始。
+              </span>
             </h2>
           </div>
           <div class="quickstart-panel reveal reveal-delay-1">
             <div class="terminal-header">
               <span></span><span></span><span></span>
             </div>
-            <pre><code><span class="t-comment"># Install skills directly with npx — no global install needed</span>
+            <pre><code><span class="lang-en"><span class="t-comment"># Install skills directly with npx — no global install needed</span>
 <span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">module-plugin performance</span>
 
 <span class="t-comment"># Browse all available skills</span>
 <span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:list</span>
 
 <span class="t-comment"># Search for skills by keyword</span>
-<span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:search</span> <span class="t-file">caching</span></code></pre>
+<span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:search</span> <span class="t-file">caching</span></span><span class="lang-zh"><span class="t-comment"># 直接用 npx 安装技能 — 无需全局安装</span>
+<span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">module-plugin performance</span>
+
+<span class="t-comment"># 浏览所有可用技能</span>
+<span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:list</span>
+
+<span class="t-comment"># 按关键词搜索技能</span>
+<span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:search</span> <span class="t-file">caching</span></span></code></pre>
           </div>
         </section>
 
         <!-- Docs Section -->
         <section class="section" id="docs">
           <div class="section-heading reveal">
-            <p class="eyebrow">Documentation</p>
+            <p class="eyebrow">
+              <span class="lang-en">Documentation</span>
+              <span class="lang-zh">文档</span>
+            </p>
             <h2>
-              Read the proposal, CLI reference, or
-              <span class="text-gradient">author new skills</span>.
+              <span class="lang-en">
+                Read the proposal, CLI reference, or
+                <span class="text-gradient">author new skills</span>.
+              </span>
+              <span class="lang-zh">
+                阅读提案、CLI 参考，或<span class="text-gradient">编写新技能</span>。
+              </span>
             </h2>
           </div>
           <div class="card-grid docs-grid">
@@ -617,8 +809,14 @@
                   <polyline points="14 2 14 8 20 8"></polyline>
                 </svg>
               </div>
-              <h3>Proposal</h3>
-              <p>Full project rationale, architecture, schema, and roadmap.</p>
+              <h3>
+                <span class="lang-en">Proposal</span>
+                <span class="lang-zh">提案</span>
+              </h3>
+              <p>
+                <span class="lang-en">Full project rationale, architecture, schema, and roadmap.</span>
+                <span class="lang-zh">完整的项目原理、架构、Schema 和路线图。</span>
+              </p>
             </a>
             <a
               class="doc-card reveal reveal-delay-2"
@@ -642,8 +840,14 @@
                   <path d="M5 4v16"></path>
                 </svg>
               </div>
-              <h3>CLI Reference</h3>
-              <p>Command-by-command usage and supported formats.</p>
+              <h3>
+                <span class="lang-en">CLI Reference</span>
+                <span class="lang-zh">CLI 参考</span>
+              </h3>
+              <p>
+                <span class="lang-en">Command-by-command usage and supported formats.</span>
+                <span class="lang-zh">逐命令的使用说明和支持的格式。</span>
+              </p>
             </a>
             <a
               class="doc-card reveal reveal-delay-3"
@@ -665,10 +869,18 @@
                   <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
                 </svg>
               </div>
-              <h3>Create Skills</h3>
+              <h3>
+                <span class="lang-en">Create Skills</span>
+                <span class="lang-zh">创建技能</span>
+              </h3>
               <p>
-                Author YAML skills with the right headings, structure, and
-                rules.
+                <span class="lang-en">
+                  Author YAML skills with the right headings, structure, and
+                  rules.
+                </span>
+                <span class="lang-zh">
+                  用正确的标题、结构和规则编写 YAML 技能。
+                </span>
               </p>
             </a>
           </div>
@@ -698,7 +910,12 @@
             <span class="brand-text">MageHub</span>
           </div>
           <p>
-            Open-source Magento 2 AI coding skills for serious local workflows.
+            <span class="lang-en">
+              Open-source Magento 2 AI coding skills for serious local workflows.
+            </span>
+            <span class="lang-zh">
+              为严肃本地工作流打造的开源 Magento 2 AI 编程技能。
+            </span>
           </p>
         </div>
         <div class="footer-links">
@@ -746,6 +963,23 @@
     </div>
 
     <script>
+      // Language switcher
+      const savedLang = localStorage.getItem('magehub-lang') || 'en';
+      document.documentElement.lang = savedLang;
+      updateLangButtons(savedLang);
+
+      function setLang(lang) {
+        document.documentElement.lang = lang;
+        localStorage.setItem('magehub-lang', lang);
+        updateLangButtons(lang);
+      }
+
+      function updateLangButtons(activeLang) {
+        document.querySelectorAll('.lang-switcher button').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.lang === activeLang);
+        });
+      }
+
       // Scroll reveal observer
       const revealObserver = new IntersectionObserver(
         (entries) => {
