@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/caravanglory/magehub/compare/magehub-v0.1.3...magehub-v0.1.4) (2026-04-22)
+
+
+### Features
+
+* write ignore entries to .git/info/exclude instead of .gitignore ([#15](https://github.com/caravanglory/magehub/issues/15)) ([9d58a6f](https://github.com/caravanglory/magehub/commit/9d58a6f70bd3ae2bb57359a4446198568a93dcc8))
+
 ## [0.1.3](https://github.com/caravanglory/magehub/compare/magehub-v0.1.2...magehub-v0.1.3) (2026-04-22)
 
 
