@@ -1,6 +1,6 @@
 {
   "name": "magehub",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "AI coding skills for Magento 2 development",
   "license": "MIT",
   "type": "module",

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.5](https://github.com/caravanglory/magehub/compare/magehub-v0.1.4...magehub-v0.1.5) (2026-04-22)
+
+
+### Features
+
+* add global skill installation (-g flag) ([#20](https://github.com/caravanglory/magehub/issues/20)) ([c7e1362](https://github.com/caravanglory/magehub/commit/c7e13629844e3bfa2cce1a920eba89049f762cdc))
+* add mage-review skill for structured Magento 2 code review ([#18](https://github.com/caravanglory/magehub/issues/18)) ([2843d9a](https://github.com/caravanglory/magehub/commit/2843d9ac9259a8846ab2c8d0576a6006c3b76245))
+* add mage-review to docs/site and Chinese/English language toggle ([#21](https://github.com/caravanglory/magehub/issues/21)) ([b3e3aaf](https://github.com/caravanglory/magehub/commit/b3e3aafe10bf5e5649b9f6df14aba20d78b87085))
+
 ## [0.1.4](https://github.com/caravanglory/magehub/compare/magehub-v0.1.3...magehub-v0.1.4) (2026-04-22)
 
 
