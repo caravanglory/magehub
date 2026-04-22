@@ -33,7 +33,7 @@ npx magehub --help
 One command is enough to install skills and render them for your AI tool:
 
 ```bash
-magehub install module-plugin performance-caching
+magehub install module-plugin performance
 ```
 
 On first run, MageHub auto-detects your tool from the project (e.g. existing `.claude/`, `.cursorrules`, `AGENTS.md`), creates `.magehub.yaml`, writes the rendered files, and updates `.gitignore`. Use `--format=<tool>` to override detection.
@@ -70,7 +70,7 @@ Generated output layout by format:
 - `api-graphql-resolver`
 - `hyva-module-compatibility`
 - `testing-phpunit`
-- `performance-caching`
+- `performance`
 - `standards-coding`
 - `devops-warden`
 

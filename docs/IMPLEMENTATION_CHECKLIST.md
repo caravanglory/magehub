@@ -208,7 +208,7 @@ As of the proposal draft, the repository contains the proposal document but not 
 - [x] `api-graphql-resolver`
 - [x] `hyva-module-compatibility`
 - [x] `testing-phpunit`
-- [x] `performance-caching`
+- [x] `performance`
 - [x] `standards-coding`
 
 ### For Each Skill

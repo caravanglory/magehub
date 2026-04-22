@@ -1,0 +1,56 @@
+# Example: Blackfire scenario for CI performance regression detection.
+#
+# Add this to .blackfire.yaml in the project root. Blackfire runs these
+# assertions on every profile and fails the build if thresholds are exceeded.
+
+scenarios: |
+  #!blackfire-player
+
+  scenario
+    name "Magento Storefront Performance"
+
+    # Homepage
+    visit url('/')
+        name "Homepage"
+        expect status_code() == 200
+        assert metrics.sql.queries.count < 30
+        assert main.wall_time < 500ms
+        assert main.peak_memory < 80MB
+
+    # Category page
+    visit url('/men/tops-men.html')
+        name "Category Page"
+        expect status_code() == 200
+        assert metrics.sql.queries.count < 50
+        assert main.wall_time < 800ms
+        assert main.peak_memory < 100MB
+
+    # Product page
+    visit url('/hero-hoodie.html')
+        name "Product Detail Page"
+        expect status_code() == 200
+        assert metrics.sql.queries.count < 40
+        assert main.wall_time < 600ms
+        assert main.peak_memory < 90MB
+
+    # Cart page
+    visit url('/checkout/cart/')
+        name "Cart Page"
+        expect status_code() == 200
+        assert metrics.sql.queries.count < 25
+        assert main.wall_time < 400ms
+
+    # Search results
+    visit url('/catalogsearch/result/?q=hoodie')
+        name "Search Results"
+        expect status_code() == 200
+        assert metrics.sql.queries.count < 35
+        assert main.wall_time < 700ms
+
+tests:
+  "Pages should not trigger SQL errors":
+    - assert metrics.sql.errors.count == 0
+
+  "No function should dominate CPU":
+    - assert main.peak_memory < 500MB
+    - assert metrics.magento2.all.collections_load.time < 300ms

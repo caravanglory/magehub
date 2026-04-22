@@ -7,7 +7,7 @@ skills:
   - api-graphql-resolver
   - hyva-module-compatibility
   - testing-phpunit
-  - performance-caching
+  - performance
   - standards-coding
 format: claude
 include_examples: true

@@ -4,7 +4,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Cache/etc/cache.xsd">
     <type name="vendor_module_data"
           translate="label,description"
-          instance="Magento\Framework\Cache\Frontend\Decorator\TagScope">
+          instance="Vendor\Module\Cache\Frontend\Decorator\TagScope">
         <label>Vendor Module Data</label>
         <description>Cached results for expensive Vendor Module computations</description>
     </type>
@@ -14,9 +14,11 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Magento\Framework\Cache\Frontend\Decorator\TagScope">
+    <virtualType name="Vendor\Module\Cache\Frontend\Decorator\TagScope"
+                 type="Magento\Framework\Cache\Frontend\Decorator\TagScope">
         <arguments>
+            <argument name="frontend" xsi:type="object">Magento\Framework\App\Cache</argument>
             <argument name="tag" xsi:type="string">VENDOR_MODULE_DATA</argument>
         </arguments>
-    </type>
+    </virtualType>
 </config>
