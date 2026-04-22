@@ -123,10 +123,7 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    await runSetupInitCommand(
-      { format: 'claude', gitExclude: false },
-      rootDir,
-    );
+    await runSetupInitCommand({ format: 'claude', gitExclude: false }, rootDir);
     await runSkillInstallCommand(
       ALL_SKILL_IDS,
       { write: false, gitExclude: false },
