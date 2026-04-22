@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/caravanglory/magehub/compare/magehub-v0.1.1...magehub-v0.1.2) (2026-04-22)
+
+
+### Features
+
+* rename performance-caching to performance, expand scope ([#9](https://github.com/caravanglory/magehub/issues/9)) ([c7e7f76](https://github.com/caravanglory/magehub/commit/c7e7f76813008062986870268125d5d49a9427db))
+
 ## [0.1.1](https://github.com/caravanglory/magehub/compare/magehub-v0.1.0...magehub-v0.1.1) (2026-04-21)
 
 
