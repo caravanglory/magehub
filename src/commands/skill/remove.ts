@@ -3,7 +3,11 @@ import type { Command } from 'commander';
 import { rm } from 'node:fs/promises';
 import os from 'node:os';
 
-import { loadConfig, mergeConfigs, saveConfig } from '../../core/config-manager.js';
+import {
+  loadConfig,
+  mergeConfigs,
+  saveConfig,
+} from '../../core/config-manager.js';
 import { getFormatMetadata, resolveOutputTarget } from '../../core/formats.js';
 import {
   loadGlobalConfig,
@@ -31,7 +35,10 @@ async function runGlobalRemove(
   const existing = new Set(config.skills);
   const missing = skillIds.filter((skillId) => !existing.has(skillId));
   if (missing.length > 0) {
-    throw new CliError(`Skills not installed globally: ${missing.join(', ')}`, 1);
+    throw new CliError(
+      `Skills not installed globally: ${missing.join(', ')}`,
+      1,
+    );
   }
 
   const format = config.format ?? 'claude';
@@ -63,14 +70,21 @@ async function runGlobalRemove(
   }
 
   if (metadata.strategy === 'per-skill-file') {
-    const removed = await removePerSkillFiles(homeDir, format, undefined, skillIds);
+    const removed = await removePerSkillFiles(
+      homeDir,
+      format,
+      undefined,
+      skillIds,
+    );
     for (const target of removed) {
       info(`Removed ${target}`);
     }
     return;
   }
 
-  const globalConfigDir = (await import('../../core/global-config.js')).getGlobalConfigDir();
+  const globalConfigDir = (
+    await import('../../core/global-config.js')
+  ).getGlobalConfigDir();
   const registry = await createSkillRegistry(globalConfigDir, config);
   const remainingSkills = config.skills.map((skillId) => {
     const skill = registry.getById(skillId);
@@ -163,11 +177,7 @@ export async function runSkillRemoveCommand(
   });
 
   if (remainingSkills.length === 0) {
-    const target = resolveOutputTarget(
-      effectiveRootDir,
-      format,
-      merged.output,
-    );
+    const target = resolveOutputTarget(effectiveRootDir, format, merged.output);
     if (target.kind === 'file' && (await pathExists(target.path))) {
       await rm(target.path);
       info(`Removed ${target.path}`);

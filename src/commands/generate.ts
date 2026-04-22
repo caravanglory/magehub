@@ -32,10 +32,7 @@ export async function runGenerateCommand(
   const merged = mergeConfigs(globalConfig, loaded.config);
   const registry = await createSkillRegistry(effectiveRootDir, globalConfig);
 
-  const format = parseOutputFormat(
-    options.format,
-    merged.format ?? 'claude',
-  );
+  const format = parseOutputFormat(options.format, merged.format ?? 'claude');
   const selectedSkillIds =
     options.skills
       ?.split(',')
@@ -67,8 +64,7 @@ export async function runGenerateCommand(
 
   const artifact = await renderArtifact(skills, {
     format,
-    includeExamples:
-      options.examples ?? merged.include_examples ?? true,
+    includeExamples: options.examples ?? merged.include_examples ?? true,
     includeAntipatterns:
       options.antipatterns ?? merged.include_antipatterns ?? true,
   });

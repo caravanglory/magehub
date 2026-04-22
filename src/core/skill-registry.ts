@@ -90,9 +90,7 @@ export async function createSkillRegistry(
       skillDirs.push(globalCustomPath);
     }
     const globalSkillsDir = getGlobalSkillsDir();
-    const globalFiles = await listSkillFiles(globalSkillsDir).catch(
-      () => [],
-    );
+    const globalFiles = await listSkillFiles(globalSkillsDir).catch(() => []);
     if (globalFiles.length > 0 && !skillDirs.includes(globalSkillsDir)) {
       skillDirs.push(globalSkillsDir);
     }

@@ -12,9 +12,7 @@ export async function runSkillListCommand(
   rootDir?: string,
 ): Promise<void> {
   const effectiveRootDir = rootDir ?? process.cwd();
-  const globalConfig = options.global
-    ? undefined
-    : await loadGlobalConfig();
+  const globalConfig = options.global ? undefined : await loadGlobalConfig();
   const registry = await createSkillRegistry(
     options.global
       ? (await import('../../core/global-config.js')).getGlobalConfigDir()
