@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/caravanglory/magehub/compare/magehub-v0.1.2...magehub-v0.1.3) (2026-04-22)
+
+
+### Bug Fixes
+
+* load bundled skills from package directory ([#12](https://github.com/caravanglory/magehub/issues/12)) ([5de3332](https://github.com/caravanglory/magehub/commit/5de3332b7541a1d1c65166ca18a096febace912f))
+* read CLI version from package.json instead of hardcoding ([#14](https://github.com/caravanglory/magehub/issues/14)) ([d24ee7a](https://github.com/caravanglory/magehub/commit/d24ee7ac1e872cff5c0ebe41824d67cab3b9e91d))
+
 ## [0.1.2](https://github.com/caravanglory/magehub/compare/magehub-v0.1.1...magehub-v0.1.2) (2026-04-22)
 
 
