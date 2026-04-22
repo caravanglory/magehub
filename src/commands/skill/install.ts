@@ -5,7 +5,7 @@ import {
   loadConfig,
   saveConfig,
 } from '../../core/config-manager.js';
-import { ensureGitignoreEntry } from '../../core/gitignore.js';
+import { ensureGitExcludeEntry } from '../../core/git-exclude.js';
 import { resolveOutputTarget } from '../../core/formats.js';
 import { renderArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
@@ -64,7 +64,7 @@ export async function runSkillInstallCommand(
     category?: string;
     format?: string;
     write?: boolean;
-    gitignore?: boolean;
+    gitExclude?: boolean;
   },
   rootDir?: string,
 ): Promise<void> {
@@ -141,9 +141,9 @@ export async function runSkillInstallCommand(
     );
   }
 
-  if (options.gitignore !== false) {
+  if (options.gitExclude !== false) {
     const target = resolveOutputTarget(effectiveRootDir, format, config.output);
-    const added = await ensureGitignoreEntry(
+    const added = await ensureGitExcludeEntry(
       effectiveRootDir,
       target.path,
       target.kind,
@@ -151,7 +151,7 @@ export async function runSkillInstallCommand(
     if (added) {
       const relative = result.targetPath.slice(effectiveRootDir.length + 1);
       info(
-        `Updated .gitignore with ${relative}${result.targetKind === 'directory' ? '/' : ''}`,
+        `Updated .git/info/exclude with ${relative}${result.targetKind === 'directory' ? '/' : ''}`,
       );
     }
   }
@@ -166,7 +166,7 @@ export function registerSkillInstallCommand(program: Command): void {
     .option('--category <category>', 'Install all skills from a category')
     .option('--format <format>', 'Override output format (persisted to config)')
     .option('--no-write', 'Skip writing rendered output files')
-    .option('--no-gitignore', 'Skip updating .gitignore')
+    .option('--no-git-exclude', 'Skip updating .git/info/exclude')
     .action(
       async (
         skillIds: string[],
@@ -174,7 +174,7 @@ export function registerSkillInstallCommand(program: Command): void {
           category?: string;
           format?: string;
           write?: boolean;
-          gitignore?: boolean;
+          gitExclude?: boolean;
         },
       ) => runSkillInstallCommand(skillIds, options),
     );

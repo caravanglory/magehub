@@ -8,7 +8,7 @@ The fastest path is one command:
 magehub install module-plugin performance
 ```
 
-This auto-detects your AI tool, creates `.magehub.yaml` if missing, renders the selected skills to disk, and updates `.gitignore`.
+This auto-detects your AI tool, creates `.magehub.yaml` if missing, renders the selected skills to disk, and updates `.git/info/exclude` (the repo-local, untracked ignore file) so the generated output is ignored without touching the shared `.gitignore`.
 
 ## Commands
 
@@ -17,7 +17,7 @@ This auto-detects your AI tool, creates `.magehub.yaml` if missing, renders the 
 Create `.magehub.yaml` without installing skills. Skipping this is fine — `skill:install` bootstraps the config on first use.
 
 ```bash
-magehub setup:init [--format=<format>] [--no-gitignore]
+magehub setup:init [--format=<format>] [--no-git-exclude]
 ```
 
 ### `skill:list`
@@ -53,7 +53,7 @@ magehub install <skill-id...>
 magehub install --category=<category>
 magehub install <skill-id...> --format=<format>   # override detection
 magehub install <skill-id...> --no-write          # update config only
-magehub install <skill-id...> --no-gitignore      # skip .gitignore update
+magehub install <skill-id...> --no-git-exclude    # skip .git/info/exclude update
 ```
 
 ### `skill:remove` (alias: `remove`)

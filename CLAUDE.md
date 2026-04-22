@@ -63,7 +63,7 @@ Key modules in `src/core/`:
 - `formats.ts` — format metadata registry (strategy: `per-skill-file` vs `single-file`, default output path, template variant). Also detects the best format from existing project files.
 - `renderer.ts` — compiles Handlebars templates (`templates/*.skill.hbs` for per-skill, `templates/*.hbs` for single-file) into a `RenderArtifact`.
 - `writer.ts` — persists `RenderArtifact` to disk (writes per-skill directories or single files).
-- `gitignore.ts` — idempotent `.gitignore` entry management for generated output paths.
+- `git-exclude.ts` — idempotent `.git/info/exclude` entry management for generated output paths (skips when `.git` is absent).
 - `runtime-assets.ts` / `paths.ts` — resolves bundled resource paths so the CLI works both from source (`src/`) and from the published `dist/` layout.
 
 Command layer (`src/commands/`) uses the **two-export pattern** described in `AGENTS.md`: a testable `runXxxCommand(options, rootDir?)` and a `registerXxxCommand(program)` that wires it into Commander. `src/cli.ts` registers all commands; `src/index.ts` is the entrypoint with the top-level `CliError` catch boundary that maps to process exit codes.

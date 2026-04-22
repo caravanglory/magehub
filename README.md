@@ -36,7 +36,7 @@ One command is enough to install skills and render them for your AI tool:
 magehub install module-plugin performance
 ```
 
-On first run, MageHub auto-detects your tool from the project (e.g. existing `.claude/`, `.cursorrules`, `AGENTS.md`), creates `.magehub.yaml`, writes the rendered files, and updates `.gitignore`. Use `--format=<tool>` to override detection.
+On first run, MageHub auto-detects your tool from the project (e.g. existing `.claude/`, `.cursorrules`, `AGENTS.md`), creates `.magehub.yaml`, writes the rendered files, and updates `.git/info/exclude` so the generated output stays local to your clone. Use `--format=<tool>` to override detection.
 
 Other common tasks:
 

@@ -1,6 +1,6 @@
 export * from './config-manager.js';
 export * from './formats.js';
-export * from './gitignore.js';
+export * from './git-exclude.js';
 export * from './paths.js';
 export * from './renderer.js';
 export * from './runtime-assets.js';

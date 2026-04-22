@@ -273,7 +273,7 @@ describe('core services and commands', () => {
   it('installs and removes skills in config', async () => {
     await runSkillInstallCommand(
       ['module-plugin'],
-      { write: false, gitignore: false },
+      { write: false, gitExclude: false },
       rootDir,
     );
     await runSkillRemoveCommand(['module-plugin'], { write: false }, rootDir);
@@ -332,8 +332,42 @@ describe('core services and commands', () => {
     expect(content).toContain('version: "1"');
   });
 
-  it('creates .gitignore with output path during setup:init', async () => {
+  it('creates .git/info/exclude with output path during setup:init', async () => {
     const initRoot = await mkdtemp(path.join(os.tmpdir(), 'magehub-gi-'));
+    await mkdir(path.join(initRoot, 'schema'), { recursive: true });
+    await mkdir(path.join(initRoot, '.git'), { recursive: true });
+    await writeFile(
+      path.join(initRoot, 'schema', 'config.schema.json'),
+      JSON.stringify({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        required: ['version', 'skills'],
+        properties: {
+          version: { type: 'string' },
+          skills: { type: 'array', items: { type: 'string' } },
+          format: { type: 'string' },
+        },
+        additionalProperties: false,
+      }),
+      'utf8',
+    );
+
+    await runSetupInitCommand({ format: 'claude' }, initRoot);
+    const exclude = await readFile(
+      path.join(initRoot, '.git', 'info', 'exclude'),
+      'utf8',
+    );
+    expect(exclude).toContain('.claude/skills/');
+    expect(exclude).toContain('# MageHub generated output');
+    const gitignoreExists = await readFile(
+      path.join(initRoot, '.gitignore'),
+      'utf8',
+    ).catch(() => null);
+    expect(gitignoreExists).toBeNull();
+  });
+
+  it('skips .git/info/exclude when project is not a git repo', async () => {
+    const initRoot = await mkdtemp(path.join(os.tmpdir(), 'magehub-nogit-'));
     await mkdir(path.join(initRoot, 'schema'), { recursive: true });
     await writeFile(
       path.join(initRoot, 'schema', 'config.schema.json'),
@@ -352,14 +386,17 @@ describe('core services and commands', () => {
     );
 
     await runSetupInitCommand({ format: 'claude' }, initRoot);
-    const gitignore = await readFile(path.join(initRoot, '.gitignore'), 'utf8');
-    expect(gitignore).toContain('.claude/skills/');
-    expect(gitignore).toContain('# MageHub generated output');
+    const excludeExists = await readFile(
+      path.join(initRoot, '.git', 'info', 'exclude'),
+      'utf8',
+    ).catch(() => null);
+    expect(excludeExists).toBeNull();
   });
 
-  it('skips .gitignore when --no-gitignore is used', async () => {
+  it('skips .git/info/exclude when --no-git-exclude is used', async () => {
     const initRoot = await mkdtemp(path.join(os.tmpdir(), 'magehub-nogi-'));
     await mkdir(path.join(initRoot, 'schema'), { recursive: true });
+    await mkdir(path.join(initRoot, '.git'), { recursive: true });
     await writeFile(
       path.join(initRoot, 'schema', 'config.schema.json'),
       JSON.stringify({
@@ -376,12 +413,15 @@ describe('core services and commands', () => {
       'utf8',
     );
 
-    await runSetupInitCommand({ format: 'claude', gitignore: false }, initRoot);
-    const gitignoreExists = await readFile(
-      path.join(initRoot, '.gitignore'),
+    await runSetupInitCommand(
+      { format: 'claude', gitExclude: false },
+      initRoot,
+    );
+    const excludeExists = await readFile(
+      path.join(initRoot, '.git', 'info', 'exclude'),
       'utf8',
     ).catch(() => null);
-    expect(gitignoreExists).toBeNull();
+    expect(excludeExists).toBeNull();
   });
 
   it('rejects unsupported output formats during init', async () => {

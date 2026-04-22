@@ -6,13 +6,13 @@ import {
   saveConfig,
 } from '../../core/config-manager.js';
 import { resolveOutputTarget } from '../../core/formats.js';
-import { ensureGitignoreEntry } from '../../core/gitignore.js';
+import { ensureGitExcludeEntry } from '../../core/git-exclude.js';
 import { CliError } from '../../utils/cli-error.js';
 import { info } from '../../utils/logger.js';
 import { parseOutputFormat } from '../../utils/validation.js';
 
 export async function runSetupInitCommand(
-  options: { format?: string; gitignore?: boolean },
+  options: { format?: string; gitExclude?: boolean },
   rootDir?: string,
 ): Promise<void> {
   const effectiveRootDir = rootDir ?? process.cwd();
@@ -46,9 +46,9 @@ export async function runSetupInitCommand(
   await saveConfig(effectiveRootDir, config);
   info('Created .magehub.yaml');
 
-  if (options.gitignore !== false) {
+  if (options.gitExclude !== false) {
     const target = resolveOutputTarget(effectiveRootDir, config.format);
-    const added = await ensureGitignoreEntry(
+    const added = await ensureGitExcludeEntry(
       effectiveRootDir,
       target.path,
       target.kind,
@@ -56,7 +56,7 @@ export async function runSetupInitCommand(
     if (added) {
       const relative = target.path.slice(effectiveRootDir.length + 1);
       info(
-        `Updated .gitignore with ${relative}${target.kind === 'directory' ? '/' : ''}`,
+        `Updated .git/info/exclude with ${relative}${target.kind === 'directory' ? '/' : ''}`,
       );
     }
   }
@@ -72,8 +72,8 @@ export function registerSetupInitCommand(program: Command): void {
       'Initialize MageHub in the current project (optional — skill:install auto-bootstraps)',
     )
     .option('--format <format>', 'Default output format')
-    .option('--no-gitignore', 'Skip updating .gitignore')
-    .action(async (options: { format?: string; gitignore?: boolean }) =>
+    .option('--no-git-exclude', 'Skip updating .git/info/exclude')
+    .action(async (options: { format?: string; gitExclude?: boolean }) =>
       runSetupInitCommand(options),
     );
 }
