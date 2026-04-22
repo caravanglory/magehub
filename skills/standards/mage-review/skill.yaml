@@ -1,0 +1,187 @@
+id: mage-review
+name: Code Review
+version: '1.0.0'
+category: standards
+description: |
+  Magento 2 structured code review workflow. Fix-First mode with confidence scoring,
+  covering DI, security, performance, frontend, API, caching, and database domains.
+  Run before every merge.
+
+tags:
+  - review
+  - code-review
+  - quality
+  - security
+  - performance
+  - di
+  - magento2
+
+magento_versions:
+  - '2.4.x'
+
+instructions_file: instructions.md
+
+conventions:
+  - rule: 'Fix-First: every finding must include a concrete, actionable fix — not just a description of the problem'
+    example: 'Instead of "This is inefficient", say "Replace getCollection()->load() with searchCriteria-based repository getList() to avoid loading all entities into memory"'
+    rationale: 'A review that only describes problems dumps work back on the author. Fix-First means the reviewer does the thinking and produces a ready-to-apply solution.'
+
+  - rule: 'Attach a confidence score (1-10) to every finding'
+    example: '[CRITICAL] (confidence: 9/10) Model/Product.php:42 — SQL injection via string interpolation in where clause. Fix: use $collection->addFieldToFilter("sku", ["eq" => $sku])'
+    rationale: 'Confidence scores calibrate urgency and reduce noise. 9-10 means verified by reading the code. 5-6 means pattern match — flag as "verify this". Below 5 goes to appendix only.'
+
+  - rule: 'Name the exact file, function, and line number for every finding'
+    example: 'Plugin/ProductPlugin.php:28 aroundSave() — plugin modifies $product after parent::save() without checking the return value'
+    rationale: 'Vague references like "the auth flow" force the author to hunt. Specific locations make fixes immediate.'
+
+  - rule: 'Verify safety claims with evidence, never say "likely handled"'
+    example: 'When claiming "input is sanitized", cite the exact line: InputValidation::sanitize($input) at Controller/Submit.php:35'
+    rationale: 'Unverified assumptions about safety are how vulnerabilities slip through. Either prove it or flag it as unverified.'
+
+  - rule: 'Think like an attacker when reviewing auth, input handling, and cache logic'
+    example: 'What happens if a guest user hits this admin controller directly? Does the beforeExecute plugin check ACL? Read the controller and verify.'
+    rationale: 'Structural review catches design flaws; adversarial review catches exploitable gaps. Both are required.'
+
+  - rule: 'Check that new enum values, status codes, or type constants are handled everywhere siblings are used'
+    example: 'If Status.php adds STATUS_PENDING, grep for all references to STATUS_COMPLETE and STATUS_PROCESSING to ensure the new value is handled in switches, validations, and UI mappings'
+    rationale: 'Magento has many status-driven workflows. Adding a value without updating all consumers causes silent failures and inconsistent state.'
+
+  - rule: 'Cross-reference the diff against TODOS.md, CHANGELOG, and plan documents for scope drift'
+    example: 'The PR description says "add email notification". The diff also modifies the checkout controller and adds a new payment method. Flag the scope creep.'
+    rationale: 'Scope drift increases blast radius and review surface. Call it out so the author can split unrelated changes into separate PRs.'
+
+  - rule: 'For XML config changes, verify the schema reference and check that dependent PHP code reads the config correctly'
+    example: 'When system.xml adds a new field, verify the backend model validates the input, the default value is set in config.xml, and the frontend template reads it via ScopeConfigInterface'
+    rationale: 'XML config without backend validation or frontend wiring is dead configuration. The full path must be traceable.'
+
+  - rule: 'Retrieve prior learnings before reviewing and log new discoveries after'
+    example: 'Before: read ~/.magehub/learnings/{project-slug}.jsonl for known pitfalls. After: log a pitfall entry if you discovered that export controllers in this project consistently omit ACL checks'
+    rationale: 'Reviews compound. A pattern found once should be found automatically in future sessions. Without persistence, every review starts from zero — the same classes of bugs are rediscovered repeatedly.'
+
+anti_patterns:
+  - pattern: 'ObjectManager::getInstance() in business logic'
+    problem: 'Hidden dependencies that cannot be mocked in unit tests. Circumvents DI configuration that other modules rely on for customization. Magento coding standard flags this.'
+    solution: 'Inject the dependency via constructor. If the dependency is expensive and conditionally used, declare a Proxy type in di.xml instead of using ObjectManager.'
+
+  - pattern: 'Plugin that does not check the callable result or modifies arguments without restoring state'
+    problem: 'around plugins that ignore $proceed() return values break the call chain. after plugins that mutate the returned object cause side effects that downstream plugins and callers do not expect.'
+    solution: 'around plugins must always return the result of $proceed() (or a valid substitute). after plugins should treat the returned object as immutable — clone before modifying if necessary.'
+
+  - pattern: 'Collection::load() or getCollection()->getItems() without filters in admin grids or API responses'
+    problem: 'Loads entire table into memory. On a catalog with 100K products this exhausts PHP memory limit and crashes the process.'
+    solution: 'Use search criteria with pagination (setPageSize/setCurrentPage). For admin grids, extend Ui\DataProvider with a SearchResult that applies filters at the SQL level.'
+
+  - pattern: 'Block or controller that renders user input without escaping'
+    problem: 'Direct echo of $_GET, request parameters, or database fields without htmlspecialchars() or Magento escaping helpers enables XSS attacks.'
+    solution: 'Use $block->escapeHtml(), $escaper->escapeHtmlAttr(), or Magento\Framework\Escaper in templates. In PHP code, pass user input through the Escaper service before rendering or persisting.'
+
+  - pattern: 'Admin controller without _isAllowed() or ACL check'
+    problem: 'Any logged-in user (including customers with stolen sessions) can access admin functionality. Magento does not enforce ACL at the framework level — each controller must opt in.'
+    solution: 'Implement _isAllowed() returning $this->_authorization->isAllowed("Vendor_Module::resource_id"). Register the ACL resource in acl.xml.'
+
+  - pattern: 'Cacheable block without IdentityInterface or with hardcoded cache keys'
+    problem: 'The block_html cache stores one copy per cache key. Without entity-specific tags, updates to underlying data do not invalidate the cached HTML, causing stale output.'
+    solution: 'Implement IdentityInterface and return entity-specific tags (e.g., Product::CACHE_TAG . "_" . $productId). Use getCacheKeyInfo() to include store ID and template name for key diversity.'
+
+  - pattern: 'db_schema.xml with nullable foreign keys or missing indexes on high-cardinality columns'
+    problem: 'Nullable foreign keys break referential integrity. Missing indexes on frequently filtered columns (status, store_id, customer_id) cause full table scans.'
+    solution: 'Foreign key columns must be non-nullable unless the relationship is genuinely optional. Add <index> entries for all columns used in WHERE, JOIN, and ORDER BY clauses.'
+
+  - pattern: 'GraphQL resolver that bypasses service contracts and queries collections directly'
+    problem: 'Direct collection queries in resolvers skip Magento authorization checks, caching layers, and extension attribute resolution. They also produce N+1 query patterns under field-level resolution.'
+    solution: 'Route all data access through repositories (getById, getList with SearchCriteria). Use Magento GraphQL data loaders or deferred resolvers for parent-child relationships to batch queries.'
+
+  - pattern: 'Observer that performs heavy computation or database writes on generic events'
+    problem: 'Events like controller_action_predispatch fire on every request. Heavy observers add latency to every page load and can deadlock under high concurrency.'
+    solution: 'Use narrow events (e.g., sales_order_place_after instead of controller_action_predispatch). For heavy work, dispatch to an async queue via MessageQueue.'
+
+  - pattern: 'Adding new methods to existing interfaces without @since annotation or backward-compatible default'
+    problem: 'Third-party modules implementing the interface break with fatal errors because they do not yet implement the new method. This is a backward-compatibility violation.'
+    solution: 'Prefer adding methods via ExtensionAttributes or a new interface. If you must extend an existing interface, add a PHP 8 default implementation and mark with @since. Document in upgrade notes.'
+
+files:
+  - path: 'REVIEW_CHECKLIST.md'
+    description: 'Per-domain review checklist template for team use'
+    template: |
+      # Magento 2 Code Review Checklist
+
+      ## Diff Stats
+      - Branch: {branch}
+      - Base: {base_branch}
+      - Files changed: {count}
+      - Insertions: {insertions}
+      - Deletions: {deletions}
+
+      ## Scope Check
+      - [ ] Changes match PR description / plan
+      - [ ] No unrelated files modified
+      - [ ] No accidental debug code (var_dump, die, console.log)
+
+      ## DI & Architecture
+      - [ ] Constructor injection uses interfaces, not concrete classes
+      - [ ] No direct ObjectManager usage
+      - [ ] di.xml changes match PHP constructor signatures
+      - [ ] Virtual types used instead of empty subclasses
+
+      ## Security
+      - [ ] Admin controllers have _isAllowed() / ACL
+      - [ ] User input escaped before rendering
+      - [ ] SQL built with parameterized queries (no string interpolation)
+      - [ ] File uploads validated (type, size, path traversal)
+
+      ## Database
+      - [ ] db_schema.xml has proper indexes
+      - [ ] Foreign keys are non-nullable where appropriate
+      - [ ] No schema changes that break existing data
+      - [ ] Upgrade scripts are idempotent
+
+      ## Caching
+      - [ ] Cacheable blocks implement IdentityInterface
+      - [ ] Cache tags are specific (not full-type flushes)
+      - [ ] Invalidation strategy documented
+
+      ## Performance
+      - [ ] No collection load without pagination/filters
+      - [ ] No N+1 query patterns in loops
+      - [ ] No heavy computation in generic observers
+
+      ## API / GraphQL
+      - [ ] Resolvers use repositories, not direct collections
+      - [ ] Web API routes have proper ACL in webapi.xml
+      - [ ] GraphQL schema changes are backward-compatible
+
+      ## Frontend
+      - [ ] Knockout components have proper data binding
+      - [ ] RequireJS dependencies declared
+      - [ ] No inline JavaScript in PHTML templates
+
+      ## i18n
+      - [ ] All user-facing strings wrapped in __()
+      - [ ] No hardcoded labels in templates or PHP
+
+      ## Tests
+      - [ ] Unit tests for business logic
+      - [ ] Integration tests for database interactions
+      - [ ] API functional tests for new endpoints
+
+references:
+  - title: 'Adobe Commerce: Security best practices'
+    url: 'https://developer.adobe.com/commerce/php/development/security/'
+  - title: 'Adobe Commerce: Dependency injection'
+    url: 'https://developer.adobe.com/commerce/php/development/build/dependency-injection-file/'
+  - title: 'Adobe Commerce: Cache overview'
+    url: 'https://developer.adobe.com/commerce/php/development/cache/'
+  - title: 'Adobe Commerce: Web API authorization'
+    url: 'https://developer.adobe.com/commerce/php/development/components/web-api/authentication/'
+  - title: 'Magento Coding Standard (GitHub)'
+    url: 'https://github.com/magento/magento-coding-standard'
+  - title: 'Adobe Commerce: GraphQL best practices'
+    url: 'https://developer.adobe.com/commerce/webapi/graphql/best-practices/'
+
+compatibility:
+  - claude
+  - opencode
+  - cursor
+  - codex
+  - qoder
+  - trae
