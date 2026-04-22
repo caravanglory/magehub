@@ -257,7 +257,7 @@ Delivered: <1-line summary of what the diff actually does>
 
 Apply the following categories against the diff. These are the issues that can cause production incidents, security breaches, or data loss.
 
-#### 3.1 SQL & Data Safety
+#### 4.1 SQL & Data Safety
 
 Check every location where SQL is built or executed:
 - String interpolation in where clauses, order by, or limit expressions
@@ -268,7 +268,7 @@ Check every location where SQL is built or executed:
 
 **Fix pattern:** Use `addFieldToFilter($field, ['eq' => $value])`. For complex queries, use the connection's `select()` with bound parameters. Never concatenate user input into SQL.
 
-#### 3.2 Race Conditions & Concurrency
+#### 4.2 Race Conditions & Concurrency
 
 Check state transitions and shared resource access:
 - Plugin that modifies an entity after save without checking if another process changed it
@@ -278,7 +278,7 @@ Check state transitions and shared resource access:
 
 **Fix pattern:** Use `FOR UPDATE` in repository load methods. Add `version` or `updated_at` checks before saves. Use Magento's message queue for operations that must be serialized.
 
-#### 3.3 LLM Output Trust Boundary (if applicable)
+#### 4.3 LLM Output Trust Boundary (if applicable)
 
 If the code integrates with LLM APIs or processes AI-generated content:
 - LLM output written to database without validation or sanitization
@@ -287,7 +287,7 @@ If the code integrates with LLM APIs or processes AI-generated content:
 
 **Fix pattern:** Validate all LLM output against a schema before persistence. Treat LLM output as untrusted user input. Set strict token and timeout limits.
 
-#### 3.4 Shell Injection
+#### 4.4 Shell Injection
 
 Check all `exec()`, `shell_exec()`, `system()`, and backtick usage:
 - User input in shell command strings
@@ -296,7 +296,7 @@ Check all `exec()`, `shell_exec()`, `system()`, and backtick usage:
 
 **Fix pattern:** Use `escapeshellarg()` and `escapeshellcmd()`. Better: replace shell calls with PHP-native equivalents (Symfony Process, ZipArchive, GD/Imagick).
 
-#### 3.5 Enum & Value Completeness
+#### 4.5 Enum & Value Completeness
 
 When the diff introduces a new enum value, status, or type constant:
 - Grep for all files referencing sibling values of the same enum
@@ -306,7 +306,7 @@ When the diff introduces a new enum value, status, or type constant:
 
 **This category requires reading code outside the diff.** Within-diff review is insufficient.
 
-#### 3.6 Input Validation & XSS
+#### 4.6 Input Validation & XSS
 
 Check all entry points (controllers, API endpoints, GraphQL resolvers):
 - Request parameters used without validation or type casting
@@ -316,7 +316,7 @@ Check all entry points (controllers, API endpoints, GraphQL resolvers):
 
 **Fix pattern:** Use Magento's `InputValidation` utility or custom validators. Escape all output with `$escaper->escapeHtml()`, `escapeHtmlAttr()`, or `escapeJs()`. For file uploads, whitelist extensions and validate MIME type.
 
-#### 3.7 Authorization & ACL
+#### 4.7 Authorization & ACL
 
 Check every admin-facing entry point:
 - Controller extends `Action\Adminhtml\Action` but does not override `_isAllowed()`
@@ -330,74 +330,74 @@ Check every admin-facing entry point:
 
 Apply these categories. Findings here do not block shipping but should be addressed in follow-up.
 
-#### 4.1 DI & Architecture
+#### 5.1 DI & Architecture
 - Concrete class injection instead of interface
 - ObjectManager usage in business logic
 - Empty subclass when virtual type would suffice
 - Global preference when area-specific would work
 - Constructor with 10+ parameters (consider factory or builder)
 
-#### 4.2 Plugin Safety
+#### 5.2 Plugin Safety
 - Plugin modifies the return value of a method whose contract specifies void
 - Around plugin does not return `$proceed()` result
 - Plugin on a method that is already heavily pluginized (check with grep)
 - Before plugin throws exception without proper type (should be LocalizedException)
 
-#### 4.3 Observer Usage
+#### 5.3 Observer Usage
 - Observer on generic events (`controller_action_predispatch`) doing heavy work
 - Observer modifies shared state without transaction safety
 - Observer fires additional events that could loop
 - No corresponding `events.xml` entry for the observer class
 
-#### 4.4 Caching
+#### 5.4 Caching
 - Cacheable block missing `IdentityInterface`
 - Hardcoded cache keys without store/context differentiation
 - Full cache type flush instead of tag-based invalidation
 - Cache save without documented invalidation strategy
 - Personalized data in FPC-cached blocks
 
-#### 4.5 Database & Schema
+#### 5.5 Database & Schema
 - `db_schema.xml` column added without default value (breaks existing rows)
 - Index missing on foreign key column
 - Nullable foreign key without business justification
 - Setup script not idempotent (fails if run twice)
 - Direct table name strings instead of constants
 
-#### 4.6 Collections & Performance
+#### 5.6 Collections & Performance
 - `getCollection()->load()` without `setPageSize()` in API or grid context
 - Collection loaded inside a loop (N+1)
 - `addAttributeToSelect('*')` instead of specific fields
 - No index on columns used in WHERE, ORDER BY, or JOIN
 - EAV attribute loaded individually instead of preloaded with collection
 
-#### 4.7 API & GraphQL
+#### 5.7 API & GraphQL
 - Resolver bypasses repository and queries collection directly
 - Web API returns internal objects instead of data interfaces
 - GraphQL schema change breaks backward compatibility
 - REST endpoint lacks pagination on list operations
 - No rate limiting on public endpoints
 
-#### 4.8 Frontend
+#### 5.8 Frontend
 - Inline JavaScript in PHTML templates
 - Knockout component without proper observable disposal
 - RequireJS dependency missing from `requirejs-config.js`
 - CSS class names not following BEM or Magento conventions
 - Hardcoded URLs instead of `$block->getUrl()`
 
-#### 4.9 i18n
+#### 5.9 i18n
 - User-facing string not wrapped in `__()`
 - Translation key contains dynamic content (should be `__('Hello %1', $name)`)
 - No translation file (`i18n/en_US.csv`) for new strings
 - Hardcoded currency or date formats
 
-#### 4.10 Testing
+#### 5.10 Testing
 - Business logic without unit test coverage
 - Database interaction without integration test
 - API endpoint without functional test
 - Test mocks the framework instead of the module's dependencies
 - Test names do not describe the behavior being verified
 
-#### 4.11 Documentation Staleness
+#### 5.11 Documentation Staleness
 - README describes a workflow that the diff changes
 - CHANGELOG does not mention the changes
 - `CLAUDE.md` or developer docs reference modified APIs

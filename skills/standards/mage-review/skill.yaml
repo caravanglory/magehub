@@ -2,10 +2,7 @@ id: mage-review
 name: Code Review
 version: '1.0.0'
 category: standards
-description: |
-  Magento 2 structured code review workflow. Fix-First mode with confidence scoring,
-  covering DI, security, performance, frontend, API, caching, and database domains.
-  Run before every merge.
+description: Magento 2 structured code review workflow with Fix-First mode, confidence scoring, covering DI, security, performance, frontend, API, caching, and database domains. Run before every merge.
 
 tags:
   - review
