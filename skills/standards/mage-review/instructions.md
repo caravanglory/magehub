@@ -252,13 +252,62 @@ If no learnings exist, proceed normally.
 
 ### Step 2: Get the diff
 
+Fetch and check whether the current branch is behind `<base_branch>`:
+
 ```bash
 git fetch origin <base_branch> --quiet
+
+# How many commits is the current branch behind base?
+BEHIND=$(git rev-list --count HEAD..origin/<base_branch> 2>/dev/null || echo 0)
+```
+
+**If `BEHIND` is 0** (current branch is up-to-date with base):
+
+```bash
 git diff origin/<base_branch> --stat
 git diff origin/<base_branch>
 ```
 
+**If `BEHIND` > 0** (current branch is behind base):
+
+The current branch is missing commits from `<base_branch>`. Diffing directly against `origin/<base_branch>` would include those upstream changes — reviewing them is wasted effort and produces false positives.
+
+Instead, create a temporary merge branch so the diff only contains the branch's own changes:
+
+```bash
+# Create temp branch from current HEAD
+REVIEW_TEMP="review-temp-$(date +%s)"
+git branch "$REVIEW_TEMP"
+
+# Merge base into temp branch (prefer merge so we keep both histories)
+git checkout "$REVIEW_TEMP"
+git merge origin/<base_branch> --no-edit
+
+# If conflicts occur, abort and fall back to direct diff
+if [ $? -ne 0 ]; then
+  git merge --abort
+  git checkout -
+  git branch -D "$REVIEW_TEMP"
+  echo "WARNING: Merge conflict with <base_branch>. Falling back to direct diff (may include upstream changes)."
+  git diff origin/<base_branch> --stat
+  git diff origin/<base_branch>
+  DIFF_REF="origin/<base_branch>"
+else
+  # Diff the merged temp branch against base — this shows ONLY branch-specific changes
+  git diff origin/<base_branch> --stat
+  git diff origin/<base_branch>
+  DIFF_REF="origin/<base_branch>"
+
+  # Return to the original branch
+  git checkout -
+  # Clean up temp branch
+  git branch -D "$REVIEW_TEMP"
+fi
+```
+
 If on the base branch or no diff exists, stop: "Nothing to review."
+
+**Why this matters:** Without the merge step, a branch 50 commits behind `main` would produce a diff that includes all 50 upstream changes — most of which were already reviewed when they landed on `main`. The temporary merge isolates the branch's unique contribution.
 
 ### Step 3: Scope check (informational)
 
