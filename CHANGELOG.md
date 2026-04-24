@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/caravanglory/magehub/compare/magehub-v0.1.5...magehub-v0.1.6) (2026-04-24)
+
+
+### Features
+
+* **mage-review:** merge base branch into temp branch before diffing ([#22](https://github.com/caravanglory/magehub/issues/22)) ([8c2cb19](https://github.com/caravanglory/magehub/commit/8c2cb193bd40113994403fcf913691e235bdbcbb))
+
 ## [0.1.5](https://github.com/caravanglory/magehub/compare/magehub-v0.1.4...magehub-v0.1.5) (2026-04-22)
 
 
