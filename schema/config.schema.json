@@ -20,7 +20,7 @@
               },
               "format": {
                 "type": "string",
-                "enum": ["claude", "opencode", "codex", "qoder"]
+                "enum": ["claude", "opencode", "cursor", "codex", "qoder", "trae"]
               }
             },
             "additionalProperties": false
@@ -33,7 +33,7 @@
     },
     "format": {
       "type": "string",
-      "enum": ["claude", "opencode", "codex", "qoder"],
+      "enum": ["claude", "opencode", "cursor", "codex", "qoder", "trae"],
       "default": "claude"
     },
     "output": {

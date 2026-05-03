@@ -88,8 +88,8 @@ const twoSkills: Skill[] = [
   },
 ];
 
-const perSkillFormats: OutputFormat[] = ['claude', 'opencode'];
-const singleFileFormats: OutputFormat[] = ['codex', 'qoder'];
+const perSkillFormats: OutputFormat[] = ['claude', 'opencode', 'trae'];
+const singleFileFormats: OutputFormat[] = ['cursor', 'codex', 'qoder'];
 
 async function snapshotFor(
   skills: Skill[],
@@ -204,5 +204,16 @@ describe('generate snapshot tests', () => {
       );
     });
 
+    it('cursor format has frontmatter', async () => {
+      const artifact = await renderArtifact([makeSkill()], {
+        format: 'cursor',
+        includeExamples: true,
+        includeAntipatterns: true,
+      });
+      if (artifact.kind !== 'single-file')
+        throw new Error('expected single-file');
+      expect(artifact.content).toContain('description: MageHub');
+      expect(artifact.content).toContain('alwaysApply: true');
+    });
   });
 });

@@ -351,7 +351,6 @@ describe('renderer', () => {
       expect(artifact.files[0].content).toContain('description: A test skill');
       expect(artifact.files[0].content).toContain('# Test Skill');
     });
-
   });
 
   describe('renderArtifact (single-file)', () => {

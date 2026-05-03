@@ -133,11 +133,14 @@ describe('skill-normalizer', () => {
       ]);
     });
 
-    it('maps legacy cursor compatibility to claude', async () => {
-      const raw = makeRawSkill({ compatibility: ['cursor', 'codex'] });
+    it('preserves cursor compatibility as-is', async () => {
+      const raw = makeRawSkill({
+        compatibility: ['cursor', 'codex'],
+      });
+
       const skill = await normalizeRawSkill(raw, rootDir);
 
-      expect(skill.compatibility).toEqual(['claude', 'codex']);
+      expect(skill.compatibility).toEqual(['cursor', 'codex']);
     });
 
     it('does not include instructions_file in the normalized Skill', async () => {

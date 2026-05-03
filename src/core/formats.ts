@@ -27,6 +27,15 @@ const FORMAT_METADATA: Record<OutputFormat, FormatMetadata> = {
     outputPath: path.join('.opencode', 'skills'),
     skillFileName: (skillId) => path.join(skillId, 'SKILL.md'),
   },
+  trae: {
+    strategy: 'per-skill-file',
+    outputPath: path.join('.trae', 'rules'),
+    skillFileName: (skillId) => `${skillId}.md`,
+  },
+  cursor: {
+    strategy: 'single-file',
+    outputPath: '.cursorrules',
+  },
   codex: {
     strategy: 'single-file',
     outputPath: 'AGENTS.md',
@@ -70,10 +79,10 @@ const FORMAT_DETECTION_ORDER: ReadonlyArray<{
   format: OutputFormat;
   marker: string;
 }> = [
-  { format: 'claude', marker: '.cursor' },
-  { format: 'claude', marker: '.cursorrules' },
   { format: 'claude', marker: '.claude' },
   { format: 'opencode', marker: '.opencode' },
+  { format: 'cursor', marker: '.cursor' },
+  { format: 'trae', marker: '.trae' },
   { format: 'qoder', marker: '.qoder' },
 ];
 

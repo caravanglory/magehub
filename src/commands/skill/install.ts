@@ -10,7 +10,6 @@ import { ensureGitExcludeEntry } from '../../core/git-exclude.js';
 import { resolveOutputTarget } from '../../core/formats.js';
 import {
   createDefaultGlobalConfig,
-  getCodexGlobalSkillsDir,
   getGlobalConfigDir,
   getQoderGlobalSkillsDir,
   loadGlobalConfig,
@@ -153,15 +152,12 @@ async function runGlobalInstall(
       includeAntipatterns: config.include_antipatterns ?? true,
     };
 
-    if (fmt === 'codex' || fmt === 'qoder') {
+    if (fmt === 'qoder') {
       const artifact = await renderPerSkillArtifact(skills, renderOptions);
-      let outputDir: string;
-      if (fmt === 'codex') {
-        outputDir = getCodexGlobalSkillsDir();
-      } else {
-        outputDir = getQoderGlobalSkillsDir();
-      }
-      const result = await writeSkillDirectories(outputDir, artifact);
+      const result = await writeSkillDirectories(
+        getQoderGlobalSkillsDir(),
+        artifact,
+      );
 
       info(
         `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,

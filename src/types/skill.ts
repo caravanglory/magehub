@@ -14,13 +14,14 @@ export const skillCategories = [
 export const supportedTools = [
   'claude',
   'opencode',
+  'cursor',
   'codex',
   'qoder',
+  'trae',
 ] as const;
 
 export type SkillCategory = (typeof skillCategories)[number];
 export type SupportedTool = (typeof supportedTools)[number];
-export type LegacySupportedTool = SupportedTool | 'cursor';
 
 export interface SkillConvention {
   rule: string;

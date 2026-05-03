@@ -6,6 +6,7 @@ import type {
   RawSkillExample,
   Skill,
   SkillExample,
+  SupportedTool,
 } from '../types/skill.js';
 
 function normalizeCompatibility(
@@ -15,7 +16,7 @@ function normalizeCompatibility(
     return undefined;
   }
 
-  return compatibility.map((tool) => (tool === 'cursor' ? 'claude' : tool));
+  return compatibility.map((tool) => tool as SupportedTool);
 }
 
 async function resolveExampleCode(

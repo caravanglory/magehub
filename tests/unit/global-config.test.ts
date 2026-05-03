@@ -6,7 +6,6 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   createDefaultGlobalConfig,
-  getCodexGlobalSkillsDir,
   getCodexHomeDir,
   getGlobalConfigDir,
   getGlobalConfigPath,
@@ -105,16 +104,6 @@ describe('global-config', () => {
       process.env.CODEX_HOME = 'custom-codex-home';
 
       expect(getCodexHomeDir()).toBe(path.resolve('custom-codex-home'));
-    });
-  });
-
-  describe('getCodexGlobalSkillsDir', () => {
-    it('returns the Codex user-level Skills directory', () => {
-      process.env.CODEX_HOME = '/tmp/magehub-codex-home';
-
-      expect(getCodexGlobalSkillsDir()).toBe(
-        path.join('/tmp/magehub-codex-home', 'skills'),
-      );
     });
   });
 

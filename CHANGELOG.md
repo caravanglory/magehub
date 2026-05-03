@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/caravanglory/magehub/compare/magehub-v0.1.6...magehub-v0.1.7) (2026-05-03)
+
+
+### Bug Fixes
+
+* Codex and Qoder install command ([#25](https://github.com/caravanglory/magehub/issues/25)) ([1cb7166](https://github.com/caravanglory/magehub/commit/1cb716619a1390b4dbe5dc37719f59666f56460c))
+
 ## [0.1.6](https://github.com/caravanglory/magehub/compare/magehub-v0.1.5...magehub-v0.1.6) (2026-04-24)
 
 

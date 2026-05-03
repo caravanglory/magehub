@@ -9,7 +9,6 @@ import {
 } from '../../core/config-manager.js';
 import { getFormatMetadata, resolveOutputTarget } from '../../core/formats.js';
 import {
-  getCodexGlobalSkillsDir,
   getQoderGlobalSkillsDir,
   loadGlobalConfig,
   resolveGlobalOutputRoot,
@@ -70,14 +69,11 @@ async function runGlobalRemove(
   const removedFormats = collectFormats(removedEntries, format);
 
   for (const fmt of removedFormats) {
-    if (fmt === 'codex' || fmt === 'qoder') {
-      let outputDir: string;
-      if (fmt === 'codex') {
-        outputDir = getCodexGlobalSkillsDir();
-      } else {
-        outputDir = getQoderGlobalSkillsDir();
-      }
-      const removed = await removeSkillDirectories(outputDir, skillIds);
+    if (fmt === 'qoder') {
+      const removed = await removeSkillDirectories(
+        getQoderGlobalSkillsDir(),
+        skillIds,
+      );
       for (const target of removed) {
         info(`Removed ${target}`);
       }

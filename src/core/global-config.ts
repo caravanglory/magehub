@@ -39,10 +39,6 @@ export function getCodexHomeDir(): string {
   return path.join(os.homedir(), CODEX_HOME_DIR_NAME);
 }
 
-export function getCodexGlobalSkillsDir(): string {
-  return path.join(getCodexHomeDir(), 'skills');
-}
-
 export function getQoderHomeDir(): string {
   const configured = process.env.QODER_HOME?.trim();
   if (configured !== undefined && configured !== '') {

@@ -192,7 +192,7 @@ describe('skill-loader', () => {
       expect(loaded.skill.examples?.[0]).not.toHaveProperty('code_file');
     });
 
-    it('maps legacy cursor compatibility to claude when loading', async () => {
+    it('accepts cursor as a valid compatibility format', async () => {
       const skillDir = path.join(rootDir, 'skills', 'module', 'module-cursor');
       await mkdir(skillDir, { recursive: true });
       await writeFile(
@@ -206,7 +206,7 @@ describe('skill-loader', () => {
 
       const loaded = await loadSkillFile(path.join(skillDir, 'skill.yaml'));
 
-      expect(loaded.skill.compatibility).toEqual(['claude', 'codex']);
+      expect(loaded.skill.compatibility).toEqual(['cursor', 'codex']);
     });
   });
 

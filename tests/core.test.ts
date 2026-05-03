@@ -337,7 +337,7 @@ describe('core services and commands', () => {
     expect(globalConfig).toContain('format: claude');
   });
 
-  it('installs and removes global codex skills under Codex skills dir', async () => {
+  it('installs and removes global codex output under Codex home', async () => {
     const originalCodexHome = process.env.CODEX_HOME;
     const codexHomeDir = path.join(homeDir, '.custom-codex');
 
@@ -349,31 +349,19 @@ describe('core services and commands', () => {
         format: 'codex',
       });
 
-      const codexSkillPath = path.join(
-        codexHomeDir,
-        'skills',
-        'module-plugin',
-        'SKILL.md',
-      );
-      const legacyAgentsPath = path.join(codexHomeDir, 'AGENTS.md');
-      const misplacedAgentsPath = path.join(homeDir, 'AGENTS.md');
+      const codexAgentsPath = path.join(codexHomeDir, 'AGENTS.md');
       const globalConfigPath = path.join(homeDir, '.magehub', 'config.yaml');
 
-      await expect(readFile(codexSkillPath, 'utf8')).resolves.toContain(
-        'name: module-plugin',
-      );
-      await expect(readFile(codexSkillPath, 'utf8')).resolves.toContain(
+      await expect(readFile(codexAgentsPath, 'utf8')).resolves.toContain(
         'Plugin Development',
       );
       await expect(readFile(globalConfigPath, 'utf8')).resolves.toContain(
         'format: codex',
       );
-      await expect(readFile(legacyAgentsPath, 'utf8')).rejects.toThrow();
-      await expect(readFile(misplacedAgentsPath, 'utf8')).rejects.toThrow();
 
       await runSkillRemoveCommand(['module-plugin'], { global: true });
 
-      await expect(readFile(codexSkillPath, 'utf8')).rejects.toThrow();
+      await expect(readFile(codexAgentsPath, 'utf8')).rejects.toThrow();
     } finally {
       if (originalCodexHome === undefined) {
         delete process.env.CODEX_HOME;
@@ -599,7 +587,7 @@ describe('core services and commands', () => {
     ).rejects.toThrow('Unsupported output format');
   });
 
-  it('treats legacy cursor format as claude during generation', async () => {
+  it('generates cursor format output to .cursorrules', async () => {
     await writeFile(
       path.join(rootDir, '.magehub.yaml'),
       'version: "1"\nskills:\n  - id: module-plugin\nformat: cursor\n',
@@ -609,7 +597,7 @@ describe('core services and commands', () => {
     await runGenerateCommand({}, rootDir);
 
     const content = await readFile(
-      path.join(rootDir, '.claude', 'skills', 'module-plugin', 'SKILL.md'),
+      path.join(rootDir, '.cursorrules'),
       'utf8',
     );
     expect(content).toContain('# Plugin Development');

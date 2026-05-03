@@ -1,11 +1,6 @@
-export const outputFormats = [
-  'claude',
-  'opencode',
-  'codex',
-  'qoder',
-] as const;
+import type { SupportedTool } from './skill.js';
 
-export type OutputFormat = (typeof outputFormats)[number];
+export type OutputFormat = SupportedTool;
 
 export interface RemoteRegistry {
   name: string;
