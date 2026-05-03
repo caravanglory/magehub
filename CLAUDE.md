@@ -30,7 +30,7 @@ There is no `npm run start` / dev script — the CLI is consumed via the built `
 
 ## Architecture
 
-MageHub is a TypeScript CLI that reads bundled + user-authored Magento 2 "skill" definitions and renders them into AI-tool-specific context files (Claude, OpenCode, Cursor, Codex, Qoder, Trae, plain markdown).
+MageHub is a TypeScript CLI that reads bundled + user-authored Magento 2 "skill" definitions and renders them into AI-tool-specific context files (Claude, OpenCode, Codex, Qoder).
 
 The data flow is:
 
@@ -80,18 +80,17 @@ Each supported format maps to a Handlebars template and a default output path. F
 | ---------- | ------------------------------ | -------------------------------- |
 | `claude`   | `templates/claude.skill.hbs`   | `.claude/skills/<id>/SKILL.md`   |
 | `opencode` | `templates/opencode.skill.hbs` | `.opencode/skills/<id>/SKILL.md` |
-| `trae`     | `templates/trae.skill.hbs`     | `.trae/rules/<id>.md`            |
 
 **Single file** — all skills concatenated into one document:
 
 | Format     | Template                 | Default output      |
 | ---------- | ------------------------ | ------------------- |
-| `cursor`   | `templates/cursor.hbs`   | `.cursorrules`      |
 | `codex`    | `templates/codex.hbs`    | `AGENTS.md`         |
 | `qoder`    | `templates/qoder.hbs`    | `.qoder/context.md` |
-| `markdown` | `templates/markdown.hbs` | `MAGEHUB.md`        |
 
-When adding a new format, add: a template (`.skill.hbs` for per-skill, `.hbs` for single-file), a `formats.ts` metadata entry, a `renderer.ts` case, a config-type entry, and an e2e smoke test — `tests/e2e/` covers all seven existing formats.
+Cursor uses Claude's `.claude/skills/<id>/SKILL.md` layout and does not have a separate output format.
+
+When adding a new format, add: a template (`.skill.hbs` for per-skill, `.hbs` for single-file), a `formats.ts` metadata entry, a `renderer.ts` case, a config-type entry, and an e2e smoke test.
 
 ## Documentation map
 

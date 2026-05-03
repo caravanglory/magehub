@@ -1,12 +1,9 @@
-import type { OutputFormat } from '../types/config.js';
+import { outputFormats, type OutputFormat } from '../types/config.js';
 import {
   skillCategories,
-  supportedTools,
   type SkillCategory,
 } from '../types/skill.js';
 import { CliError } from './cli-error.js';
-
-const outputFormats = supportedTools satisfies readonly OutputFormat[];
 
 export function parseSkillCategory(
   value: string | undefined,
@@ -26,7 +23,7 @@ export function parseOutputFormat(
   value: string | undefined,
   fallback: OutputFormat,
 ): OutputFormat {
-  const candidate = value ?? fallback;
+  const candidate = value === 'cursor' ? 'claude' : (value ?? fallback);
 
   if (!outputFormats.includes(candidate as OutputFormat)) {
     throw new CliError(`Unsupported output format: ${candidate}`, 1);

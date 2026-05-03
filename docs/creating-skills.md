@@ -33,6 +33,9 @@ Project-local custom skills can live in any project-local directory referenced b
 - `references`
 - `compatibility`
 
+Valid `compatibility` values are `claude`, `opencode`, `codex`, and `qoder`.
+Legacy `cursor` entries are normalized to `claude` when skills are loaded.
+
 ## Heading Rule
 
 Inside `instructions`, headings should start at `###` or deeper.

@@ -191,6 +191,23 @@ describe('skill-loader', () => {
       expect(loaded.skill.examples?.[0].code).toBe('<?php echo "hello";');
       expect(loaded.skill.examples?.[0]).not.toHaveProperty('code_file');
     });
+
+    it('maps legacy cursor compatibility to claude when loading', async () => {
+      const skillDir = path.join(rootDir, 'skills', 'module', 'module-cursor');
+      await mkdir(skillDir, { recursive: true });
+      await writeFile(
+        path.join(skillDir, 'skill.yaml'),
+        makeSkillYaml({
+          id: 'module-cursor',
+          compatibility: ['cursor', 'codex'],
+        }),
+        'utf8',
+      );
+
+      const loaded = await loadSkillFile(path.join(skillDir, 'skill.yaml'));
+
+      expect(loaded.skill.compatibility).toEqual(['claude', 'codex']);
+    });
   });
 
   describe('loadAllSkills', () => {

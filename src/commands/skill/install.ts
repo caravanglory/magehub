@@ -10,6 +10,7 @@ import { ensureGitExcludeEntry } from '../../core/git-exclude.js';
 import { resolveOutputTarget } from '../../core/formats.js';
 import {
   createDefaultGlobalConfig,
+  getCodexGlobalSkillsDir,
   getGlobalConfigDir,
   getQoderGlobalSkillsDir,
   loadGlobalConfig,
@@ -19,7 +20,8 @@ import {
 import { renderArtifact, renderPerSkillArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { writeArtifact, writeSkillDirectories } from '../../core/writer.js';
-import type { MageHubConfig } from '../../types/config.js';
+import type { MageHubConfig, SkillEntry } from '../../types/config.js';
+import type { Skill } from '../../types/skill.js';
 import { CliError } from '../../utils/cli-error.js';
 import { info } from '../../utils/logger.js';
 import {
@@ -27,8 +29,16 @@ import {
   parseSkillCategory,
 } from '../../utils/validation.js';
 
-function mergeUnique(existing: string[], additions: string[]): string[] {
-  return [...new Set([...existing, ...additions])];
+function mergeUnique(
+  existing: SkillEntry[],
+  additions: string[],
+  format: string,
+): SkillEntry[] {
+  const seen = new Set(existing.map((e) => e.id));
+  const newEntries: SkillEntry[] = additions
+    .filter((id) => !seen.has(id))
+    .map((id) => ({ id, format: format as SkillEntry['format'] }));
+  return [...existing, ...newEntries];
 }
 
 async function loadOrBootstrapConfig(
@@ -57,6 +67,27 @@ async function loadOrBootstrapConfig(
   return { config: bootstrap, bootstrapped: true };
 }
 
+function groupSkillsByFormat(
+  entries: SkillEntry[],
+  registry: { getById: (id: string) => Skill | undefined },
+  fallbackFormat: string,
+): Map<string, Skill[]> {
+  const groups = new Map<string, Skill[]>();
+  for (const entry of entries) {
+    const fmt = entry.format ?? fallbackFormat;
+    let group = groups.get(fmt);
+    if (group === undefined) {
+      group = [];
+      groups.set(fmt, group);
+    }
+    const skill = registry.getById(entry.id);
+    if (skill !== undefined) {
+      group.push(skill);
+    }
+  }
+  return groups;
+}
+
 async function runGlobalInstall(
   skillIds: string[],
   options: {
@@ -83,20 +114,20 @@ async function runGlobalInstall(
     parsedCategory !== undefined
       ? registry.list(parsedCategory).map((skill) => skill.id)
       : [];
-  const targetIds = mergeUnique(skillIds, categorySkillIds);
+  const allTargetIds = [...new Set([...skillIds, ...categorySkillIds])];
 
-  if (targetIds.length === 0) {
+  if (allTargetIds.length === 0) {
     throw new CliError('No skills specified for installation.', 1);
   }
 
-  for (const skillId of targetIds) {
+  for (const skillId of allTargetIds) {
     if (registry.getById(skillId) === undefined) {
       throw new CliError(`Unknown skill ID: ${skillId}`, 3);
     }
   }
 
-  const previous = new Set(config.skills);
-  config.skills = mergeUnique(config.skills, targetIds);
+  const previous = new Set(config.skills.map((e) => e.id));
+  config.skills = mergeUnique(config.skills, allTargetIds, format);
   await saveGlobalConfig(config);
 
   if (isNew) {
@@ -105,7 +136,7 @@ async function runGlobalInstall(
     info('Updated ~/.magehub/config.yaml');
   }
 
-  for (const skillId of targetIds) {
+  for (const skillId of allTargetIds) {
     info(`${previous.has(skillId) ? '•' : '✓'} ${skillId}`);
   }
 
@@ -113,44 +144,43 @@ async function runGlobalInstall(
     return;
   }
 
-  const targetSkills = config.skills.map((skillId) => {
-    const skill = registry.getById(skillId);
-    if (skill === undefined) {
-      throw new CliError(`Unknown skill ID: ${skillId}`, 3);
+  const grouped = groupSkillsByFormat(config.skills, registry, format);
+
+  for (const [fmt, skills] of grouped) {
+    const renderOptions = {
+      format: fmt,
+      includeExamples: config.include_examples ?? true,
+      includeAntipatterns: config.include_antipatterns ?? true,
+    };
+
+    if (fmt === 'codex' || fmt === 'qoder') {
+      const artifact = await renderPerSkillArtifact(skills, renderOptions);
+      let outputDir: string;
+      if (fmt === 'codex') {
+        outputDir = getCodexGlobalSkillsDir();
+      } else {
+        outputDir = getQoderGlobalSkillsDir();
+      }
+      const result = await writeSkillDirectories(outputDir, artifact);
+
+      info(
+        `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+      );
+      continue;
     }
-    return skill;
-  });
 
-  const renderOptions = {
-    format,
-    includeExamples: config.include_examples ?? true,
-    includeAntipatterns: config.include_antipatterns ?? true,
-  };
+    const artifact = await renderArtifact(skills, renderOptions);
 
-  if (format === 'qoder') {
-    const artifact = await renderPerSkillArtifact(targetSkills, renderOptions);
-    const result = await writeSkillDirectories(
-      getQoderGlobalSkillsDir(),
-      artifact,
-    );
+    const outputRoot = resolveGlobalOutputRoot(fmt);
+    const result = await writeArtifact(outputRoot, fmt, undefined, artifact);
 
-    info(
-      `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
-    );
-    return;
-  }
-
-  const artifact = await renderArtifact(targetSkills, renderOptions);
-
-  const outputRoot = resolveGlobalOutputRoot(format);
-  const result = await writeArtifact(outputRoot, format, undefined, artifact);
-
-  if (result.targetKind === 'file') {
-    info(`Generated: ${result.targetPath}`);
-  } else {
-    info(
-      `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
-    );
+    if (result.targetKind === 'file') {
+      info(`Generated: ${result.targetPath}`);
+    } else {
+      info(
+        `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+      );
+    }
   }
 }
 
@@ -188,20 +218,21 @@ export async function runSkillInstallCommand(
     parsedCategory !== undefined
       ? registry.list(parsedCategory).map((skill) => skill.id)
       : [];
-  const targetIds = mergeUnique(skillIds, categorySkillIds);
+  const allTargetIds = [...new Set([...skillIds, ...categorySkillIds])];
 
-  if (targetIds.length === 0) {
+  if (allTargetIds.length === 0) {
     throw new CliError('No skills specified for installation.', 1);
   }
 
-  for (const skillId of targetIds) {
+  for (const skillId of allTargetIds) {
     if (registry.getById(skillId) === undefined) {
       throw new CliError(`Unknown skill ID: ${skillId}`, 3);
     }
   }
 
-  const previous = new Set(config.skills);
-  config.skills = mergeUnique(config.skills, targetIds);
+  const format = parseOutputFormat(options.format, 'claude');
+  const previous = new Set(config.skills.map((e) => e.id));
+  config.skills = mergeUnique(config.skills, allTargetIds, format);
   await saveConfig(effectiveRootDir, config);
 
   if (bootstrapped) {
@@ -210,7 +241,7 @@ export async function runSkillInstallCommand(
     info('Updated .magehub.yaml');
   }
 
-  for (const skillId of targetIds) {
+  for (const skillId of allTargetIds) {
     info(`${previous.has(skillId) ? '•' : '✓'} ${skillId}`);
   }
 
@@ -219,49 +250,48 @@ export async function runSkillInstallCommand(
   }
 
   const merged = mergeConfigs(globalConfig, config);
-  const format = merged.format ?? 'claude';
-  const allSkillIds = merged.skills;
-  const targetSkills = allSkillIds.map((skillId) => {
-    const skill = registry.getById(skillId);
-    if (skill === undefined) {
-      throw new CliError(`Unknown skill ID: ${skillId}`, 3);
-    }
-    return skill;
-  });
+  const fallbackFormat = merged.format ?? 'claude';
+  const grouped = groupSkillsByFormat(merged.skills, registry, fallbackFormat);
 
-  const artifact = await renderArtifact(targetSkills, {
-    format,
-    includeExamples: merged.include_examples ?? true,
-    includeAntipatterns: merged.include_antipatterns ?? true,
-  });
+  for (const [fmt, skills] of grouped) {
+    const artifact = await renderArtifact(skills, {
+      format: fmt,
+      includeExamples: merged.include_examples ?? true,
+      includeAntipatterns: merged.include_antipatterns ?? true,
+    });
 
-  const result = await writeArtifact(
-    effectiveRootDir,
-    format,
-    merged.output,
-    artifact,
-  );
-
-  if (result.targetKind === 'file') {
-    info(`Generated: ${result.targetPath}`);
-  } else {
-    info(
-      `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
-    );
-  }
-
-  if (options.gitExclude !== false) {
-    const target = resolveOutputTarget(effectiveRootDir, format, merged.output);
-    const added = await ensureGitExcludeEntry(
+    const result = await writeArtifact(
       effectiveRootDir,
-      target.path,
-      target.kind,
+      fmt,
+      merged.output,
+      artifact,
     );
-    if (added) {
-      const relative = result.targetPath.slice(effectiveRootDir.length + 1);
+
+    if (result.targetKind === 'file') {
+      info(`Generated: ${result.targetPath}`);
+    } else {
       info(
-        `Updated .git/info/exclude with ${relative}${result.targetKind === 'directory' ? '/' : ''}`,
+        `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
       );
+    }
+
+    if (options.gitExclude !== false) {
+      const target = resolveOutputTarget(
+        effectiveRootDir,
+        fmt,
+        merged.output,
+      );
+      const added = await ensureGitExcludeEntry(
+        effectiveRootDir,
+        target.path,
+        target.kind,
+      );
+      if (added) {
+        const relative = result.targetPath.slice(effectiveRootDir.length + 1);
+        info(
+          `Updated .git/info/exclude with ${relative}${result.targetKind === 'directory' ? '/' : ''}`,
+        );
+      }
     }
   }
 }

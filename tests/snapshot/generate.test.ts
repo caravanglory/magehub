@@ -48,7 +48,7 @@ function makeSkill(overrides: Partial<Skill> = {}): Skill {
         url: 'https://developer.adobe.com/commerce/php/development/components/plugins/',
       },
     ],
-    compatibility: ['claude', 'opencode', 'cursor', 'codex', 'qoder', 'trae'],
+    compatibility: ['claude', 'opencode', 'codex', 'qoder'],
     ...overrides,
   };
 }
@@ -84,12 +84,12 @@ const twoSkills: Skill[] = [
         url: 'https://developer.adobe.com/commerce/testing/guide/',
       },
     ],
-    compatibility: ['claude', 'opencode', 'cursor', 'codex', 'qoder', 'trae'],
+    compatibility: ['claude', 'opencode', 'codex', 'qoder'],
   },
 ];
 
-const perSkillFormats: OutputFormat[] = ['claude', 'opencode', 'trae'];
-const singleFileFormats: OutputFormat[] = ['cursor', 'codex', 'qoder'];
+const perSkillFormats: OutputFormat[] = ['claude', 'opencode'];
+const singleFileFormats: OutputFormat[] = ['codex', 'qoder'];
 
 async function snapshotFor(
   skills: Skill[],
@@ -163,13 +163,6 @@ describe('generate snapshot tests', () => {
       expect(output).not.toContain('### Anti-patterns');
     });
 
-    it('generates stable output with both options disabled (cursor)', async () => {
-      const output = await snapshotFor(twoSkills, 'cursor', {
-        includeExamples: false,
-        includeAntipatterns: false,
-      });
-      expect(output).toMatchSnapshot();
-    });
   });
 
   describe('format-specific structure', () => {
@@ -211,16 +204,5 @@ describe('generate snapshot tests', () => {
       );
     });
 
-    it('cursor format has frontmatter', async () => {
-      const artifact = await renderArtifact([makeSkill()], {
-        format: 'cursor',
-        includeExamples: true,
-        includeAntipatterns: true,
-      });
-      if (artifact.kind !== 'single-file')
-        throw new Error('expected single-file');
-      expect(artifact.content).toContain('description: MageHub');
-      expect(artifact.content).toContain('alwaysApply: true');
-    });
   });
 });

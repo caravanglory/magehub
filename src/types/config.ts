@@ -1,6 +1,11 @@
-import type { SupportedTool } from './skill.js';
+export const outputFormats = [
+  'claude',
+  'opencode',
+  'codex',
+  'qoder',
+] as const;
 
-export type OutputFormat = SupportedTool;
+export type OutputFormat = (typeof outputFormats)[number];
 
 export interface RemoteRegistry {
   name: string;
@@ -8,9 +13,14 @@ export interface RemoteRegistry {
   public_key?: string;
 }
 
+export interface SkillEntry {
+  id: string;
+  format?: OutputFormat;
+}
+
 export interface MageHubConfig {
   version: string;
-  skills: string[];
+  skills: SkillEntry[];
   format?: OutputFormat;
   output?: string;
   include_examples?: boolean;

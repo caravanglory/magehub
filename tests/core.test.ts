@@ -162,7 +162,7 @@ async function setupFixtureRepo(): Promise<string> {
 
   await writeFile(
     path.join(rootDir, '.magehub.yaml'),
-    ['version: "1"', 'skills:', '  - module-plugin', 'format: claude'].join(
+    ['version: "1"', 'skills:', '  - id: module-plugin', 'format: claude'].join(
       '\n',
     ),
     'utf8',
@@ -227,7 +227,7 @@ describe('core services and commands', () => {
     expect(result.valid).toBe(true);
 
     const loaded = await loadConfig(rootDir);
-    expect(loaded.config.skills).toEqual(['module-plugin']);
+    expect(loaded.config.skills).toEqual([{ id: 'module-plugin' }]);
   });
 
   it('validates skill files and reports no warnings for ### headings', async () => {
@@ -315,7 +315,7 @@ describe('core services and commands', () => {
 
     expect(globalConfig).toContain('performance');
     expect(globalConfig).toContain('format: claude');
-    expect(projectConfig.config.skills).toEqual(['module-plugin']);
+    expect(projectConfig.config.skills).toEqual([{ id: 'module-plugin' }]);
   });
 
   it('defaults global installs to claude when format is omitted', async () => {
@@ -337,7 +337,7 @@ describe('core services and commands', () => {
     expect(globalConfig).toContain('format: claude');
   });
 
-  it('installs and removes global codex output under Codex home', async () => {
+  it('installs and removes global codex skills under Codex skills dir', async () => {
     const originalCodexHome = process.env.CODEX_HOME;
     const codexHomeDir = path.join(homeDir, '.custom-codex');
 
@@ -349,21 +349,31 @@ describe('core services and commands', () => {
         format: 'codex',
       });
 
-      const codexAgentsPath = path.join(codexHomeDir, 'AGENTS.md');
+      const codexSkillPath = path.join(
+        codexHomeDir,
+        'skills',
+        'module-plugin',
+        'SKILL.md',
+      );
+      const legacyAgentsPath = path.join(codexHomeDir, 'AGENTS.md');
       const misplacedAgentsPath = path.join(homeDir, 'AGENTS.md');
       const globalConfigPath = path.join(homeDir, '.magehub', 'config.yaml');
 
-      await expect(readFile(codexAgentsPath, 'utf8')).resolves.toContain(
+      await expect(readFile(codexSkillPath, 'utf8')).resolves.toContain(
+        'name: module-plugin',
+      );
+      await expect(readFile(codexSkillPath, 'utf8')).resolves.toContain(
         'Plugin Development',
       );
       await expect(readFile(globalConfigPath, 'utf8')).resolves.toContain(
         'format: codex',
       );
+      await expect(readFile(legacyAgentsPath, 'utf8')).rejects.toThrow();
       await expect(readFile(misplacedAgentsPath, 'utf8')).rejects.toThrow();
 
       await runSkillRemoveCommand(['module-plugin'], { global: true });
 
-      await expect(readFile(codexAgentsPath, 'utf8')).rejects.toThrow();
+      await expect(readFile(codexSkillPath, 'utf8')).rejects.toThrow();
     } finally {
       if (originalCodexHome === undefined) {
         delete process.env.CODEX_HOME;
@@ -587,5 +597,21 @@ describe('core services and commands', () => {
     await expect(
       runGenerateCommand({ format: 'bad-format' }, rootDir),
     ).rejects.toThrow('Unsupported output format');
+  });
+
+  it('treats legacy cursor format as claude during generation', async () => {
+    await writeFile(
+      path.join(rootDir, '.magehub.yaml'),
+      'version: "1"\nskills:\n  - id: module-plugin\nformat: cursor\n',
+      'utf8',
+    );
+
+    await runGenerateCommand({}, rootDir);
+
+    const content = await readFile(
+      path.join(rootDir, '.claude', 'skills', 'module-plugin', 'SKILL.md'),
+      'utf8',
+    );
+    expect(content).toContain('# Plugin Development');
   });
 });

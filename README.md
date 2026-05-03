@@ -1,6 +1,6 @@
 # MageHub
 
-MageHub is a TypeScript CLI for packaging Magento 2 AI coding skills as reusable context files for tools like Claude Code, OpenCode, Cursor, Codex, Qoder, and Trae.
+MageHub is a TypeScript CLI for packaging Magento 2 AI coding skills as reusable context files for tools like Claude Code, OpenCode, Codex, and Qoder.
 
 Project site: [magehub.org](https://magehub.org)
 
@@ -53,19 +53,19 @@ magehub skill:list                     # browse bundled skills
 magehub skill:search plugin            # find skills by keyword
 magehub skill:remove -g module-plugin  # uninstall globally and clean output
 magehub generate                       # re-render current project from .magehub.yaml
-magehub setup:init --format=cursor     # optional: create .magehub.yaml without installing skills
+magehub setup:init --format=claude     # optional: create .magehub.yaml without installing skills
 ```
+
+Cursor users should use `--format=claude`; Cursor auto-loads Claude skills.
 
 Global output layout by format:
 
-| Format     | Strategy       | Global output                      |
-| ---------- | -------------- | ---------------------------------- |
-| `claude`   | per-skill file | `~/.claude/skills/<id>/SKILL.md`   |
-| `opencode` | per-skill file | `~/.opencode/skills/<id>/SKILL.md` |
-| `trae`     | per-skill file | `~/.trae/rules/<id>.md`            |
-| `cursor`   | single file    | `~/.cursorrules`                   |
-| `codex`    | single file    | `~/.codex/AGENTS.md`               |
-| `qoder`    | per-skill file | `~/.qoder/skills/<id>/SKILL.md`    |
+| Format     | Strategy       | Global output                           |
+| ---------- | -------------- | --------------------------------------- |
+| `claude`   | per-skill file | `~/.claude/skills/<id>/SKILL.md`        |
+| `opencode` | per-skill file | `~/.opencode/skills/<id>/SKILL.md`      |
+| `codex`    | per-skill file | `~/.codex/skills/<id>/SKILL.md`         |
+| `qoder`    | per-skill file | `~/.qoder/skills/<id>/SKILL.md`         |
 
 ## Bundled v1.0 Skills
 

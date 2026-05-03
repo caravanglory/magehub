@@ -35,7 +35,7 @@ MageHub is an open-source collection of AI coding skills (structured prompts + c
 
 ### 1.2 Problem Statement
 
-AI coding tools like Claude Code, Cursor, and OpenCode are powerful but lack specialized knowledge about:
+AI coding tools like Claude Code and OpenCode are powerful but lack specialized knowledge about:
 
 - Magento 2's complex architecture (DI, plugins, observers, service contracts)
 - Magento-specific conventions (module structure, naming, XML configurations)
@@ -50,7 +50,7 @@ MageHub provides:
 1. **Curated Skills** — Expert knowledge packaged as structured prompts
 2. **Dual Format** — YAML (source of truth) + Markdown (human-readable)
 3. **CLI Tool** — Magento-style commands (`skill:install`, `skill:list`)
-4. **Multi-Tool Support** — Works with Claude Code, OpenCode, Cursor, Codex, Qoder, Trae
+4. **Multi-Tool Support** — Works with Claude Code, OpenCode, Codex, and Qoder
 
 ### 1.4 Target Users
 
@@ -78,7 +78,7 @@ MageHub provides:
 
 - Local CLI that installs skills, generates context files, and validates skill YAML
 - 10 bundled core skills (no network dependency, fully offline)
-- Output formats for Claude Code, OpenCode, Cursor, Codex, Qoder, and Trae
+- Output formats for Claude Code, OpenCode, Codex, and Qoder
 - Schema validation for skill YAML and project config
 
 **Out of scope (planned for v1.1+):**
@@ -1092,10 +1092,8 @@ properties:
       enum:
         - claude
         - opencode
-        - cursor
         - codex
         - qoder
-        - trae
     description: List of compatible AI tools supported by the current formatter set. Adding a new tool requires schema and formatter updates.
 ```
 
@@ -1264,10 +1262,8 @@ references:
 compatibility:
   - claude
   - opencode
-  - cursor
   - codex
   - qoder
-  - trae
 ```
 
 ### 4.3 Configuration Schema
@@ -1297,10 +1293,8 @@ properties:
     enum:
       - claude
       - opencode
-      - cursor
       - codex
       - qoder
-      - trae
     default: claude
     description: Default output format
 
@@ -1390,7 +1384,7 @@ magehub setup:init [--format=<format>]
 **Example:**
 
 ```bash
-$ magehub setup:init --format=cursor
+$ magehub setup:init --format=claude
 
 Created .magehub.yaml
 MageHub initialized successfully!
@@ -1601,10 +1595,8 @@ magehub generate [--format=<format>] [--output=<path>] [--skills=<ids>]
 |--------|----------------|
 | `claude` | `CLAUDE.md` |
 | `opencode` | `.opencode/skills/magehub.md` |
-| `cursor` | `.cursorrules` |
 | `codex` | `AGENTS.md` |
 | `qoder` | `.qoder/context.md` |
-| `trae` | `.trae/rules/magehub.md` |
 
 **Example:**
 
@@ -1623,11 +1615,7 @@ Output: CLAUDE.md (12.4 KB)
 Context file generated successfully!
 ```
 
-```bash
-$ magehub generate --format=cursor --output=.cursor/rules/magento.mdc
-
-Generated: .cursor/rules/magento.mdc
-```
+Cursor uses the Claude output format and auto-loads `.claude/skills/*/SKILL.md`.
 
 ---
 
@@ -1765,12 +1753,10 @@ What would you like to do?
 Select your primary AI tool:
   1. Claude Code
   2. OpenCode
-  3. Cursor
-  4. Codex
-  5. Qoder
-  6. Trae
+  3. Codex
+  4. Qoder
 
-> 3
+> 1
 
 Select skill categories (space to toggle, enter to confirm):
   [x] Module Development
@@ -1780,10 +1766,10 @@ Select skill categories (space to toggle, enter to confirm):
   [ ] Performance
   [ ] Upgrade
 
-Generating .cursorrules...
+Generating .claude/skills/...
 Done!
 
-Run 'cursor .' to start coding with MageHub skills.
+Run Claude Code or Cursor in the project to use MageHub skills.
 ```
 
 ### 5.4 Shorthand Resolution
@@ -1883,41 +1869,7 @@ All error messages are written to `stderr`. Normal output goes to `stdout`.
 
 ---
 
-#### 6.1.3 Cursor (`cursor`)
-
-**Output Location:** `.cursorrules` or `.cursor/rules/*.mdc`
-
-**Format:**
-
-```markdown
----
-description: MageHub - Magento 2 AI Coding Skills
-globs:
-  - '**/*.php'
-  - '**/*.xml'
-  - '**/*.phtml'
-  - '**/*.graphqls'
-alwaysApply: true
----
-
-# Magento 2 Development Guidelines
-
-{combined instructions from all skills}
-
-## Module Development
-
-{module skills content}
-
-## Hyva Development
-
-{hyva skills content}
-
-...
-```
-
----
-
-#### 6.1.4 Codex (`codex`)
+#### 6.1.3 Codex (`codex`)
 
 **Output Location:** `AGENTS.md` (project root)
 
@@ -1949,7 +1901,7 @@ You are working on a Magento 2 project. Follow these guidelines:
 
 ---
 
-#### 6.1.5 Qoder (`qoder`)
+#### 6.1.4 Qoder (`qoder`)
 
 **Output Location:** `.qoder/context.md`
 
@@ -1977,35 +1929,6 @@ generated: { timestamp }
 
 ---
 
-#### 6.1.6 Trae (`trae`)
-
-**Output Location:** `.trae/rules/magehub.md`
-
-**Format:**
-
-```markdown
----
-description: MageHub — Magento 2 AI Coding Skills
-version: { version }
-skills: [{ skill-list }]
----
-
-# Magento 2 Rules
-
-{combined instructions from all skills, each as a ## section}
-
-## Do
-
-{conventions rewritten as positive "Do X" rules}
-
-## Do Not
-
-{anti-patterns rewritten as "Do not X" rules}
-```
-
-> **Note:** Trae loads rule files from `.trae/rules/`. Each file is a self-contained rule set with YAML front-matter. Trae prefers concise, imperative "Do / Do Not" formatting.
-
----
 
 ### 6.2 File Pattern Detection
 
@@ -2015,14 +1938,13 @@ The CLI can auto-detect the appropriate format. Auto-detection is a **fallback o
 
 ```typescript
 function detectFormat(projectPath: string): Format {
-  // Cursor-specific directories/files (highest priority — most specific indicator)
-  if (existsSync(join(projectPath, '.cursor'))) return 'cursor';
-  if (existsSync(join(projectPath, '.cursorrules'))) return 'cursor';
+  // Cursor projects reuse Claude skills
+  if (existsSync(join(projectPath, '.cursor'))) return 'claude';
+  if (existsSync(join(projectPath, '.cursorrules'))) return 'claude';
 
   // Tool-specific config directories
   if (existsSync(join(projectPath, '.opencode'))) return 'opencode';
   if (existsSync(join(projectPath, '.qoder'))) return 'qoder';
-  if (existsSync(join(projectPath, '.trae'))) return 'trae';
 
   // File-based detection (less specific)
   if (existsSync(join(projectPath, 'AGENTS.md'))) return 'codex';
@@ -2091,10 +2013,9 @@ magehub/
 ├── templates/                         # Output format templates
 │   ├── claude.hbs
 │   ├── opencode.hbs
-│   ├── cursor.hbs
 │   ├── codex.hbs
 │   ├── qoder.hbs
-│   └── trae.hbs
+│   
 │
 ├── src/                               # CLI source code
 │   ├── index.ts                       # Entry point
@@ -2125,10 +2046,9 @@ magehub/
 │   │   ├── base-formatter.ts
 │   │   ├── claude-formatter.ts
 │   │   ├── opencode-formatter.ts
-│   │   ├── cursor-formatter.ts
 │   │   ├── codex-formatter.ts
 │   │   ├── qoder-formatter.ts
-│   │   └── trae-formatter.ts
+│   │   
 │   │
 │   ├── utils/
 │   │   ├── logger.ts                  # Colored console output
@@ -2335,10 +2255,10 @@ export default defineConfig({
 
 - [ ] Claude Code formatter
 - [ ] OpenCode formatter
-- [ ] Cursor formatter
+- [ ] Review Cursor/Claude compatibility guidance
 - [ ] Codex formatter
 - [ ] Qoder formatter
-- [ ] Trae formatter
+- [ ] Review supported formatter list for drift
 
 #### 3.3 Generate Command
 
@@ -2504,7 +2424,7 @@ export default defineConfig({
 | Term               | Definition                                                       |
 | ------------------ | ---------------------------------------------------------------- |
 | **Skill**          | A unit of AI-readable knowledge about a specific Magento 2 topic |
-| **Context File**   | Output file consumed by AI tools (CLAUDE.md, .cursorrules, etc.) |
+| **Context File**   | Output file consumed by AI tools (CLAUDE.md, AGENTS.md, etc.) |
 | **Formatter**      | Component that converts skills to tool-specific format           |
 | **Skill Registry** | Index of all available skills                                    |
 | **Skill Bundle**   | Pre-defined collection of related skills                         |

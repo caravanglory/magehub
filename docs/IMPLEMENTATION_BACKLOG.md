@@ -177,7 +177,7 @@ Build the formatter abstraction, template rendering utilities, and shared merge 
 
 ### Scope
 
-Implement Claude, OpenCode, Cursor, Codex, Qoder, and Trae formatters.
+Implement Claude, OpenCode, Codex, and Qoder formatters.
 
 ### Acceptance Criteria
 

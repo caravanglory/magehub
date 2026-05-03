@@ -62,22 +62,10 @@ describe('config-manager', () => {
       expect(target.path).toBe(path.join('/project', '.opencode', 'skills'));
     });
 
-    it('resolves trae output to a .trae/rules directory', () => {
-      const target = resolveOutputTarget('/project', 'trae');
-      expect(target.kind).toBe('directory');
-      expect(target.path).toBe(path.join('/project', '.trae', 'rules'));
-    });
-
     it('resolves codex output to a single AGENTS.md file', () => {
       const target = resolveOutputTarget('/project', 'codex');
       expect(target.kind).toBe('file');
       expect(target.path).toBe(path.join('/project', 'AGENTS.md'));
-    });
-
-    it('resolves cursor output to a single .cursorrules file', () => {
-      const target = resolveOutputTarget('/project', 'cursor');
-      expect(target.kind).toBe('file');
-      expect(target.path).toBe(path.join('/project', '.cursorrules'));
     });
 
     it('resolves qoder output to a single .qoder/context.md file', () => {
@@ -108,7 +96,7 @@ describe('config-manager', () => {
       const result = await loadConfig(rootDir);
 
       expect(result.config.version).toBe('1');
-      expect(result.config.skills).toEqual(['module-test']);
+      expect(result.config.skills).toEqual([{ id: 'module-test' }]);
       expect(result.config.format).toBe('claude');
       expect(result.filePath).toBe(path.join(rootDir, '.magehub.yaml'));
     });
@@ -165,7 +153,7 @@ describe('config-manager', () => {
   describe('saveConfig', () => {
     it('persists config to disk', async () => {
       const config = createDefaultConfig();
-      config.skills = ['new-skill'];
+      config.skills = [{ id: 'new-skill' }];
 
       await saveConfig(rootDir, config);
 
@@ -173,20 +161,20 @@ describe('config-manager', () => {
         path.join(rootDir, '.magehub.yaml'),
         'utf8',
       );
-      const parsed = YAML.parse(content) as { skills: string[] };
-      expect(parsed.skills).toEqual(['new-skill']);
+      const parsed = YAML.parse(content) as { skills: Array<{ id: string }> };
+      expect(parsed.skills).toEqual([{ id: 'new-skill' }]);
     });
 
     it('overwrites existing config', async () => {
       const config = createDefaultConfig();
-      config.skills = ['a'];
+      config.skills = [{ id: 'a' }];
       await saveConfig(rootDir, config);
 
-      config.skills = ['b'];
+      config.skills = [{ id: 'b' }];
       await saveConfig(rootDir, config);
 
       const result = await loadConfig(rootDir);
-      expect(result.config.skills).toEqual(['b']);
+      expect(result.config.skills).toEqual([{ id: 'b' }]);
     });
   });
 
@@ -242,7 +230,7 @@ describe('config-manager', () => {
   describe('mergeConfigs', () => {
     it('returns project config when global is undefined', () => {
       const project = createDefaultConfig();
-      project.skills = ['a'];
+      project.skills = [{ id: 'a' }];
 
       const result = mergeConfigs(undefined, project);
       expect(result).toBe(project);
@@ -250,17 +238,17 @@ describe('config-manager', () => {
 
     it('merges skill lists with project-first ordering and dedup', () => {
       const global = createDefaultConfig();
-      global.skills = ['shared', 'global-only'];
+      global.skills = [{ id: 'shared' }, { id: 'global-only' }];
 
       const project = createDefaultConfig();
-      project.skills = ['shared', 'project-only'];
+      project.skills = [{ id: 'shared' }, { id: 'project-only' }];
 
       const result = mergeConfigs(global, project);
-      expect(result.skills).toEqual(['shared', 'project-only', 'global-only']);
+      expect(result.skills.map((e) => e.id)).toEqual(['shared', 'project-only', 'global-only']);
     });
 
     it('project format overrides global format', () => {
-      const global = createDefaultConfig('cursor');
+      const global = createDefaultConfig('codex');
       const project = createDefaultConfig('claude');
 
       const result = mergeConfigs(global, project);
@@ -268,12 +256,12 @@ describe('config-manager', () => {
     });
 
     it('falls back to global format when project format is undefined', () => {
-      const global = createDefaultConfig('cursor');
+      const global = createDefaultConfig('codex');
       const project = createDefaultConfig();
       delete project.format;
 
       const result = mergeConfigs(global, project);
-      expect(result.format).toBe('cursor');
+      expect(result.format).toBe('codex');
     });
 
     it('project include_examples overrides global', () => {

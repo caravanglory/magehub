@@ -28,7 +28,7 @@ export async function runSkillVerifyCommand(
         2,
       );
     });
-    skillIds = loaded.config.skills;
+    skillIds = loaded.config.skills.map((e) => e.id);
   }
 
   if (skillIds.length === 0) {

@@ -10,12 +10,30 @@
     "skills": {
       "type": "array",
       "items": {
-        "type": "string"
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "format": {
+                "type": "string",
+                "enum": ["claude", "opencode", "codex", "qoder"]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "string"
+          }
+        ]
       }
     },
     "format": {
       "type": "string",
-      "enum": ["claude", "opencode", "cursor", "codex", "qoder", "trae"],
+      "enum": ["claude", "opencode", "codex", "qoder"],
       "default": "claude"
     },
     "output": {

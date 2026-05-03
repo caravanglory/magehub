@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   createDefaultGlobalConfig,
+  getCodexGlobalSkillsDir,
   getCodexHomeDir,
   getGlobalConfigDir,
   getGlobalConfigPath,
@@ -107,6 +108,16 @@ describe('global-config', () => {
     });
   });
 
+  describe('getCodexGlobalSkillsDir', () => {
+    it('returns the Codex user-level Skills directory', () => {
+      process.env.CODEX_HOME = '/tmp/magehub-codex-home';
+
+      expect(getCodexGlobalSkillsDir()).toBe(
+        path.join('/tmp/magehub-codex-home', 'skills'),
+      );
+    });
+  });
+
   describe('getQoderHomeDir', () => {
     it('returns ~/.qoder when QODER_HOME is not set', () => {
       delete process.env.QODER_HOME;
@@ -132,7 +143,7 @@ describe('global-config', () => {
   });
 
   describe('resolveGlobalOutputRoot', () => {
-    it('uses Codex home for global codex output', () => {
+    it('uses Codex home for codex single-file output root', () => {
       process.env.CODEX_HOME = '/tmp/magehub-codex-home';
 
       expect(resolveGlobalOutputRoot('codex')).toBe('/tmp/magehub-codex-home');
@@ -158,8 +169,8 @@ describe('global-config', () => {
     });
 
     it('accepts a format override', () => {
-      const config = createDefaultGlobalConfig('cursor');
-      expect(config.format).toBe('cursor');
+      const config = createDefaultGlobalConfig('codex');
+      expect(config.format).toBe('codex');
     });
   });
 
@@ -173,13 +184,13 @@ describe('global-config', () => {
   describe('saveGlobalConfig + loadGlobalConfig', () => {
     it('round-trips a config through save and load', async () => {
       const config = createDefaultGlobalConfig();
-      config.skills = ['test-skill'];
+      config.skills = [{ id: 'test-skill' }];
 
       await saveGlobalConfig(config);
       const loaded = await loadGlobalConfig();
 
       expect(loaded).toBeDefined();
-      expect(loaded!.skills).toEqual(['test-skill']);
+      expect(loaded!.skills).toEqual([{ id: 'test-skill' }]);
       expect(loaded!.format).toBe('claude');
       expect(loaded!.custom_skills_path).toBe('skills');
     });

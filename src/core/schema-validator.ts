@@ -16,6 +16,53 @@ const Ajv = AjvModule.default ?? AjvModule;
 
 const validatorCache = new Map<string, Promise<ValidateFunction>>();
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function normalizeLegacyTool(value: unknown): unknown {
+  return value === 'cursor' ? 'claude' : value;
+}
+
+function normalizeLegacyConfigPayload(payload: unknown): unknown {
+  if (!isRecord(payload)) {
+    return payload;
+  }
+
+  let result = { ...payload };
+
+  if (result.format !== undefined) {
+    result = {
+      ...result,
+      format: normalizeLegacyTool(result.format),
+    };
+  }
+
+  if (Array.isArray(result.skills)) {
+    result = {
+      ...result,
+      skills: result.skills.map((entry: unknown) =>
+        typeof entry === 'string' ? { id: entry } : entry,
+      ),
+    };
+  }
+
+  return result;
+}
+
+function normalizeLegacySkillPayload(payload: unknown): unknown {
+  if (!isRecord(payload) || !Array.isArray(payload.compatibility)) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    compatibility: payload.compatibility.map((entry) =>
+      normalizeLegacyTool(entry),
+    ),
+  };
+}
+
 function formatAjvError(error: ErrorObject): string {
   const location = error.instancePath === '' ? '/' : error.instancePath;
   return `${location} ${error.message ?? 'Validation error'}`;
@@ -60,11 +107,17 @@ export function clearSchemaValidatorCache(): void {
 export async function validateSkillSchema(
   payload: unknown,
 ): Promise<SchemaValidationResult<RawSkill>> {
-  return validateAgainstSchema<RawSkill>('skill.schema.json', payload);
+  return validateAgainstSchema<RawSkill>(
+    'skill.schema.json',
+    normalizeLegacySkillPayload(payload),
+  );
 }
 
 export async function validateConfigSchema(
   payload: unknown,
 ): Promise<SchemaValidationResult<MageHubConfig>> {
-  return validateAgainstSchema<MageHubConfig>('config.schema.json', payload);
+  return validateAgainstSchema<MageHubConfig>(
+    'config.schema.json',
+    normalizeLegacyConfigPayload(payload),
+  );
 }

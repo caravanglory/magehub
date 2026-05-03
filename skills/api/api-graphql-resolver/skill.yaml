@@ -118,7 +118,5 @@ references:
 compatibility:
   - claude
   - opencode
-  - cursor
   - codex
   - qoder
-  - trae

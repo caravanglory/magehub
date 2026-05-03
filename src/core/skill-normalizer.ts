@@ -8,6 +8,16 @@ import type {
   SkillExample,
 } from '../types/skill.js';
 
+function normalizeCompatibility(
+  compatibility: RawSkill['compatibility'],
+): Skill['compatibility'] {
+  if (compatibility === undefined) {
+    return undefined;
+  }
+
+  return compatibility.map((tool) => (tool === 'cursor' ? 'claude' : tool));
+}
+
 async function resolveExampleCode(
   raw: RawSkillExample,
   skillDir: string,
@@ -56,6 +66,7 @@ export async function normalizeRawSkill(
 
   return {
     ...metadata,
+    compatibility: normalizeCompatibility(metadata.compatibility),
     instructions,
     ...(examples !== undefined && { examples }),
   };

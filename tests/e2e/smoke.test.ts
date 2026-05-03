@@ -34,7 +34,6 @@ import type { OutputFormat } from '../../src/types/config.js';
 import { PROJECT_ROOT } from '../helpers/fixture.js';
 import { parseFrontMatter } from '../helpers/front-matter.js';
 import {
-  assertCursorFrontMatter,
   assertFencedCodeBlocks,
   assertMagentoDomainTerms,
   assertNoUnresolvedPlaceholders,
@@ -48,10 +47,8 @@ import {
 const ALL_FORMATS: OutputFormat[] = [
   'claude',
   'opencode',
-  'cursor',
   'codex',
   'qoder',
-  'trae',
 ];
 
 const ALL_SKILL_IDS = [
@@ -76,6 +73,7 @@ interface FormatOutput {
 
 describe('E2E smoke test — full lifecycle against simulated Magento 2 project', () => {
   let rootDir: string;
+  let homeDir: string;
   const outputs = new Map<OutputFormat, FormatOutput>();
 
   beforeEach(() => {
@@ -84,6 +82,8 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
 
   beforeAll(async () => {
     rootDir = await mkdtemp(path.join(os.tmpdir(), 'magehub-smoke-'));
+    homeDir = await mkdtemp(path.join(os.tmpdir(), 'magehub-home-'));
+    vi.spyOn(os, 'homedir').mockReturnValue(homeDir);
 
     await mkdir(path.join(rootDir, 'app', 'etc'), { recursive: true });
     await writeFile(
@@ -190,6 +190,8 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
     }
 
     await rm(rootDir, { recursive: true, force: true });
+    await rm(homeDir, { recursive: true, force: true });
+    vi.restoreAllMocks();
   });
 
   it('initializes in a simulated Magento 2 project directory', () => {
@@ -255,10 +257,6 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
       const result = outputs.get(format);
       expect(result).toBeDefined();
 
-      if (format === 'cursor') {
-        assertCursorFrontMatter(result!.files[0].content);
-        return;
-      }
       if (format === 'qoder') {
         assertQoderFrontMatter(result!.files[0].content);
         return;
@@ -269,13 +267,6 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
           expect(data).toHaveProperty('name');
           expect(data).toHaveProperty('description');
           expect(typeof data['description']).toBe('string');
-        }
-        return;
-      }
-      if (format === 'trae') {
-        for (const file of result!.files) {
-          const { data } = parseFrontMatter(file.content);
-          expect(data).toHaveProperty('description');
         }
         return;
       }

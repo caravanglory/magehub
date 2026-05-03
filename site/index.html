@@ -137,12 +137,12 @@
                 MageHub turns Magento 2 architecture, conventions,
                 anti-patterns, and examples into reusable AI skills. Use one
                 local CLI to generate context files for Claude Code, OpenCode,
-                Cursor, Codex, Qoder, and Trae.
+                Codex, and Qoder.
               </span>
               <span class="lang-zh">
                 MageHub 将 Magento 2 的架构、约定、反模式和示例转化为可复用的 AI
                 技能。通过一个本地 CLI 为 Claude
-                Code、OpenCode、Cursor、Codex、Qoder 和 Trae 生成上下文文件。
+                Code、OpenCode、Codex 和 Qoder 生成上下文文件。
               </span>
             </p>
             <div class="hero-actions">
@@ -224,7 +224,7 @@ Created ~/.magehub/config.yaml
             <span class="lang-zh">v1.0 内置技能</span>
           </article>
           <article class="metric-card reveal reveal-delay-2">
-            <strong data-count="6">0</strong>
+            <strong data-count="4">0</strong>
             <span class="lang-en">Supported output formats</span>
             <span class="lang-zh">支持的输出格式</span>
           </article>
@@ -735,13 +735,11 @@ Created ~/.magehub/config.yaml
                 >~/.opencode/skills/&lt;id&gt;/SKILL.md</code
               >
             </div>
-            <div class="format-card reveal reveal-delay-3">
-              <span class="format-name">Cursor</span>
-              <code class="format-file">~/.cursorrules</code>
-            </div>
             <div class="format-card reveal reveal-delay-1">
               <span class="format-name">Codex</span>
-              <code class="format-file">~/.codex/AGENTS.md</code>
+              <code class="format-file"
+                >~/.codex/skills/&lt;id&gt;/SKILL.md</code
+              >
             </div>
             <div class="format-card reveal reveal-delay-2">
               <span class="format-name">Qoder</span>
@@ -749,11 +747,17 @@ Created ~/.magehub/config.yaml
                 >~/.qoder/skills/&lt;id&gt;/SKILL.md</code
               >
             </div>
-            <div class="format-card reveal reveal-delay-3">
-              <span class="format-name">Trae</span>
-              <code class="format-file">~/.trae/rules/&lt;id&gt;.md</code>
-            </div>
           </div>
+          <p class="section-note reveal reveal-delay-2">
+            <span class="lang-en"
+              >Cursor auto-loads Claude skills, so use the Claude output for
+              Cursor projects.</span
+            >
+            <span class="lang-zh"
+              >Cursor 会自动加载 Claude skills，因此 Cursor 项目请直接使用
+              Claude 输出。</span
+            >
+          </p>
         </section>
 
         <!-- Quick Start Section -->
