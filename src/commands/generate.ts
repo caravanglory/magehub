@@ -107,20 +107,28 @@ export async function runGenerateCommand(
     throw new CliError('No skills configured for generation.', 1);
   }
 
-  const grouped = groupEntriesByFormat(merged.skills, fallbackFormat);
-
-  for (const [fmt, skillIds] of grouped) {
-    const effectiveFmt = parseOutputFormat(options.format, fmt);
-    const skills = skillIds.map((skillId) => {
+  if (options.format !== undefined) {
+    const format = parseOutputFormat(options.format, fallbackFormat);
+    const allSkillIds = merged.skills.map((e) => e.id);
+    const skills = allSkillIds.map((skillId) => {
       const skill = registry.getById(skillId);
       if (skill === undefined) {
         throw new CliError(`Unknown skill ID: ${skillId}`, 3);
+      }
+      if (
+        skill.compatibility !== undefined &&
+        !skill.compatibility.includes(format)
+      ) {
+        throw new CliError(
+          `Skill ${skillId} is not compatible with format ${format}`,
+          3,
+        );
       }
       return skill;
     });
 
     const artifact = await renderArtifact(skills, {
-      format: effectiveFmt,
+      format,
       includeExamples: options.examples ?? merged.include_examples ?? true,
       includeAntipatterns:
         options.antipatterns ?? merged.include_antipatterns ?? true,
@@ -128,7 +136,51 @@ export async function runGenerateCommand(
 
     const result = await writeArtifact(
       effectiveRootDir,
-      effectiveFmt,
+      format,
+      options.output ?? merged.output,
+      artifact,
+    );
+
+    if (result.targetKind === 'file') {
+      info(`Generated: ${result.targetPath}`);
+    } else {
+      info(
+        `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+      );
+    }
+    return;
+  }
+
+  const grouped = groupEntriesByFormat(merged.skills, fallbackFormat);
+
+  for (const [fmt, skillIds] of grouped) {
+    const skills = skillIds.map((skillId) => {
+      const skill = registry.getById(skillId);
+      if (skill === undefined) {
+        throw new CliError(`Unknown skill ID: ${skillId}`, 3);
+      }
+      if (
+        skill.compatibility !== undefined &&
+        !skill.compatibility.includes(fmt)
+      ) {
+        throw new CliError(
+          `Skill ${skillId} is not compatible with format ${fmt}`,
+          3,
+        );
+      }
+      return skill;
+    });
+
+    const artifact = await renderArtifact(skills, {
+      format: fmt,
+      includeExamples: options.examples ?? merged.include_examples ?? true,
+      includeAntipatterns:
+        options.antipatterns ?? merged.include_antipatterns ?? true,
+    });
+
+    const result = await writeArtifact(
+      effectiveRootDir,
+      fmt,
       options.output ?? merged.output,
       artifact,
     );

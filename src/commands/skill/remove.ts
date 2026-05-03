@@ -191,10 +191,10 @@ export async function runSkillRemoveCommand(
   const globalConfig = await loadGlobalConfig();
   const merged = mergeConfigs(globalConfig, loaded.config);
   const fallbackFormat = merged.format ?? 'claude';
-  const metadata = getFormatMetadata(fallbackFormat);
   const removedFormats = collectFormats(removedEntries, fallbackFormat);
 
   for (const fmt of removedFormats) {
+    const metadata = getFormatMetadata(fmt);
     const remainingInFormat = merged.skills.filter(
       (e) => (e.format ?? fallbackFormat) === fmt,
     );

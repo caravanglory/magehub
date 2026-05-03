@@ -156,6 +156,7 @@ async function setupFixtureRepo(): Promise<string> {
       '    url: https://example.com',
       'compatibility:',
       '  - claude',
+      '  - cursor',
     ].join('\n'),
     'utf8',
   );
