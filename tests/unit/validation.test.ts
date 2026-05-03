@@ -47,11 +47,6 @@ describe('parseOutputFormat', () => {
     expect(parseOutputFormat('opencode', 'claude')).toBe('opencode');
     expect(parseOutputFormat('codex', 'claude')).toBe('codex');
     expect(parseOutputFormat('qoder', 'claude')).toBe('qoder');
-    expect(parseOutputFormat('trae', 'claude')).toBe('trae');
-  });
-
-  it('accepts cursor as a valid format', () => {
-    expect(parseOutputFormat('cursor', 'claude')).toBe('cursor');
   });
 
   it('returns fallback when value is undefined', () => {

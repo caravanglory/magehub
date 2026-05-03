@@ -14,10 +14,8 @@ export const skillCategories = [
 export const supportedTools = [
   'claude',
   'opencode',
-  'cursor',
   'codex',
   'qoder',
-  'trae',
 ] as const;
 
 export type SkillCategory = (typeof skillCategories)[number];

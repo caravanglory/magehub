@@ -156,7 +156,6 @@ async function setupFixtureRepo(): Promise<string> {
       '    url: https://example.com',
       'compatibility:',
       '  - claude',
-      '  - cursor',
     ].join('\n'),
     'utf8',
   );
@@ -586,21 +585,5 @@ describe('core services and commands', () => {
     await expect(
       runGenerateCommand({ format: 'bad-format' }, rootDir),
     ).rejects.toThrow('Unsupported output format');
-  });
-
-  it('generates cursor format output to .cursorrules', async () => {
-    await writeFile(
-      path.join(rootDir, '.magehub.yaml'),
-      'version: "1"\nskills:\n  - id: module-plugin\nformat: cursor\n',
-      'utf8',
-    );
-
-    await runGenerateCommand({}, rootDir);
-
-    const content = await readFile(
-      path.join(rootDir, '.cursorrules'),
-      'utf8',
-    );
-    expect(content).toContain('# Plugin Development');
   });
 });

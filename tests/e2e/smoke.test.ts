@@ -49,7 +49,6 @@ const ALL_FORMATS: OutputFormat[] = [
   'opencode',
   'codex',
   'qoder',
-  'trae',
 ];
 
 const ALL_SKILL_IDS = [
@@ -268,13 +267,6 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
           expect(data).toHaveProperty('name');
           expect(data).toHaveProperty('description');
           expect(typeof data['description']).toBe('string');
-        }
-        return;
-      }
-      if (format === 'trae') {
-        for (const file of result!.files) {
-          const { data } = parseFrontMatter(file.content);
-          expect(data).toHaveProperty('description');
         }
         return;
       }
