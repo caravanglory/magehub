@@ -9,13 +9,18 @@ import {
 } from '../../core/config-manager.js';
 import { getFormatMetadata, resolveOutputTarget } from '../../core/formats.js';
 import {
+  getQoderGlobalSkillsDir,
   loadGlobalConfig,
   resolveGlobalOutputRoot,
   saveGlobalConfig,
 } from '../../core/global-config.js';
 import { renderArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
-import { removePerSkillFiles, writeArtifact } from '../../core/writer.js';
+import {
+  removePerSkillFiles,
+  removeSkillDirectories,
+  writeArtifact,
+} from '../../core/writer.js';
 import { CliError } from '../../utils/cli-error.js';
 import { pathExists } from '../../utils/fs.js';
 import { info } from '../../utils/logger.js';
@@ -54,6 +59,17 @@ async function runGlobalRemove(
   }
 
   if (options.write === false) {
+    return;
+  }
+
+  if (format === 'qoder') {
+    const removed = await removeSkillDirectories(
+      getQoderGlobalSkillsDir(),
+      skillIds,
+    );
+    for (const target of removed) {
+      info(`Removed ${target}`);
+    }
     return;
   }
 

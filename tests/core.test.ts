@@ -324,6 +324,50 @@ describe('core services and commands', () => {
     }
   });
 
+  it('installs and removes global qoder skills under Qoder skills dir', async () => {
+    const originalQoderHome = process.env.QODER_HOME;
+    const qoderHomeDir = path.join(homeDir, '.custom-qoder');
+
+    process.env.QODER_HOME = qoderHomeDir;
+
+    try {
+      await runSkillInstallCommand(['module-plugin'], {
+        global: true,
+        format: 'qoder',
+      });
+
+      const qoderSkillPath = path.join(
+        qoderHomeDir,
+        'skills',
+        'module-plugin',
+        'SKILL.md',
+      );
+      const legacyContextPath = path.join(homeDir, '.qoder', 'context.md');
+      const globalConfigPath = path.join(homeDir, '.magehub', 'config.yaml');
+
+      await expect(readFile(qoderSkillPath, 'utf8')).resolves.toContain(
+        'name: module-plugin',
+      );
+      await expect(readFile(qoderSkillPath, 'utf8')).resolves.toContain(
+        'Plugin Development',
+      );
+      await expect(readFile(globalConfigPath, 'utf8')).resolves.toContain(
+        'format: qoder',
+      );
+      await expect(readFile(legacyContextPath, 'utf8')).rejects.toThrow();
+
+      await runSkillRemoveCommand(['module-plugin'], { global: true });
+
+      await expect(readFile(qoderSkillPath, 'utf8')).rejects.toThrow();
+    } finally {
+      if (originalQoderHome === undefined) {
+        delete process.env.QODER_HOME;
+      } else {
+        process.env.QODER_HOME = originalQoderHome;
+      }
+    }
+  });
+
   it('rejects removing skills that are not installed', async () => {
     await expect(
       runSkillRemoveCommand(['missing-skill'], { write: false }, rootDir),

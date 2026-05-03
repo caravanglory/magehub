@@ -11,13 +11,14 @@ import { resolveOutputTarget } from '../../core/formats.js';
 import {
   createDefaultGlobalConfig,
   getGlobalConfigDir,
+  getQoderGlobalSkillsDir,
   loadGlobalConfig,
   resolveGlobalOutputRoot,
   saveGlobalConfig,
 } from '../../core/global-config.js';
-import { renderArtifact } from '../../core/renderer.js';
+import { renderArtifact, renderPerSkillArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
-import { writeArtifact } from '../../core/writer.js';
+import { writeArtifact, writeSkillDirectories } from '../../core/writer.js';
 import type { MageHubConfig } from '../../types/config.js';
 import { CliError } from '../../utils/cli-error.js';
 import { info } from '../../utils/logger.js';
@@ -132,11 +133,26 @@ async function runGlobalInstall(
     return skill;
   });
 
-  const artifact = await renderArtifact(targetSkills, {
+  const renderOptions = {
     format,
     includeExamples: config.include_examples ?? true,
     includeAntipatterns: config.include_antipatterns ?? true,
-  });
+  };
+
+  if (format === 'qoder') {
+    const artifact = await renderPerSkillArtifact(targetSkills, renderOptions);
+    const result = await writeSkillDirectories(
+      getQoderGlobalSkillsDir(),
+      artifact,
+    );
+
+    info(
+      `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+    );
+    return;
+  }
+
+  const artifact = await renderArtifact(targetSkills, renderOptions);
 
   const outputRoot = resolveGlobalOutputRoot(format);
   const result = await writeArtifact(outputRoot, format, undefined, artifact);

@@ -10,6 +10,8 @@ import {
   getGlobalConfigDir,
   getGlobalConfigPath,
   getGlobalSkillsDir,
+  getQoderGlobalSkillsDir,
+  getQoderHomeDir,
   loadGlobalConfig,
   resolveGlobalOutputRoot,
   resolveGlobalCustomSkillsPath,
@@ -20,6 +22,7 @@ import { clearSchemaValidatorCache } from '../../src/core/schema-validator.js';
 const globalConfigPath = getGlobalConfigPath();
 let savedConfig: string | undefined;
 let savedCodexHome: string | undefined;
+let savedQoderHome: string | undefined;
 
 async function backupGlobalConfig(): Promise<void> {
   try {
@@ -49,6 +52,7 @@ describe('global-config', () => {
   beforeEach(async () => {
     clearSchemaValidatorCache();
     savedCodexHome = process.env.CODEX_HOME;
+    savedQoderHome = process.env.QODER_HOME;
     await backupGlobalConfig();
   });
 
@@ -57,6 +61,11 @@ describe('global-config', () => {
       delete process.env.CODEX_HOME;
     } else {
       process.env.CODEX_HOME = savedCodexHome;
+    }
+    if (savedQoderHome === undefined) {
+      delete process.env.QODER_HOME;
+    } else {
+      process.env.QODER_HOME = savedQoderHome;
     }
     await restoreGlobalConfig();
   });
@@ -95,6 +104,30 @@ describe('global-config', () => {
       process.env.CODEX_HOME = 'custom-codex-home';
 
       expect(getCodexHomeDir()).toBe(path.resolve('custom-codex-home'));
+    });
+  });
+
+  describe('getQoderHomeDir', () => {
+    it('returns ~/.qoder when QODER_HOME is not set', () => {
+      delete process.env.QODER_HOME;
+
+      expect(getQoderHomeDir()).toBe(path.join(os.homedir(), '.qoder'));
+    });
+
+    it('honors QODER_HOME when set', () => {
+      process.env.QODER_HOME = 'custom-qoder-home';
+
+      expect(getQoderHomeDir()).toBe(path.resolve('custom-qoder-home'));
+    });
+  });
+
+  describe('getQoderGlobalSkillsDir', () => {
+    it('returns the Qoder user-level Skills directory', () => {
+      process.env.QODER_HOME = '/tmp/magehub-qoder-home';
+
+      expect(getQoderGlobalSkillsDir()).toBe(
+        path.join('/tmp/magehub-qoder-home', 'skills'),
+      );
     });
   });
 

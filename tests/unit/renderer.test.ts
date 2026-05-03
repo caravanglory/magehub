@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
   renderArtifact,
+  renderPerSkillArtifact,
   renderSkillListTable,
   renderSkillSearchResults,
   renderSkillDetail,
@@ -323,6 +324,19 @@ describe('renderer', () => {
       expect(content).not.toContain('### Examples');
       expect(content).not.toContain('### Anti-patterns');
       expect(content).not.toContain('### References');
+    });
+
+    it('renders qoder skill files with required frontmatter', async () => {
+      const artifact = await renderPerSkillArtifact([makeSkill()], {
+        format: 'qoder',
+        includeExamples: true,
+        includeAntipatterns: true,
+      });
+
+      expect(artifact.files).toHaveLength(1);
+      expect(artifact.files[0].content).toContain('name: test-skill');
+      expect(artifact.files[0].content).toContain('description: A test skill');
+      expect(artifact.files[0].content).toContain('# Test Skill');
     });
   });
 

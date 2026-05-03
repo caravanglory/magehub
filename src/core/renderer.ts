@@ -196,12 +196,12 @@ export async function renderArtifact(
   options: RenderOptions,
 ): Promise<RenderArtifact> {
   const metadata = getFormatMetadata(options.format);
-  const bodyOptions = {
-    includeExamples: options.includeExamples,
-    includeAntipatterns: options.includeAntipatterns,
-  };
 
   if (metadata.strategy === 'single-file') {
+    const bodyOptions = {
+      includeExamples: options.includeExamples,
+      includeAntipatterns: options.includeAntipatterns,
+    };
     const template = await loadTemplate(options.format);
     const content = skills
       .map((skill) => renderSkillSection(skill, bodyOptions))
@@ -215,6 +215,17 @@ export async function renderArtifact(
     };
   }
 
+  return renderPerSkillArtifact(skills, options);
+}
+
+export async function renderPerSkillArtifact(
+  skills: Skill[],
+  options: RenderOptions,
+): Promise<PerSkillArtifact> {
+  const bodyOptions = {
+    includeExamples: options.includeExamples,
+    includeAntipatterns: options.includeAntipatterns,
+  };
   const template = await loadTemplate(options.format, 'skill');
   const files = skills.map((skill) => {
     const body = renderSkillBody(skill, bodyOptions);

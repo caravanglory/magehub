@@ -12,6 +12,7 @@ import { validateConfigSchema } from './schema-validator.js';
 const GLOBAL_DIR_NAME = '.magehub';
 const GLOBAL_CONFIG_FILE = 'config.yaml';
 const CODEX_HOME_DIR_NAME = '.codex';
+const QODER_HOME_DIR_NAME = '.qoder';
 
 function getGlobalDirSegments(): string[] {
   return [os.homedir(), GLOBAL_DIR_NAME];
@@ -36,6 +37,19 @@ export function getCodexHomeDir(): string {
   }
 
   return path.join(os.homedir(), CODEX_HOME_DIR_NAME);
+}
+
+export function getQoderHomeDir(): string {
+  const configured = process.env.QODER_HOME?.trim();
+  if (configured !== undefined && configured !== '') {
+    return path.resolve(configured);
+  }
+
+  return path.join(os.homedir(), QODER_HOME_DIR_NAME);
+}
+
+export function getQoderGlobalSkillsDir(): string {
+  return path.join(getQoderHomeDir(), 'skills');
 }
 
 export function resolveGlobalOutputRoot(format: OutputFormat): string {

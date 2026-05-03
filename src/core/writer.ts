@@ -9,6 +9,7 @@ import {
   resolveSkillOutputPath,
 } from './formats.js';
 import type { RenderArtifact } from './renderer.js';
+import type { PerSkillArtifact } from './renderer.js';
 
 export interface WriteResult {
   targetPath: string;
@@ -40,6 +41,21 @@ export async function writeArtifact(
   return { targetPath: target.path, targetKind: target.kind, written };
 }
 
+export async function writeSkillDirectories(
+  outputDir: string,
+  artifact: PerSkillArtifact,
+): Promise<WriteResult> {
+  const written: string[] = [];
+
+  for (const file of artifact.files) {
+    const filePath = path.join(outputDir, file.skillId, 'SKILL.md');
+    await writeUtf8(filePath, file.content);
+    written.push(filePath);
+  }
+
+  return { targetPath: outputDir, targetKind: 'directory', written };
+}
+
 export async function removePerSkillFiles(
   rootDir: string,
   format: OutputFormat,
@@ -67,6 +83,23 @@ export async function removePerSkillFiles(
     if (await pathExists(candidate)) {
       await rm(candidate, { recursive: true, force: true });
       removed.push(candidate);
+    }
+  }
+
+  return removed;
+}
+
+export async function removeSkillDirectories(
+  outputDir: string,
+  skillIds: string[],
+): Promise<string[]> {
+  const removed: string[] = [];
+
+  for (const skillId of skillIds) {
+    const skillDir = path.join(outputDir, skillId);
+    if (await pathExists(skillDir)) {
+      await rm(skillDir, { recursive: true, force: true });
+      removed.push(skillDir);
     }
   }
 
