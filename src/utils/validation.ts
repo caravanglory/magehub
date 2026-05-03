@@ -6,10 +6,7 @@ import {
 } from '../types/skill.js';
 import { CliError } from './cli-error.js';
 
-const outputFormats = [
-  ...supportedTools,
-  'markdown',
-] as const satisfies readonly OutputFormat[];
+const outputFormats = supportedTools satisfies readonly OutputFormat[];
 
 export function parseSkillCategory(
   value: string | undefined,

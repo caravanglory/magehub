@@ -172,7 +172,6 @@ As of the proposal draft, the repository contains the proposal document but not 
   - [x] `templates/codex.hbs`
   - [x] `templates/qoder.hbs`
   - [x] `templates/trae.hbs`
-  - [x] `templates/markdown.hbs`
 - [x] Implement formatter classes under `src/formatters/`
 - [x] Implement merge rules for instructions, conventions, examples, anti-patterns
 - [x] Implement heading normalization during merge
@@ -252,7 +251,7 @@ As of the proposal draft, the repository contains the proposal document but not 
 - [x] `npm run build` passes
 - [x] `npm run lint` passes
 - [x] All generated outputs are stable in snapshots (18 snapshots)
-- [x] Automated smoke test validates all 7 format outputs are structurally usable (see `test-results/smoke-report.md` for optional visual review)
+- [x] Automated smoke test validates all 6 format outputs are structurally usable (see `test-results/smoke-report.md` for optional visual review)
 
 ---
 

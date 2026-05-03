@@ -78,7 +78,7 @@ MageHub provides:
 
 - Local CLI that installs skills, generates context files, and validates skill YAML
 - 10 bundled core skills (no network dependency, fully offline)
-- Output formats for Claude Code, OpenCode, Cursor, Codex, Qoder, Trae, and Markdown
+- Output formats for Claude Code, OpenCode, Cursor, Codex, Qoder, and Trae
 - Schema validation for skill YAML and project config
 
 **Out of scope (planned for v1.1+):**
@@ -1301,7 +1301,6 @@ properties:
       - codex
       - qoder
       - trae
-      - markdown
     default: claude
     description: Default output format
 
@@ -1606,7 +1605,6 @@ magehub generate [--format=<format>] [--output=<path>] [--skills=<ids>]
 | `codex` | `AGENTS.md` |
 | `qoder` | `.qoder/context.md` |
 | `trae` | `.trae/rules/magehub.md` |
-| `markdown` | `MAGEHUB.md` |
 
 **Example:**
 
@@ -2096,8 +2094,7 @@ magehub/
 │   ├── cursor.hbs
 │   ├── codex.hbs
 │   ├── qoder.hbs
-│   ├── trae.hbs
-│   └── markdown.hbs
+│   └── trae.hbs
 │
 ├── src/                               # CLI source code
 │   ├── index.ts                       # Entry point
@@ -2131,8 +2128,7 @@ magehub/
 │   │   ├── cursor-formatter.ts
 │   │   ├── codex-formatter.ts
 │   │   ├── qoder-formatter.ts
-│   │   ├── trae-formatter.ts
-│   │   └── markdown-formatter.ts
+│   │   └── trae-formatter.ts
 │   │
 │   ├── utils/
 │   │   ├── logger.ts                  # Colored console output
@@ -2343,7 +2339,6 @@ export default defineConfig({
 - [ ] Codex formatter
 - [ ] Qoder formatter
 - [ ] Trae formatter
-- [ ] Generic Markdown formatter
 
 #### 3.3 Generate Command
 

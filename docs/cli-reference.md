@@ -2,19 +2,27 @@
 
 ## Quick Start
 
-The fastest path is one command:
+The fastest path installs skills globally for the current user:
 
 ```bash
 magehub install module-plugin performance
 ```
 
-This auto-detects your AI tool, creates `.magehub.yaml` if missing, renders the selected skills to disk, and updates `.git/info/exclude` (the repo-local, untracked ignore file) so the generated output is ignored without touching the shared `.gitignore`.
+This creates or updates `~/.magehub/config.yaml` and renders the selected skills to the target tool's global location. If `--format` is omitted, MageHub uses `claude`.
+
+Use `-c` / `--current` to install into the current project:
+
+```bash
+magehub install -c module-plugin performance
+```
+
+Current-project installs create `.magehub.yaml` if missing, render the selected skills to disk, and update `.git/info/exclude` (the repo-local, untracked ignore file) so generated output is ignored without touching the shared `.gitignore`. If `--format` is omitted, MageHub uses `claude`.
 
 ## Commands
 
 ### `setup:init` (optional)
 
-Create `.magehub.yaml` without installing skills. Skipping this is fine — `skill:install` bootstraps the config on first use.
+Create `.magehub.yaml` without installing skills. Skipping this is fine — `skill:install --current` bootstraps the config on first use.
 
 ```bash
 magehub setup:init [--format=<format>] [--no-git-exclude]
@@ -46,14 +54,16 @@ magehub skill:show <skill-id>
 
 ### `skill:install` (alias: `install`)
 
-Install one or more skills into `.magehub.yaml` and render output files. If `.magehub.yaml` does not exist, it is created with an auto-detected format.
+Install one or more skills globally by default, or into `.magehub.yaml` with `--current`.
 
 ```bash
-magehub install <skill-id...>
-magehub install --category=<category>
-magehub install <skill-id...> --format=<format>   # override detection
-magehub install <skill-id...> --no-write          # update config only
-magehub install <skill-id...> --no-git-exclude    # skip .git/info/exclude update
+magehub install <skill-id...>                     # global install
+magehub install --category=<category>             # global category install
+magehub install <skill-id...> --format=<format>   # set global output format
+magehub install -c <skill-id...>                  # current project install
+magehub install -c <skill-id...> --format=<format> # set project output format
+magehub install -c <skill-id...> --no-write       # update project config only
+magehub install -c <skill-id...> --no-git-exclude # skip .git/info/exclude update
 ```
 
 ### `skill:remove` (alias: `remove`)
@@ -109,13 +119,12 @@ magehub generate [--format=<format>] [--output=<path>] [--skills=<id,id>] [--no-
 | `cursor`   | single file    | `.cursorrules`                   |
 | `codex`    | single file    | `AGENTS.md`                      |
 | `qoder`    | single file    | `.qoder/context.md`              |
-| `markdown` | single file    | `MAGEHUB.md`                     |
 
 Per-skill formats write one file per installed skill with YAML frontmatter. Single-file formats concatenate all skills into one document.
 
 ## Exit Behavior
 
 - invalid CLI inputs fail early
-- missing/invalid `.magehub.yaml` returns a config error (except `skill:install`, which bootstraps instead)
+- missing/invalid `.magehub.yaml` returns a config error (except `skill:install --current`, which bootstraps instead)
 - invalid skill files return a skill validation error
 - duplicate local skill IDs fail registry creation

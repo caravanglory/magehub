@@ -61,7 +61,9 @@ export async function runSetupInitCommand(
     }
   }
 
-  info('MageHub initialized. Run `magehub skill:install <id>` to add skills.');
+  info(
+    'MageHub initialized. Run `magehub skill:install --current <id>` to add skills.',
+  );
 }
 
 export function registerSetupInitCommand(program: Command): void {
@@ -69,7 +71,7 @@ export function registerSetupInitCommand(program: Command): void {
     .command('setup:init')
     .alias('init')
     .description(
-      'Initialize MageHub in the current project (optional — skill:install auto-bootstraps)',
+      'Initialize MageHub in the current project (optional — skill:install --current auto-bootstraps)',
     )
     .option('--format <format>', 'Default output format')
     .option('--no-git-exclude', 'Skip updating .git/info/exclude')

@@ -44,10 +44,6 @@ const FORMAT_METADATA: Record<OutputFormat, FormatMetadata> = {
     strategy: 'single-file',
     outputPath: path.join('.qoder', 'context.md'),
   },
-  markdown: {
-    strategy: 'single-file',
-    outputPath: 'MAGEHUB.md',
-  },
 };
 
 export function getFormatMetadata(format: OutputFormat): FormatMetadata {

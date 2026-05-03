@@ -23,7 +23,7 @@ export async function runGenerateCommand(
   const loaded = await loadConfig(effectiveRootDir).catch((error: unknown) => {
     const detail = error instanceof Error ? `: ${error.message}` : '';
     throw new CliError(
-      `Missing or invalid .magehub.yaml${detail}. Run \`magehub skill:install <id>\` to bootstrap.`,
+      `Missing or invalid .magehub.yaml${detail}. Run \`magehub skill:install --current <id>\` to bootstrap.`,
       2,
     );
   });
@@ -48,11 +48,9 @@ export async function runGenerateCommand(
     if (skill === undefined) {
       throw new CliError(`Unknown skill ID: ${skillId}`, 3);
     }
-    const compatibilityFormat = format === 'markdown' ? undefined : format;
     if (
-      compatibilityFormat !== undefined &&
       skill.compatibility !== undefined &&
-      !skill.compatibility.includes(compatibilityFormat)
+      !skill.compatibility.includes(format)
     ) {
       throw new CliError(
         `Skill ${skillId} is not compatible with format ${format}`,

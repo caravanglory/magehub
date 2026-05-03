@@ -52,7 +52,6 @@ const ALL_FORMATS: OutputFormat[] = [
   'codex',
   'qoder',
   'trae',
-  'markdown',
 ];
 
 const ALL_SKILL_IDS = [
@@ -126,7 +125,7 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
     await runSetupInitCommand({ format: 'claude', gitExclude: false }, rootDir);
     await runSkillInstallCommand(
       ALL_SKILL_IDS,
-      { write: false, gitExclude: false },
+      { current: true, write: false, gitExclude: false },
       rootDir,
     );
 
@@ -280,7 +279,7 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
         }
         return;
       }
-      // codex, markdown: no frontmatter
+      // codex: no frontmatter
       const { data } = parseFrontMatter(result!.files[0].content);
       expect(Object.keys(data).length).toBe(0);
     });

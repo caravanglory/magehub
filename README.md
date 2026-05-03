@@ -30,35 +30,42 @@ npx magehub --help
 
 ## Quick Start
 
-One command is enough to install skills and render them for your AI tool:
+By default, MageHub installs skills globally for the current user:
 
 ```bash
 magehub install module-plugin performance
 ```
 
-On first run, MageHub auto-detects your tool from the project (e.g. existing `.claude/`, `.cursorrules`, `AGENTS.md`), creates `.magehub.yaml`, writes the rendered files, and updates `.git/info/exclude` so the generated output stays local to your clone. Use `--format=<tool>` to override detection.
+On first global run, MageHub creates `~/.magehub/config.yaml` and writes the rendered output to the selected tool's global location. If `--format` is omitted, MageHub uses `claude`.
+
+Use `-c` / `--current` to install into the current project instead:
+
+```bash
+magehub install -c module-plugin performance
+```
+
+Project installs create or update `.magehub.yaml`, write the rendered files into the current project, and update `.git/info/exclude` so generated output stays local to your clone. If `--format` is omitted, MageHub uses `claude`; pass `--format=codex` or another supported format when you want a different target.
 
 Other common tasks:
 
 ```bash
 magehub skill:list                     # browse bundled skills
 magehub skill:search plugin            # find skills by keyword
-magehub skill:remove module-plugin     # uninstall and clean output
-magehub generate                       # re-render everything from .magehub.yaml
+magehub skill:remove -g module-plugin  # uninstall globally and clean output
+magehub generate                       # re-render current project from .magehub.yaml
 magehub setup:init --format=cursor     # optional: create .magehub.yaml without installing skills
 ```
 
-Generated output layout by format:
+Global output layout by format:
 
-| Format     | Strategy       | Default output                   |
-| ---------- | -------------- | -------------------------------- |
-| `claude`   | per-skill file | `.claude/skills/<id>/SKILL.md`   |
-| `opencode` | per-skill file | `.opencode/skills/<id>/SKILL.md` |
-| `trae`     | per-skill file | `.trae/rules/<id>.md`            |
-| `cursor`   | single file    | `.cursorrules`                   |
-| `codex`    | single file    | `AGENTS.md`                      |
-| `qoder`    | single file    | `.qoder/context.md`              |
-| `markdown` | single file    | `MAGEHUB.md`                     |
+| Format     | Strategy       | Global output                      |
+| ---------- | -------------- | ---------------------------------- |
+| `claude`   | per-skill file | `~/.claude/skills/<id>/SKILL.md`   |
+| `opencode` | per-skill file | `~/.opencode/skills/<id>/SKILL.md` |
+| `trae`     | per-skill file | `~/.trae/rules/<id>.md`            |
+| `cursor`   | single file    | `~/.cursorrules`                   |
+| `codex`    | single file    | `~/.codex/AGENTS.md`               |
+| `qoder`    | per-skill file | `~/.qoder/skills/<id>/SKILL.md`    |
 
 ## Bundled v1.0 Skills
 

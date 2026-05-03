@@ -1,6 +1,6 @@
 import type { SupportedTool } from './skill.js';
 
-export type OutputFormat = SupportedTool | 'markdown';
+export type OutputFormat = SupportedTool;
 
 export interface RemoteRegistry {
   name: string;

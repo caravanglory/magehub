@@ -137,13 +137,12 @@
                 MageHub turns Magento 2 architecture, conventions,
                 anti-patterns, and examples into reusable AI skills. Use one
                 local CLI to generate context files for Claude Code, OpenCode,
-                Cursor, Codex, Qoder, Trae, and plain Markdown.
+                Cursor, Codex, Qoder, and Trae.
               </span>
               <span class="lang-zh">
                 MageHub 将 Magento 2 的架构、约定、反模式和示例转化为可复用的 AI
                 技能。通过一个本地 CLI 为 Claude
-                Code、OpenCode、Cursor、Codex、Qoder、Trae 和纯 Markdown
-                生成上下文文件。
+                Code、OpenCode、Cursor、Codex、Qoder 和 Trae 生成上下文文件。
               </span>
             </p>
             <div class="hero-actions">
@@ -196,6 +195,7 @@
                 <span></span><span></span><span></span>
               </div>
               <pre><code><span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">module-plugin</span> <span class="t-arg">performance</span>
+Created ~/.magehub/config.yaml
 <span class="t-success">&#10003;</span> module-plugin installed
 <span class="t-success">&#10003;</span> performance installed
 
@@ -224,7 +224,7 @@
             <span class="lang-zh">v1.0 内置技能</span>
           </article>
           <article class="metric-card reveal reveal-delay-2">
-            <strong data-count="7">0</strong>
+            <strong data-count="6">0</strong>
             <span class="lang-en">Supported output formats</span>
             <span class="lang-zh">支持的输出格式</span>
           </article>
@@ -654,11 +654,13 @@
                 </h3>
                 <p>
                   <span class="lang-en">
-                    Select bundled or project-local skills in
+                    Install globally by default, or use <code>-c</code> to
+                    select bundled and project-local skills in
                     <code>.magehub.yaml</code>.
                   </span>
                   <span class="lang-zh">
-                    在 <code>.magehub.yaml</code> 中选择内置或项目本地技能。
+                    默认全局安装；使用 <code>-c</code> 时在
+                    <code>.magehub.yaml</code> 中选择内置或项目本地技能。
                   </span>
                 </p>
               </div>
@@ -724,34 +726,32 @@
             <div class="format-card reveal reveal-delay-1">
               <span class="format-name">Claude Code</span>
               <code class="format-file"
-                >.claude/skills/&lt;id&gt;/SKILL.md</code
+                >~/.claude/skills/&lt;id&gt;/SKILL.md</code
               >
             </div>
             <div class="format-card reveal reveal-delay-2">
               <span class="format-name">OpenCode</span>
               <code class="format-file"
-                >.opencode/skills/&lt;id&gt;/SKILL.md</code
+                >~/.opencode/skills/&lt;id&gt;/SKILL.md</code
               >
             </div>
             <div class="format-card reveal reveal-delay-3">
               <span class="format-name">Cursor</span>
-              <code class="format-file">.cursorrules</code>
+              <code class="format-file">~/.cursorrules</code>
             </div>
             <div class="format-card reveal reveal-delay-1">
               <span class="format-name">Codex</span>
-              <code class="format-file">AGENTS.md</code>
+              <code class="format-file">~/.codex/AGENTS.md</code>
             </div>
             <div class="format-card reveal reveal-delay-2">
               <span class="format-name">Qoder</span>
-              <code class="format-file">.qoder/context.md</code>
+              <code class="format-file"
+                >~/.qoder/skills/&lt;id&gt;/SKILL.md</code
+              >
             </div>
             <div class="format-card reveal reveal-delay-3">
               <span class="format-name">Trae</span>
-              <code class="format-file">.trae/rules/&lt;id&gt;.md</code>
-            </div>
-            <div class="format-card format-card-wide reveal reveal-delay-4">
-              <span class="format-name">Markdown</span>
-              <code class="format-file">MAGEHUB.md</code>
+              <code class="format-file">~/.trae/rules/&lt;id&gt;.md</code>
             </div>
           </div>
         </section>
@@ -777,15 +777,21 @@
             <div class="terminal-header">
               <span></span><span></span><span></span>
             </div>
-            <pre><code><span class="lang-en"><span class="t-comment"># Install skills directly with npx — no global install needed</span>
+            <pre><code><span class="lang-en"><span class="t-comment"># Install skills globally; --format defaults to claude</span>
 <span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">module-plugin performance</span>
+
+<span class="t-comment"># Install into the current project instead</span>
+<span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">-c module-plugin performance --format=codex</span>
 
 <span class="t-comment"># Browse all available skills</span>
 <span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:list</span>
 
 <span class="t-comment"># Search for skills by keyword</span>
-<span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:search</span> <span class="t-file">caching</span></span><span class="lang-zh"><span class="t-comment"># 直接用 npx 安装技能 — 无需全局安装</span>
+<span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:search</span> <span class="t-file">caching</span></span><span class="lang-zh"><span class="t-comment"># 默认全局安装技能；--format 默认 claude</span>
 <span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">module-plugin performance</span>
+
+<span class="t-comment"># 安装到当前项目</span>
+<span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">-c module-plugin performance --format=codex</span>
 
 <span class="t-comment"># 浏览所有可用技能</span>
 <span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:list</span>

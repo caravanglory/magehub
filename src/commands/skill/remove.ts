@@ -32,7 +32,7 @@ async function runGlobalRemove(
   const config = await loadGlobalConfig();
   if (config === undefined) {
     throw new CliError(
-      'No global config found. Run `magehub skill:install -g <id>` first.',
+      'No global config found. Run `magehub skill:install <id>` first.',
       2,
     );
   }
@@ -132,7 +132,7 @@ export async function runSkillRemoveCommand(
   const effectiveRootDir = rootDir ?? process.cwd();
   const loaded = await loadConfig(effectiveRootDir).catch(() => {
     throw new CliError(
-      'Missing or invalid .magehub.yaml. Run `magehub skill:install <id>` first.',
+      'Missing or invalid .magehub.yaml. Run `magehub skill:install --current <id>` first.',
       2,
     );
   });

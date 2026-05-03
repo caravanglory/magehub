@@ -86,12 +86,6 @@ describe('config-manager', () => {
       expect(target.path).toBe(path.join('/project', '.qoder', 'context.md'));
     });
 
-    it('resolves markdown output to a single MAGEHUB.md file', () => {
-      const target = resolveOutputTarget('/project', 'markdown');
-      expect(target.kind).toBe('file');
-      expect(target.path).toBe(path.join('/project', 'MAGEHUB.md'));
-    });
-
     it('honors an absolute override for single-file formats', () => {
       const target = resolveOutputTarget(
         '/project',

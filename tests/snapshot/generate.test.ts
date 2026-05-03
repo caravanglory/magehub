@@ -89,12 +89,7 @@ const twoSkills: Skill[] = [
 ];
 
 const perSkillFormats: OutputFormat[] = ['claude', 'opencode', 'trae'];
-const singleFileFormats: OutputFormat[] = [
-  'cursor',
-  'codex',
-  'qoder',
-  'markdown',
-];
+const singleFileFormats: OutputFormat[] = ['cursor', 'codex', 'qoder'];
 
 async function snapshotFor(
   skills: Skill[],
@@ -226,17 +221,6 @@ describe('generate snapshot tests', () => {
         throw new Error('expected single-file');
       expect(artifact.content).toContain('description: MageHub');
       expect(artifact.content).toContain('alwaysApply: true');
-    });
-
-    it('markdown format has generic header', async () => {
-      const artifact = await renderArtifact([makeSkill()], {
-        format: 'markdown',
-        includeExamples: true,
-        includeAntipatterns: true,
-      });
-      if (artifact.kind !== 'single-file')
-        throw new Error('expected single-file');
-      expect(artifact.content).toContain('# MageHub');
     });
   });
 });

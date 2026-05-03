@@ -49,7 +49,6 @@ describe('parseOutputFormat', () => {
     expect(parseOutputFormat('codex', 'claude')).toBe('codex');
     expect(parseOutputFormat('qoder', 'claude')).toBe('qoder');
     expect(parseOutputFormat('trae', 'claude')).toBe('trae');
-    expect(parseOutputFormat('markdown', 'claude')).toBe('markdown');
   });
 
   it('returns fallback when value is undefined', () => {
@@ -61,6 +60,12 @@ describe('parseOutputFormat', () => {
     expect(() => parseOutputFormat('bad-format', 'claude')).toThrow(CliError);
     expect(() => parseOutputFormat('bad-format', 'claude')).toThrow(
       'Unsupported output format: bad-format',
+    );
+  });
+
+  it('rejects the removed markdown format', () => {
+    expect(() => parseOutputFormat('markdown', 'claude')).toThrow(
+      'Unsupported output format: markdown',
     );
   });
 
