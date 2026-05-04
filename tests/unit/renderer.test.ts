@@ -371,6 +371,5 @@ describe('renderer', () => {
       expect(artifact.content).toContain('## Second (second)');
       expect(artifact.content).toContain('---');
     });
-
   });
 });

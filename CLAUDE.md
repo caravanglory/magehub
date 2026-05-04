@@ -83,10 +83,10 @@ Each supported format maps to a Handlebars template and a default output path. F
 
 **Single file** — all skills concatenated into one document:
 
-| Format     | Template                 | Default output      |
-| ---------- | ------------------------ | ------------------- |
-| `codex`    | `templates/codex.hbs`    | `AGENTS.md`         |
-| `qoder`    | `templates/qoder.hbs`    | `.qoder/context.md` |
+| Format  | Template              | Default output      |
+| ------- | --------------------- | ------------------- |
+| `codex` | `templates/codex.hbs` | `AGENTS.md`         |
+| `qoder` | `templates/qoder.hbs` | `.qoder/context.md` |
 
 Cursor uses Claude's `.claude/skills/<id>/SKILL.md` layout and does not have a separate output format.
 

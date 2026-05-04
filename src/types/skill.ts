@@ -11,12 +11,7 @@ export const skillCategories = [
   'standards',
 ] as const;
 
-export const supportedTools = [
-  'claude',
-  'opencode',
-  'codex',
-  'qoder',
-] as const;
+export const supportedTools = ['claude', 'opencode', 'codex', 'qoder'] as const;
 
 export type SkillCategory = (typeof skillCategories)[number];
 export type SupportedTool = (typeof supportedTools)[number];
@@ -77,7 +72,10 @@ export interface Skill {
   compatibility?: SupportedTool[];
 }
 
-export type RawSkill = Omit<Skill, 'instructions' | 'examples' | 'compatibility'> & {
+export type RawSkill = Omit<
+  Skill,
+  'instructions' | 'examples' | 'compatibility'
+> & {
   instructions?: string;
   instructions_file?: string;
   examples?: RawSkillExample[];

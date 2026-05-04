@@ -2,7 +2,11 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 import YAML from 'yaml';
 
-import type { MageHubConfig, OutputFormat, SkillEntry } from '../types/config.js';
+import type {
+  MageHubConfig,
+  OutputFormat,
+  SkillEntry,
+} from '../types/config.js';
 import { detectFormat } from './formats.js';
 import { createMageHubPaths } from './paths.js';
 import {

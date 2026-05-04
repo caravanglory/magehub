@@ -244,7 +244,11 @@ describe('config-manager', () => {
       project.skills = [{ id: 'shared' }, { id: 'project-only' }];
 
       const result = mergeConfigs(global, project);
-      expect(result.skills.map((e) => e.id)).toEqual(['shared', 'project-only', 'global-only']);
+      expect(result.skills.map((e) => e.id)).toEqual([
+        'shared',
+        'project-only',
+        'global-only',
+      ]);
     });
 
     it('project format overrides global format', () => {

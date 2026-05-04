@@ -222,11 +222,7 @@ export async function runSkillRemoveCommand(
     });
 
     if (remainingSkills.length === 0) {
-      const target = resolveOutputTarget(
-        effectiveRootDir,
-        fmt,
-        merged.output,
-      );
+      const target = resolveOutputTarget(effectiveRootDir, fmt, merged.output);
       if (target.kind === 'file' && (await pathExists(target.path))) {
         await rm(target.path);
         info(`Removed ${target.path}`);

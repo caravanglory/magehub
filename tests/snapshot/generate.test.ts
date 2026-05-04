@@ -162,7 +162,6 @@ describe('generate snapshot tests', () => {
       expect(output).not.toContain('### Examples');
       expect(output).not.toContain('### Anti-patterns');
     });
-
   });
 
   describe('format-specific structure', () => {

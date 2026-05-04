@@ -272,11 +272,7 @@ export async function runSkillInstallCommand(
     }
 
     if (options.gitExclude !== false) {
-      const target = resolveOutputTarget(
-        effectiveRootDir,
-        fmt,
-        merged.output,
-      );
+      const target = resolveOutputTarget(effectiveRootDir, fmt, merged.output);
       const added = await ensureGitExcludeEntry(
         effectiveRootDir,
         target.path,

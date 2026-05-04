@@ -44,12 +44,7 @@ import {
   type FormatResult,
 } from '../helpers/smoke-report.js';
 
-const ALL_FORMATS: OutputFormat[] = [
-  'claude',
-  'opencode',
-  'codex',
-  'qoder',
-];
+const ALL_FORMATS: OutputFormat[] = ['claude', 'opencode', 'codex', 'qoder'];
 
 const ALL_SKILL_IDS = [
   'admin-ui-grid',
