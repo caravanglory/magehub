@@ -111,14 +111,12 @@ magehub generate [--format=<format>] [--output=<path>] [--skills=<id,id>] [--no-
 
 ## Output Layout by Format
 
-Cursor auto-loads Claude skills, so use `claude` for Cursor projects.
-
 | Format     | Strategy       | Default output                   |
 | ---------- | -------------- | -------------------------------- |
 | `claude`   | per-skill file | `.claude/skills/<id>/SKILL.md`   |
 | `opencode` | per-skill file | `.opencode/skills/<id>/SKILL.md` |
-| `codex`    | single file    | `AGENTS.md`                      |
-| `qoder`    | single file    | `.qoder/context.md`              |
+| `codex`    | per-skill file | `.codex/skills/<id>/SKILL.md`    |
+| `qoder`    | per-skill file | `.qoder/skills/<id>/SKILL.md`    |
 
 Per-skill formats write one file per installed skill with YAML frontmatter. Single-file formats concatenate all skills into one document.
 

@@ -1770,10 +1770,10 @@ Select skill categories (space to toggle, enter to confirm):
   [ ] Performance
   [ ] Upgrade
 
-Generating .cursorrules...
+Generating output...
 Done!
 
-Run 'cursor .' to start coding with MageHub skills.
+Run your AI tool to start coding with MageHub skills.
 ```
 
 ### 5.4 Shorthand Resolution
@@ -1873,41 +1873,7 @@ All error messages are written to `stderr`. Normal output goes to `stdout`.
 
 ---
 
-#### 6.1.3 Cursor (`cursor`)
-
-**Output Location:** `.cursorrules` or `.cursor/rules/*.mdc`
-
-**Format:**
-
-```markdown
----
-description: MageHub - Magento 2 AI Coding Skills
-globs:
-  - '**/*.php'
-  - '**/*.xml'
-  - '**/*.phtml'
-  - '**/*.graphqls'
-alwaysApply: true
----
-
-# Magento 2 Development Guidelines
-
-{combined instructions from all skills}
-
-## Module Development
-
-{module skills content}
-
-## Hyva Development
-
-{hyva skills content}
-
-...
-```
-
----
-
-#### 6.1.4 Codex (`codex`)
+#### 6.1.3 Codex (`codex`)
 
 **Output Location:** `AGENTS.md` (project root)
 
@@ -1939,7 +1905,7 @@ You are working on a Magento 2 project. Follow these guidelines:
 
 ---
 
-#### 6.1.5 Qoder (`qoder`)
+#### 6.1.4 Qoder (`qoder`)
 
 **Output Location:** `.qoder/context.md`
 
@@ -1967,36 +1933,6 @@ generated: { timestamp }
 
 ---
 
-#### 6.1.6 Trae (`trae`)
-
-**Output Location:** `.trae/rules/magehub.md`
-
-**Format:**
-
-```markdown
----
-description: MageHub — Magento 2 AI Coding Skills
-version: { version }
-skills: [{ skill-list }]
----
-
-# Magento 2 Rules
-
-{combined instructions from all skills, each as a ## section}
-
-## Do
-
-{conventions rewritten as positive "Do X" rules}
-
-## Do Not
-
-{anti-patterns rewritten as "Do not X" rules}
-```
-
-> **Note:** Trae loads rule files from `.trae/rules/`. Each file is a self-contained rule set with YAML front-matter. Trae prefers concise, imperative "Do / Do Not" formatting.
-
----
-
 ### 6.2 File Pattern Detection
 
 The CLI can auto-detect the appropriate format. Auto-detection is a **fallback only**; users should prefer the explicit `--format` flag when multiple tools are used in the same project.
@@ -2005,14 +1941,9 @@ The CLI can auto-detect the appropriate format. Auto-detection is a **fallback o
 
 ```typescript
 function detectFormat(projectPath: string): Format {
-  // Cursor-specific directories/files (highest priority — most specific indicator)
-  if (existsSync(join(projectPath, '.cursor'))) return 'cursor';
-  if (existsSync(join(projectPath, '.cursorrules'))) return 'cursor';
-
   // Tool-specific config directories
   if (existsSync(join(projectPath, '.opencode'))) return 'opencode';
   if (existsSync(join(projectPath, '.qoder'))) return 'qoder';
-  if (existsSync(join(projectPath, '.trae'))) return 'trae';
 
   // File-based detection (less specific)
   if (existsSync(join(projectPath, 'AGENTS.md'))) return 'codex';
@@ -2079,12 +2010,10 @@ magehub/
 │           └── skill.yaml
 │
 ├── templates/                         # Output format templates
-│   ├── claude.hbs
-│   ├── opencode.hbs
-│   ├── cursor.hbs
+│   ├── claude.skill.hbs
+│   ├── opencode.skill.hbs
 │   ├── codex.hbs
-│   ├── qoder.hbs
-│   └── trae.hbs
+│   └── qoder.hbs
 │
 ├── src/                               # CLI source code
 │   ├── index.ts                       # Entry point
@@ -2111,14 +2040,10 @@ magehub/
 │   │   └── config-manager.ts          # .magehub.yaml handling
 │   │   # cache-manager.ts             # Remote skill caching (v1.1)
 │   │
-│   ├── formatters/                    # Output formatters
-│   │   ├── base-formatter.ts
-│   │   ├── claude-formatter.ts
-│   │   ├── opencode-formatter.ts
-│   │   ├── cursor-formatter.ts
-│   │   ├── codex-formatter.ts
-│   │   ├── qoder-formatter.ts
-│   │   └── trae-formatter.ts
+│   ├── core/                          # Core functionality
+│   │   ├── renderer.ts                # Handlebars template compilation
+│   │   ├── writer.ts                  # RenderArtifact persistence
+│   │   ├── formats.ts                 # Format metadata registry
 │   │
 │   ├── utils/
 │   │   ├── logger.ts                  # Colored console output
@@ -2325,10 +2250,8 @@ export default defineConfig({
 
 - [ ] Claude Code formatter
 - [ ] OpenCode formatter
-- [ ] Cursor formatter
 - [ ] Codex formatter
 - [ ] Qoder formatter
-- [ ] Trae formatter
 
 #### 3.3 Generate Command
 
@@ -2494,7 +2417,7 @@ export default defineConfig({
 | Term               | Definition                                                       |
 | ------------------ | ---------------------------------------------------------------- |
 | **Skill**          | A unit of AI-readable knowledge about a specific Magento 2 topic |
-| **Context File**   | Output file consumed by AI tools (CLAUDE.md, .cursorrules, etc.) |
+| **Context File**   | Output file consumed by AI tools (CLAUDE.md, AGENTS.md, etc.)    |
 | **Formatter**      | Component that converts skills to tool-specific format           |
 | **Skill Registry** | Index of all available skills                                    |
 | **Skill Bundle**   | Pre-defined collection of related skills                         |
