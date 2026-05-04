@@ -1,29 +1,21 @@
 import type { Command } from 'commander';
 
-import { rm } from 'node:fs/promises';
-
 import {
   loadConfig,
   mergeConfigs,
   saveConfig,
 } from '../../core/config-manager.js';
-import { getFormatMetadata, resolveOutputTarget } from '../../core/formats.js';
+
 import {
-  getQoderGlobalSkillsDir,
   loadGlobalConfig,
   resolveGlobalOutputRoot,
   saveGlobalConfig,
 } from '../../core/global-config.js';
 import { renderArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
-import {
-  removePerSkillFiles,
-  removeSkillDirectories,
-  writeArtifact,
-} from '../../core/writer.js';
+import { removePerSkillFiles, writeArtifact } from '../../core/writer.js';
 import type { SkillEntry } from '../../types/config.js';
 import { CliError } from '../../utils/cli-error.js';
-import { pathExists } from '../../utils/fs.js';
 import { info } from '../../utils/logger.js';
 
 function collectFormats(entries: SkillEntry[], fallback: string): Set<string> {
@@ -69,55 +61,23 @@ async function runGlobalRemove(
   const removedFormats = collectFormats(removedEntries, format);
 
   for (const fmt of removedFormats) {
-    if (fmt === 'qoder') {
-      const removed = await removeSkillDirectories(
-        getQoderGlobalSkillsDir(),
-        skillIds,
-      );
-      for (const target of removed) {
-        info(`Removed ${target}`);
-      }
-      continue;
-    }
-
-    const outputRoot = resolveGlobalOutputRoot(fmt);
-    const metadata = getFormatMetadata(fmt);
+    const outputRoot = resolveGlobalOutputRoot();
 
     const remainingInFormat = config.skills.filter(
       (e) => (e.format ?? format) === fmt,
     );
 
-    if (remainingInFormat.length === 0) {
-      if (metadata.strategy === 'per-skill-file') {
-        const removed = await removePerSkillFiles(
-          outputRoot,
-          fmt,
-          undefined,
-          skillIds,
-        );
-        for (const target of removed) {
-          info(`Removed ${target}`);
-        }
-      } else {
-        const target = resolveOutputTarget(outputRoot, fmt);
-        if (target.kind === 'file' && (await pathExists(target.path))) {
-          await rm(target.path);
-          info(`Removed ${target.path}`);
-        }
-      }
-      continue;
+    const removed = await removePerSkillFiles(
+      outputRoot,
+      fmt,
+      undefined,
+      skillIds,
+    );
+    for (const target of removed) {
+      info(`Removed ${target}`);
     }
 
-    if (metadata.strategy === 'per-skill-file') {
-      const removed = await removePerSkillFiles(
-        outputRoot,
-        fmt,
-        undefined,
-        skillIds,
-      );
-      for (const target of removed) {
-        info(`Removed ${target}`);
-      }
+    if (remainingInFormat.length === 0) {
       continue;
     }
 
@@ -194,21 +154,21 @@ export async function runSkillRemoveCommand(
   const removedFormats = collectFormats(removedEntries, fallbackFormat);
 
   for (const fmt of removedFormats) {
-    const metadata = getFormatMetadata(fmt);
     const remainingInFormat = merged.skills.filter(
       (e) => (e.format ?? fallbackFormat) === fmt,
     );
 
-    if (metadata.strategy === 'per-skill-file') {
-      const removed = await removePerSkillFiles(
-        effectiveRootDir,
-        fmt,
-        merged.output,
-        skillIds,
-      );
-      for (const target of removed) {
-        info(`Removed ${target}`);
-      }
+    const removed = await removePerSkillFiles(
+      effectiveRootDir,
+      fmt,
+      merged.output,
+      skillIds,
+    );
+    for (const target of removed) {
+      info(`Removed ${target}`);
+    }
+
+    if (remainingInFormat.length === 0) {
       continue;
     }
 
@@ -220,15 +180,6 @@ export async function runSkillRemoveCommand(
       }
       return skill;
     });
-
-    if (remainingSkills.length === 0) {
-      const target = resolveOutputTarget(effectiveRootDir, fmt, merged.output);
-      if (target.kind === 'file' && (await pathExists(target.path))) {
-        await rm(target.path);
-        info(`Removed ${target.path}`);
-      }
-      continue;
-    }
 
     const artifact = await renderArtifact(remainingSkills, {
       format: fmt,

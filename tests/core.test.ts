@@ -339,9 +339,8 @@ describe('core services and commands', () => {
 
   it('installs and removes global codex output under Codex home', async () => {
     const originalCodexHome = process.env.CODEX_HOME;
-    const codexHomeDir = path.join(homeDir, '.custom-codex');
 
-    process.env.CODEX_HOME = codexHomeDir;
+    process.env.CODEX_HOME = path.join(homeDir, '.custom-codex');
 
     try {
       await runSkillInstallCommand(['module-plugin'], {
@@ -349,10 +348,16 @@ describe('core services and commands', () => {
         format: 'codex',
       });
 
-      const codexAgentsPath = path.join(codexHomeDir, 'AGENTS.md');
+      const codexSkillPath = path.join(
+        homeDir,
+        '.codex',
+        'skills',
+        'module-plugin',
+        'SKILL.md',
+      );
       const globalConfigPath = path.join(homeDir, '.magehub', 'config.yaml');
 
-      await expect(readFile(codexAgentsPath, 'utf8')).resolves.toContain(
+      await expect(readFile(codexSkillPath, 'utf8')).resolves.toContain(
         'Plugin Development',
       );
       await expect(readFile(globalConfigPath, 'utf8')).resolves.toContain(
@@ -361,7 +366,7 @@ describe('core services and commands', () => {
 
       await runSkillRemoveCommand(['module-plugin'], { global: true });
 
-      await expect(readFile(codexAgentsPath, 'utf8')).rejects.toThrow();
+      await expect(readFile(codexSkillPath, 'utf8')).rejects.toThrow();
     } finally {
       if (originalCodexHome === undefined) {
         delete process.env.CODEX_HOME;
@@ -373,9 +378,8 @@ describe('core services and commands', () => {
 
   it('installs and removes global qoder skills under Qoder skills dir', async () => {
     const originalQoderHome = process.env.QODER_HOME;
-    const qoderHomeDir = path.join(homeDir, '.custom-qoder');
 
-    process.env.QODER_HOME = qoderHomeDir;
+    process.env.QODER_HOME = path.join(homeDir, '.custom-qoder');
 
     try {
       await runSkillInstallCommand(['module-plugin'], {
@@ -384,12 +388,12 @@ describe('core services and commands', () => {
       });
 
       const qoderSkillPath = path.join(
-        qoderHomeDir,
+        homeDir,
+        '.qoder',
         'skills',
         'module-plugin',
         'SKILL.md',
       );
-      const legacyContextPath = path.join(homeDir, '.qoder', 'context.md');
       const globalConfigPath = path.join(homeDir, '.magehub', 'config.yaml');
 
       await expect(readFile(qoderSkillPath, 'utf8')).resolves.toContain(
@@ -401,7 +405,6 @@ describe('core services and commands', () => {
       await expect(readFile(globalConfigPath, 'utf8')).resolves.toContain(
         'format: qoder',
       );
-      await expect(readFile(legacyContextPath, 'utf8')).rejects.toThrow();
 
       await runSkillRemoveCommand(['module-plugin'], { global: true });
 

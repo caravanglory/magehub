@@ -92,10 +92,13 @@ class ProductTest extends TestCase
 `;
 
 exports[`generate snapshot tests > multi-skill output > generates stable multi-skill output for codex format 1`] = `
-"# MageHub — Magento 2 Agent Instructions Enabled skills:
-module-plugin, testing-phpunit
+"=== module-plugin ===
+---
+name: module-plugin
+description: Implement Magento 2 plugins correctly
+---
 
-## Plugin Development (module-plugin)
+# Plugin Development
 
 ### Plugin System
 
@@ -137,9 +140,14 @@ public function afterGetName(
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
 
+
+=== testing-phpunit ===
+---
+name: testing-phpunit
+description: Write PHPUnit tests for Magento 2 modules
 ---
 
-## PHPUnit Testing (testing-phpunit)
+# PHPUnit Testing
 
 ### PHPUnit Testing
 
@@ -170,7 +178,8 @@ class ProductTest extends TestCase
 
 ### References
 
-- [Magento Testing Guide](https://developer.adobe.com/commerce/testing/guide/)"
+- [Magento Testing Guide](https://developer.adobe.com/commerce/testing/guide/)
+"
 `;
 
 exports[`generate snapshot tests > multi-skill output > generates stable multi-skill output for opencode format 1`] = `
@@ -265,15 +274,13 @@ class ProductTest extends TestCase
 `;
 
 exports[`generate snapshot tests > multi-skill output > generates stable multi-skill output for qoder format 1`] = `
-"---
-name: MageHub
-type: context
+"=== module-plugin ===
+---
+name: module-plugin
+description: Implement Magento 2 plugins correctly
 ---
 
-Enabled skills:
-module-plugin, testing-phpunit
-
-## Plugin Development (module-plugin)
+# Plugin Development
 
 ### Plugin System
 
@@ -315,9 +322,14 @@ public function afterGetName(
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
 
+
+=== testing-phpunit ===
+---
+name: testing-phpunit
+description: Write PHPUnit tests for Magento 2 modules
 ---
 
-## PHPUnit Testing (testing-phpunit)
+# PHPUnit Testing
 
 ### PHPUnit Testing
 
@@ -348,7 +360,8 @@ class ProductTest extends TestCase
 
 ### References
 
-- [Magento Testing Guide](https://developer.adobe.com/commerce/testing/guide/)"
+- [Magento Testing Guide](https://developer.adobe.com/commerce/testing/guide/)
+"
 `;
 
 exports[`generate snapshot tests > option variations > generates stable output with --no-antipatterns (claude) 1`] = `
@@ -502,10 +515,13 @@ public function afterGetName(
 `;
 
 exports[`generate snapshot tests > single skill output > generates stable output for codex format 1`] = `
-"# MageHub — Magento 2 Agent Instructions Enabled skills:
-module-plugin
+"=== module-plugin ===
+---
+name: module-plugin
+description: Implement Magento 2 plugins correctly
+---
 
-## Plugin Development (module-plugin)
+# Plugin Development
 
 ### Plugin System
 
@@ -545,7 +561,8 @@ public function afterGetName(
 
 ### References
 
-- [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)"
+- [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+"
 `;
 
 exports[`generate snapshot tests > single skill output > generates stable output for opencode format 1`] = `
@@ -600,15 +617,13 @@ public function afterGetName(
 `;
 
 exports[`generate snapshot tests > single skill output > generates stable output for qoder format 1`] = `
-"---
-name: MageHub
-type: context
+"=== module-plugin ===
+---
+name: module-plugin
+description: Implement Magento 2 plugins correctly
 ---
 
-Enabled skills:
-module-plugin
-
-## Plugin Development (module-plugin)
+# Plugin Development
 
 ### Plugin System
 
@@ -648,5 +663,6 @@ public function afterGetName(
 
 ### References
 
-- [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)"
+- [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+"
 `;

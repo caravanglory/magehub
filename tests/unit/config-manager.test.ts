@@ -62,26 +62,22 @@ describe('config-manager', () => {
       expect(target.path).toBe(path.join('/project', '.opencode', 'skills'));
     });
 
-    it('resolves codex output to a single AGENTS.md file', () => {
+    it('resolves codex output to a .codex/skills directory', () => {
       const target = resolveOutputTarget('/project', 'codex');
-      expect(target.kind).toBe('file');
-      expect(target.path).toBe(path.join('/project', 'AGENTS.md'));
+      expect(target.kind).toBe('directory');
+      expect(target.path).toBe(path.join('/project', '.codex', 'skills'));
     });
 
-    it('resolves qoder output to a single .qoder/context.md file', () => {
+    it('resolves qoder output to a .qoder/skills directory', () => {
       const target = resolveOutputTarget('/project', 'qoder');
-      expect(target.kind).toBe('file');
-      expect(target.path).toBe(path.join('/project', '.qoder', 'context.md'));
+      expect(target.kind).toBe('directory');
+      expect(target.path).toBe(path.join('/project', '.qoder', 'skills'));
     });
 
-    it('honors an absolute override for single-file formats', () => {
-      const target = resolveOutputTarget(
-        '/project',
-        'codex',
-        '/tmp/elsewhere.md',
-      );
-      expect(target.kind).toBe('file');
-      expect(target.path).toBe('/tmp/elsewhere.md');
+    it('honors an absolute override for per-skill formats', () => {
+      const target = resolveOutputTarget('/project', 'codex', '/tmp/elsewhere');
+      expect(target.kind).toBe('directory');
+      expect(target.path).toBe('/tmp/elsewhere');
     });
 
     it('honors a relative override for per-skill formats', () => {

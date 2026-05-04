@@ -35,7 +35,7 @@ MageHub is an open-source collection of AI coding skills (structured prompts + c
 
 ### 1.2 Problem Statement
 
-AI coding tools like Claude Code, Cursor, and OpenCode are powerful but lack specialized knowledge about:
+AI coding tools like Claude Code and OpenCode are powerful but lack specialized knowledge about:
 
 - Magento 2's complex architecture (DI, plugins, observers, service contracts)
 - Magento-specific conventions (module structure, naming, XML configurations)
@@ -50,7 +50,7 @@ MageHub provides:
 1. **Curated Skills** — Expert knowledge packaged as structured prompts
 2. **Dual Format** — YAML (source of truth) + Markdown (human-readable)
 3. **CLI Tool** — Magento-style commands (`skill:install`, `skill:list`)
-4. **Multi-Tool Support** — Works with Claude Code, OpenCode, Cursor, Codex, Qoder, Trae
+4. **Multi-Tool Support** — Works with Claude Code, OpenCode, Codex, Qoder
 
 ### 1.4 Target Users
 
@@ -78,7 +78,7 @@ MageHub provides:
 
 - Local CLI that installs skills, generates context files, and validates skill YAML
 - 10 bundled core skills (no network dependency, fully offline)
-- Output formats for Claude Code, OpenCode, Cursor, Codex, Qoder, and Trae
+- Output formats for Claude Code, OpenCode, Codex, and Qoder
 - Schema validation for skill YAML and project config
 
 **Out of scope (planned for v1.1+):**
@@ -1092,10 +1092,8 @@ properties:
       enum:
         - claude
         - opencode
-        - cursor
         - codex
         - qoder
-        - trae
     description: List of compatible AI tools supported by the current formatter set. Adding a new tool requires schema and formatter updates.
 ```
 
@@ -1264,10 +1262,8 @@ references:
 compatibility:
   - claude
   - opencode
-  - cursor
   - codex
   - qoder
-  - trae
 ```
 
 ### 4.3 Configuration Schema
@@ -1297,10 +1293,8 @@ properties:
     enum:
       - claude
       - opencode
-      - cursor
       - codex
       - qoder
-      - trae
     default: claude
     description: Default output format
 
@@ -1390,7 +1384,7 @@ magehub setup:init [--format=<format>]
 **Example:**
 
 ```bash
-$ magehub setup:init --format=cursor
+$ magehub setup:init --format=claude
 
 Created .magehub.yaml
 MageHub initialized successfully!
@@ -1601,10 +1595,8 @@ magehub generate [--format=<format>] [--output=<path>] [--skills=<ids>]
 |--------|----------------|
 | `claude` | `CLAUDE.md` |
 | `opencode` | `.opencode/skills/magehub.md` |
-| `cursor` | `.cursorrules` |
 | `codex` | `AGENTS.md` |
 | `qoder` | `.qoder/context.md` |
-| `trae` | `.trae/rules/magehub.md` |
 
 **Example:**
 
@@ -1624,9 +1616,9 @@ Context file generated successfully!
 ```
 
 ```bash
-$ magehub generate --format=cursor --output=.cursor/rules/magento.mdc
+$ magehub generate --format=codex --output=AGENTS.md
 
-Generated: .cursor/rules/magento.mdc
+Generated: AGENTS.md
 ```
 
 ---
@@ -1765,10 +1757,8 @@ What would you like to do?
 Select your primary AI tool:
   1. Claude Code
   2. OpenCode
-  3. Cursor
-  4. Codex
-  5. Qoder
-  6. Trae
+  3. Codex
+  4. Qoder
 
 > 3
 

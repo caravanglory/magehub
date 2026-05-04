@@ -8,7 +8,6 @@ import {
   renderSkillDetail,
   renderConfig,
   type PerSkillArtifact,
-  type SingleFileArtifact,
 } from '../../src/core/renderer.js';
 import { clearSchemaValidatorCache } from '../../src/core/schema-validator.js';
 import type { OutputFormat } from '../../src/types/config.js';
@@ -25,21 +24,6 @@ async function renderPerSkill(
   const artifact = await renderArtifact(skills, options);
   if (artifact.kind !== 'per-skill-file') {
     throw new Error(`Expected per-skill artifact for ${options.format}`);
-  }
-  return artifact;
-}
-
-async function renderSingle(
-  skills: Skill[],
-  options: {
-    format: OutputFormat;
-    includeExamples: boolean;
-    includeAntipatterns: boolean;
-  },
-): Promise<SingleFileArtifact> {
-  const artifact = await renderArtifact(skills, options);
-  if (artifact.kind !== 'single-file') {
-    throw new Error(`Expected single-file artifact for ${options.format}`);
   }
   return artifact;
 }
@@ -353,9 +337,9 @@ describe('renderer', () => {
     });
   });
 
-  describe('renderArtifact (single-file)', () => {
-    it('concatenates skills into a single document for codex', async () => {
-      const artifact = await renderSingle(
+  describe('renderArtifact (per-skill-file)', () => {
+    it('produces separate skill files for codex', async () => {
+      const artifact = await renderArtifact(
         [
           makeSkill({ id: 'first', name: 'First' }),
           makeSkill({ id: 'second', name: 'Second' }),
@@ -367,9 +351,11 @@ describe('renderer', () => {
         },
       );
 
-      expect(artifact.content).toContain('## First (first)');
-      expect(artifact.content).toContain('## Second (second)');
-      expect(artifact.content).toContain('---');
+      expect(artifact.kind).toBe('per-skill-file');
+      if (artifact.kind !== 'per-skill-file') return;
+      expect(artifact.files).toHaveLength(2);
+      expect(artifact.files[0].content).toContain('name: first');
+      expect(artifact.files[1].content).toContain('name: second');
     });
   });
 });

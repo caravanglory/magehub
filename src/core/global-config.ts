@@ -52,11 +52,7 @@ export function getQoderGlobalSkillsDir(): string {
   return path.join(getQoderHomeDir(), 'skills');
 }
 
-export function resolveGlobalOutputRoot(format: OutputFormat): string {
-  if (format === 'codex') {
-    return getCodexHomeDir();
-  }
-
+export function resolveGlobalOutputRoot(): string {
   return os.homedir();
 }
 

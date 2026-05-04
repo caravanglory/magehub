@@ -88,8 +88,6 @@ Each supported format maps to a Handlebars template and a default output path. F
 | `codex` | `templates/codex.hbs` | `AGENTS.md`         |
 | `qoder` | `templates/qoder.hbs` | `.qoder/context.md` |
 
-Cursor uses Claude's `.claude/skills/<id>/SKILL.md` layout and does not have a separate output format.
-
 When adding a new format, add: a template (`.skill.hbs` for per-skill, `.hbs` for single-file), a `formats.ts` metadata entry, a `renderer.ts` case, a config-type entry, and an e2e smoke test.
 
 ## Documentation map

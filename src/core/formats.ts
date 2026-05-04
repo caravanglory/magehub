@@ -28,12 +28,14 @@ const FORMAT_METADATA: Record<OutputFormat, FormatMetadata> = {
     skillFileName: (skillId) => path.join(skillId, 'SKILL.md'),
   },
   codex: {
-    strategy: 'single-file',
-    outputPath: 'AGENTS.md',
+    strategy: 'per-skill-file',
+    outputPath: path.join('.codex', 'skills'),
+    skillFileName: (skillId) => path.join(skillId, 'SKILL.md'),
   },
   qoder: {
-    strategy: 'single-file',
-    outputPath: path.join('.qoder', 'context.md'),
+    strategy: 'per-skill-file',
+    outputPath: path.join('.qoder', 'skills'),
+    skillFileName: (skillId) => path.join(skillId, 'SKILL.md'),
   },
 };
 

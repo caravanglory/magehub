@@ -11,14 +11,13 @@ import { resolveOutputTarget } from '../../core/formats.js';
 import {
   createDefaultGlobalConfig,
   getGlobalConfigDir,
-  getQoderGlobalSkillsDir,
   loadGlobalConfig,
   resolveGlobalOutputRoot,
   saveGlobalConfig,
 } from '../../core/global-config.js';
-import { renderArtifact, renderPerSkillArtifact } from '../../core/renderer.js';
+import { renderArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
-import { writeArtifact, writeSkillDirectories } from '../../core/writer.js';
+import { writeArtifact } from '../../core/writer.js';
 import type { MageHubConfig, SkillEntry } from '../../types/config.js';
 import type { Skill } from '../../types/skill.js';
 import { CliError } from '../../utils/cli-error.js';
@@ -146,37 +145,18 @@ async function runGlobalInstall(
   const grouped = groupSkillsByFormat(config.skills, registry, format);
 
   for (const [fmt, skills] of grouped) {
-    const renderOptions = {
+    const artifact = await renderArtifact(skills, {
       format: fmt,
       includeExamples: config.include_examples ?? true,
       includeAntipatterns: config.include_antipatterns ?? true,
-    };
+    });
 
-    if (fmt === 'qoder') {
-      const artifact = await renderPerSkillArtifact(skills, renderOptions);
-      const result = await writeSkillDirectories(
-        getQoderGlobalSkillsDir(),
-        artifact,
-      );
-
-      info(
-        `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
-      );
-      continue;
-    }
-
-    const artifact = await renderArtifact(skills, renderOptions);
-
-    const outputRoot = resolveGlobalOutputRoot(fmt);
+    const outputRoot = resolveGlobalOutputRoot();
     const result = await writeArtifact(outputRoot, fmt, undefined, artifact);
 
-    if (result.targetKind === 'file') {
-      info(`Generated: ${result.targetPath}`);
-    } else {
-      info(
-        `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
-      );
-    }
+    info(
+      `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+    );
   }
 }
 

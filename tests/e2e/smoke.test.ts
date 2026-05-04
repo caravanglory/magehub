@@ -37,7 +37,6 @@ import {
   assertFencedCodeBlocks,
   assertMagentoDomainTerms,
   assertNoUnresolvedPlaceholders,
-  assertQoderFrontMatter,
 } from '../helpers/output-validators.js';
 import {
   generateSmokeReport,
@@ -253,10 +252,6 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
       expect(result).toBeDefined();
 
       if (format === 'qoder') {
-        assertQoderFrontMatter(result!.files[0].content);
-        return;
-      }
-      if (format === 'claude' || format === 'opencode') {
         for (const file of result!.files) {
           const { data } = parseFrontMatter(file.content);
           expect(data).toHaveProperty('name');
@@ -265,9 +260,13 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
         }
         return;
       }
-      // codex: no frontmatter
-      const { data } = parseFrontMatter(result!.files[0].content);
-      expect(Object.keys(data).length).toBe(0);
+      // claude, opencode, codex: all per-skill with name+description frontmatter
+      for (const file of result!.files) {
+        const { data } = parseFrontMatter(file.content);
+        expect(data).toHaveProperty('name');
+        expect(data).toHaveProperty('description');
+        expect(typeof data['description']).toBe('string');
+      }
     });
   });
 });
