@@ -72,7 +72,7 @@ The review gets smarter over time by recording reusable patterns. Every session 
 
 #### Storage
 
-```
+```text
 ~/.magehub/learnings/{project-slug}.jsonl
 ```
 
@@ -313,7 +313,7 @@ If on the base branch or no diff exists, stop: "Nothing to review."
 
 Read PR description and commit messages. Compare against files changed. Output:
 
-```
+```text
 Scope Check: [CLEAN / DRIFT DETECTED]
 Intent: <1-line summary of what was requested>
 Delivered: <1-line summary of what the diff actually does>
@@ -503,7 +503,7 @@ For each file type in the diff, apply the domain-specific checklist:
 
 ### Step 7: Output format
 
-```
+```text
 Pre-Landing Review: N issues (X critical, Y informational)
 ════════════════════════════════════════════════════════════
 

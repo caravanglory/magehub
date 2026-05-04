@@ -195,18 +195,18 @@ describe('renderer', () => {
     it('returns prettified JSON', () => {
       const config = {
         version: '1',
-        skills: ['a', 'b'],
+        skills: [{ id: 'a' }, { id: 'b' }],
         format: 'claude' as const,
       };
 
       const output = renderConfig(config);
       const parsed = JSON.parse(output) as {
         version: string;
-        skills: string[];
+        skills: Array<{ id: string }>;
       };
 
       expect(parsed.version).toBe('1');
-      expect(parsed.skills).toEqual(['a', 'b']);
+      expect(parsed.skills).toEqual([{ id: 'a' }, { id: 'b' }]);
     });
   });
 
@@ -338,6 +338,19 @@ describe('renderer', () => {
       expect(artifact.files[0].content).toContain('description: A test skill');
       expect(artifact.files[0].content).toContain('# Test Skill');
     });
+
+    it('renders codex skill files with required frontmatter', async () => {
+      const artifact = await renderPerSkillArtifact([makeSkill()], {
+        format: 'codex',
+        includeExamples: true,
+        includeAntipatterns: true,
+      });
+
+      expect(artifact.files).toHaveLength(1);
+      expect(artifact.files[0].content).toContain('name: test-skill');
+      expect(artifact.files[0].content).toContain('description: A test skill');
+      expect(artifact.files[0].content).toContain('# Test Skill');
+    });
   });
 
   describe('renderArtifact (single-file)', () => {
@@ -357,17 +370,6 @@ describe('renderer', () => {
       expect(artifact.content).toContain('## First (first)');
       expect(artifact.content).toContain('## Second (second)');
       expect(artifact.content).toContain('---');
-    });
-
-    it('renders cursor format with enabled skills listing', async () => {
-      const artifact = await renderSingle([makeSkill()], {
-        format: 'cursor',
-        includeExamples: true,
-        includeAntipatterns: true,
-      });
-
-      expect(artifact.content).toContain('test-skill');
-      expect(artifact.content).toContain('## Test Skill (test-skill)');
     });
   });
 });

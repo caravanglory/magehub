@@ -99,7 +99,7 @@ export function makeSkillYaml(
 export function makeConfigYaml(
   overrides: {
     version?: string;
-    skills?: string[];
+    skills?: Array<string | { id: string; format?: string }>;
     format?: string;
     include_examples?: boolean;
     include_antipatterns?: boolean;
@@ -110,10 +110,20 @@ export function makeConfigYaml(
   const skills = overrides.skills ?? [];
   const format = overrides.format ?? 'claude';
 
+  const skillLines = skills.map((s) => {
+    if (typeof s === 'string') {
+      return `  - id: ${s}`;
+    }
+    if (s.format !== undefined) {
+      return `  - id: ${s.id}\n    format: ${s.format}`;
+    }
+    return `  - id: ${s.id}`;
+  });
+
   const lines: string[] = [
     `version: "${version}"`,
     'skills:',
-    ...(skills.length > 0 ? skills.map((s) => `  - ${s}`) : ['  []']),
+    ...(skillLines.length > 0 ? skillLines : ['  []']),
     `format: ${format}`,
   ];
 

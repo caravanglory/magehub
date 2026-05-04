@@ -8,9 +8,14 @@ export interface RemoteRegistry {
   public_key?: string;
 }
 
+export interface SkillEntry {
+  id: string;
+  format?: OutputFormat;
+}
+
 export interface MageHubConfig {
   version: string;
-  skills: string[];
+  skills: SkillEntry[];
   format?: OutputFormat;
   output?: string;
   include_examples?: boolean;

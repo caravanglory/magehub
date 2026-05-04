@@ -5,9 +5,27 @@ import { loadGlobalConfig } from '../core/global-config.js';
 import { renderArtifact } from '../core/renderer.js';
 import { createSkillRegistry } from '../core/skill-registry.js';
 import { writeArtifact } from '../core/writer.js';
+import type { SkillEntry } from '../types/config.js';
 import { CliError } from '../utils/cli-error.js';
 import { info } from '../utils/logger.js';
 import { parseOutputFormat } from '../utils/validation.js';
+
+function groupEntriesByFormat(
+  entries: SkillEntry[],
+  fallbackFormat: string,
+): Map<string, string[]> {
+  const groups = new Map<string, string[]>();
+  for (const entry of entries) {
+    const fmt = entry.format ?? fallbackFormat;
+    let ids = groups.get(fmt);
+    if (ids === undefined) {
+      ids = [];
+      groups.set(fmt, ids);
+    }
+    ids.push(entry.id);
+  }
+  return groups;
+}
 
 export async function runGenerateCommand(
   options: {
@@ -31,55 +49,149 @@ export async function runGenerateCommand(
   const globalConfig = await loadGlobalConfig();
   const merged = mergeConfigs(globalConfig, loaded.config);
   const registry = await createSkillRegistry(effectiveRootDir, globalConfig);
+  const fallbackFormat = merged.format ?? 'claude';
 
-  const format = parseOutputFormat(options.format, merged.format ?? 'claude');
-  const selectedSkillIds =
-    options.skills
-      ?.split(',')
+  if (options.skills !== undefined) {
+    const format = parseOutputFormat(options.format, fallbackFormat);
+    const selectedSkillIds = options.skills
+      .split(',')
       .map((value) => value.trim())
-      .filter(Boolean) ?? merged.skills;
+      .filter(Boolean);
 
-  if (selectedSkillIds.length === 0) {
+    if (selectedSkillIds.length === 0) {
+      throw new CliError('No skills configured for generation.', 1);
+    }
+
+    const skills = selectedSkillIds.map((skillId) => {
+      const skill = registry.getById(skillId);
+      if (skill === undefined) {
+        throw new CliError(`Unknown skill ID: ${skillId}`, 3);
+      }
+      if (
+        skill.compatibility !== undefined &&
+        !skill.compatibility.includes(format)
+      ) {
+        throw new CliError(
+          `Skill ${skillId} is not compatible with format ${format}`,
+          3,
+        );
+      }
+      return skill;
+    });
+
+    const artifact = await renderArtifact(skills, {
+      format,
+      includeExamples: options.examples ?? merged.include_examples ?? true,
+      includeAntipatterns:
+        options.antipatterns ?? merged.include_antipatterns ?? true,
+    });
+
+    const result = await writeArtifact(
+      effectiveRootDir,
+      format,
+      options.output ?? merged.output,
+      artifact,
+    );
+
+    if (result.targetKind === 'file') {
+      info(`Generated: ${result.targetPath}`);
+    } else {
+      info(
+        `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+      );
+    }
+    return;
+  }
+
+  if (merged.skills.length === 0) {
     throw new CliError('No skills configured for generation.', 1);
   }
 
-  const skills = selectedSkillIds.map((skillId) => {
-    const skill = registry.getById(skillId);
-    if (skill === undefined) {
-      throw new CliError(`Unknown skill ID: ${skillId}`, 3);
-    }
-    if (
-      skill.compatibility !== undefined &&
-      !skill.compatibility.includes(format)
-    ) {
-      throw new CliError(
-        `Skill ${skillId} is not compatible with format ${format}`,
-        3,
+  if (options.format !== undefined) {
+    const format = parseOutputFormat(options.format, fallbackFormat);
+    const allSkillIds = merged.skills.map((e) => e.id);
+    const skills = allSkillIds.map((skillId) => {
+      const skill = registry.getById(skillId);
+      if (skill === undefined) {
+        throw new CliError(`Unknown skill ID: ${skillId}`, 3);
+      }
+      if (
+        skill.compatibility !== undefined &&
+        !skill.compatibility.includes(format)
+      ) {
+        throw new CliError(
+          `Skill ${skillId} is not compatible with format ${format}`,
+          3,
+        );
+      }
+      return skill;
+    });
+
+    const artifact = await renderArtifact(skills, {
+      format,
+      includeExamples: options.examples ?? merged.include_examples ?? true,
+      includeAntipatterns:
+        options.antipatterns ?? merged.include_antipatterns ?? true,
+    });
+
+    const result = await writeArtifact(
+      effectiveRootDir,
+      format,
+      options.output ?? merged.output,
+      artifact,
+    );
+
+    if (result.targetKind === 'file') {
+      info(`Generated: ${result.targetPath}`);
+    } else {
+      info(
+        `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
       );
     }
-    return skill;
-  });
+    return;
+  }
 
-  const artifact = await renderArtifact(skills, {
-    format,
-    includeExamples: options.examples ?? merged.include_examples ?? true,
-    includeAntipatterns:
-      options.antipatterns ?? merged.include_antipatterns ?? true,
-  });
+  const grouped = groupEntriesByFormat(merged.skills, fallbackFormat);
 
-  const result = await writeArtifact(
-    effectiveRootDir,
-    format,
-    options.output ?? merged.output,
-    artifact,
-  );
+  for (const [fmt, skillIds] of grouped) {
+    const skills = skillIds.map((skillId) => {
+      const skill = registry.getById(skillId);
+      if (skill === undefined) {
+        throw new CliError(`Unknown skill ID: ${skillId}`, 3);
+      }
+      if (
+        skill.compatibility !== undefined &&
+        !skill.compatibility.includes(fmt)
+      ) {
+        throw new CliError(
+          `Skill ${skillId} is not compatible with format ${fmt}`,
+          3,
+        );
+      }
+      return skill;
+    });
 
-  if (result.targetKind === 'file') {
-    info(`Generated: ${result.targetPath}`);
-  } else {
-    info(
-      `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+    const artifact = await renderArtifact(skills, {
+      format: fmt,
+      includeExamples: options.examples ?? merged.include_examples ?? true,
+      includeAntipatterns:
+        options.antipatterns ?? merged.include_antipatterns ?? true,
+    });
+
+    const result = await writeArtifact(
+      effectiveRootDir,
+      fmt,
+      options.output ?? merged.output,
+      artifact,
     );
+
+    if (result.targetKind === 'file') {
+      info(`Generated: ${result.targetPath}`);
+    } else {
+      info(
+        `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
+      );
+    }
   }
 }
 

@@ -2,7 +2,11 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 import YAML from 'yaml';
 
-import type { MageHubConfig, OutputFormat } from '../types/config.js';
+import type {
+  MageHubConfig,
+  OutputFormat,
+  SkillEntry,
+} from '../types/config.js';
 import { detectFormat } from './formats.js';
 import { createMageHubPaths } from './paths.js';
 import {
@@ -98,6 +102,14 @@ export function resolveCustomSkillsPath(
   return resolved;
 }
 
+export function mergeSkillEntries(
+  primary: SkillEntry[],
+  secondary: SkillEntry[],
+): SkillEntry[] {
+  const seen = new Set(primary.map((entry) => entry.id));
+  return [...primary, ...secondary.filter((entry) => !seen.has(entry.id))];
+}
+
 export function mergeConfigs(
   global: MageHubConfig | undefined,
   project: MageHubConfig,
@@ -108,7 +120,7 @@ export function mergeConfigs(
 
   const merged: MageHubConfig = {
     version: project.version,
-    skills: [...new Set([...project.skills, ...global.skills])],
+    skills: mergeSkillEntries(project.skills, global.skills),
     format: project.format ?? global.format,
     output: project.output ?? global.output,
     include_examples: project.include_examples ?? global.include_examples,

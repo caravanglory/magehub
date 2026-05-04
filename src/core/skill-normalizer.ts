@@ -6,7 +6,18 @@ import type {
   RawSkillExample,
   Skill,
   SkillExample,
+  SupportedTool,
 } from '../types/skill.js';
+
+function normalizeCompatibility(
+  compatibility: RawSkill['compatibility'],
+): Skill['compatibility'] {
+  if (compatibility === undefined) {
+    return undefined;
+  }
+
+  return compatibility.map((tool) => tool as SupportedTool);
+}
 
 async function resolveExampleCode(
   raw: RawSkillExample,
@@ -56,6 +67,7 @@ export async function normalizeRawSkill(
 
   return {
     ...metadata,
+    compatibility: normalizeCompatibility(metadata.compatibility),
     instructions,
     ...(examples !== undefined && { examples }),
   };

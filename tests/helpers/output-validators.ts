@@ -30,7 +30,7 @@ export function assertHeadingHierarchy(
   const h1Lines = lines.filter((l) => /^# [^#]/.test(l));
   const h2Lines = lines.filter((l) => /^## [^#]/.test(l));
 
-  // Most formats have exactly one h1 title; cursor uses h2 as top level
+  // Most formats have exactly one h1 title.
   expect(h1Lines.length).toBeGreaterThanOrEqual(0);
   expect(h1Lines.length).toBeLessThanOrEqual(1);
 
@@ -111,23 +111,11 @@ export function assertSkillSeparators(
   const { body } = parseFrontMatter(content);
   // Separators between N skills = N-1
   const separators = body.match(/\n---\n/g);
-  // There may be additional --- from the template itself (e.g., cursor has one before content).
-  // We just check there are at least (N-1) separators.
+  // Some templates may add extra separators; we just check there are at least (N-1).
   expect(
     separators?.length ?? 0,
     `Expected at least ${expectedSkillCount - 1} skill separators`,
   ).toBeGreaterThanOrEqual(expectedSkillCount - 1);
-}
-
-/**
- * Assert that cursor format has valid YAML front-matter.
- */
-export function assertCursorFrontMatter(content: string): void {
-  const { data } = parseFrontMatter(content);
-  expect(data).toHaveProperty('description');
-  expect(data).toHaveProperty('alwaysApply', true);
-  expect(typeof data['description']).toBe('string');
-  expect((data['description'] as string).length).toBeGreaterThan(0);
 }
 
 /**
@@ -139,16 +127,6 @@ export function assertQoderFrontMatter(content: string): void {
   expect(data).toHaveProperty('type');
   expect(typeof data['name']).toBe('string');
   expect(typeof data['type']).toBe('string');
-}
-
-/**
- * Assert that trae format has valid YAML front-matter.
- */
-export function assertTraeFrontMatter(content: string): void {
-  const { data } = parseFrontMatter(content);
-  expect(data).toHaveProperty('description');
-  expect(typeof data['description']).toBe('string');
-  expect((data['description'] as string).length).toBeGreaterThan(0);
 }
 
 /**

@@ -16,6 +16,27 @@ const Ajv = AjvModule.default ?? AjvModule;
 
 const validatorCache = new Map<string, Promise<ValidateFunction>>();
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function normalizeLegacyConfigPayload(payload: unknown): unknown {
+  if (!isRecord(payload)) {
+    return payload;
+  }
+
+  if (!Array.isArray(payload.skills)) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    skills: payload.skills.map((entry: unknown) =>
+      typeof entry === 'string' ? { id: entry } : entry,
+    ),
+  };
+}
+
 function formatAjvError(error: ErrorObject): string {
   const location = error.instancePath === '' ? '/' : error.instancePath;
   return `${location} ${error.message ?? 'Validation error'}`;
@@ -66,5 +87,8 @@ export async function validateSkillSchema(
 export async function validateConfigSchema(
   payload: unknown,
 ): Promise<SchemaValidationResult<MageHubConfig>> {
-  return validateAgainstSchema<MageHubConfig>('config.schema.json', payload);
+  return validateAgainstSchema<MageHubConfig>(
+    'config.schema.json',
+    normalizeLegacyConfigPayload(payload),
+  );
 }

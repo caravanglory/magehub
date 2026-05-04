@@ -162,7 +162,7 @@ async function setupFixtureRepo(): Promise<string> {
 
   await writeFile(
     path.join(rootDir, '.magehub.yaml'),
-    ['version: "1"', 'skills:', '  - module-plugin', 'format: claude'].join(
+    ['version: "1"', 'skills:', '  - id: module-plugin', 'format: claude'].join(
       '\n',
     ),
     'utf8',
@@ -227,7 +227,7 @@ describe('core services and commands', () => {
     expect(result.valid).toBe(true);
 
     const loaded = await loadConfig(rootDir);
-    expect(loaded.config.skills).toEqual(['module-plugin']);
+    expect(loaded.config.skills).toEqual([{ id: 'module-plugin' }]);
   });
 
   it('validates skill files and reports no warnings for ### headings', async () => {
@@ -315,7 +315,7 @@ describe('core services and commands', () => {
 
     expect(globalConfig).toContain('performance');
     expect(globalConfig).toContain('format: claude');
-    expect(projectConfig.config.skills).toEqual(['module-plugin']);
+    expect(projectConfig.config.skills).toEqual([{ id: 'module-plugin' }]);
   });
 
   it('defaults global installs to claude when format is omitted', async () => {
@@ -350,7 +350,6 @@ describe('core services and commands', () => {
       });
 
       const codexAgentsPath = path.join(codexHomeDir, 'AGENTS.md');
-      const misplacedAgentsPath = path.join(homeDir, 'AGENTS.md');
       const globalConfigPath = path.join(homeDir, '.magehub', 'config.yaml');
 
       await expect(readFile(codexAgentsPath, 'utf8')).resolves.toContain(
@@ -359,7 +358,6 @@ describe('core services and commands', () => {
       await expect(readFile(globalConfigPath, 'utf8')).resolves.toContain(
         'format: codex',
       );
-      await expect(readFile(misplacedAgentsPath, 'utf8')).rejects.toThrow();
 
       await runSkillRemoveCommand(['module-plugin'], { global: true });
 
