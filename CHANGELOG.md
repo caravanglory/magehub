@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/caravanglory/magehub/compare/magehub-v0.1.7...magehub-v0.1.8) (2026-05-04)
+
+
+### Features
+
+* per-skill format support and global install mode ([#28](https://github.com/caravanglory/magehub/issues/28)) ([afbf327](https://github.com/caravanglory/magehub/commit/afbf3271b80bbf0ca07513072b16cbffcf756460))
+
 ## [0.1.7](https://github.com/caravanglory/magehub/compare/magehub-v0.1.6...magehub-v0.1.7) (2026-05-03)
 
 
