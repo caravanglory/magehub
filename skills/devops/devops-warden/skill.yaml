@@ -2,17 +2,7 @@ id: devops-warden
 name: Warden Local Environment
 version: '1.1.0'
 category: devops
-description: |
-  Run every local Magento 2 development command through Warden's Docker-based
-  environment. Covers warden shell / warden debug entry points, bin/magento and
-  composer invocations, database import and live connection, Redis / Valkey cache
-  and session management, Varnish cache invalidation via ban rules, OpenSearch
-  index operations, RabbitMQ queue inspection, n98-magerun2 convenience commands,
-  mutagen file-sync troubleshooting, and full environment lifecycle (start / stop /
-  down / logs / doctor). Use this skill whenever the user mentions warden, docker
-  local env, bin/magento, composer inside container, warden shell, cache flush,
-  database import, redis flush, varnish ban, opensearch reindex, rabbitmq queue,
-  magerun, n98, mutagen sync, or any Magento CLI task that must run in a container.
+description: "Run Magento 2 CLI commands through Warden's Docker environment: warden shell, bin/magento, composer, Redis/Valkey, Varnish, OpenSearch, RabbitMQ, n98-magerun2, mutagen sync, and env lifecycle."
 
 tags:
   - warden
