@@ -11,8 +11,13 @@ container can repair.
 
 ### Environment Lifecycle
 
-Use lifecycle commands from the project root (where `.env` resolves
-the Warden environment name):
+Warden reads `WARDEN_ENV_NAME` (and other stack flags such as
+`WARDEN_REDIS`, `WARDEN_VARNISH`, `WARDEN_RABBITMQ`) from the `.env`
+file in the project root. Always run lifecycle commands from that
+directory so Warden resolves the correct environment name and
+docker-compose overrides.
+
+Use lifecycle commands from the project root:
 
 - `warden env start` — start a stopped environment
 - `warden env stop` — stop without destroying volumes
@@ -79,6 +84,92 @@ When commands fail in unexpected ways — `warden shell` hangs, nginx
 investigating the application. It inspects Docker state, the local
 DNS resolver, root CA trust, and mutagen session health. Add `-v`
 (`warden doctor -v`) to include environment variables in the output.
+
+### n98-magerun2
+
+n98-magerun2 is pre-installed inside the php-fpm container and is
+accessible from any `warden shell` session. Use it for admin tasks and
+one-off data operations that would otherwise require a custom PHP script:
+
+- `n98-magerun2 sys:info` — PHP version, Magento edition/version, and
+  active modules summary
+- `n98-magerun2 config:store:get web/secure/base_url` — read a
+  core_config_data value without touching the DB directly
+- `n98-magerun2 config:store:set --scope=default --scope-id=0 \
+  dev/debug/template_hints_storefront 1` — write a config value
+- `n98-magerun2 admin:user:create` — interactive wizard to create an
+  admin user (avoids writing a throwaway script)
+- `n98-magerun2 admin:user:change-password admin@example.com` — reset
+  a password without touching the DB
+- `n98-magerun2 db:query "SELECT entity_id, sku FROM catalog_product_entity LIMIT 10"` — one-off SQL without opening a full DB session
+- `n98-magerun2 cache:clean` — clean specific cache types interactively
+- `n98-magerun2 index:list` — show indexer status (same data as
+  `bin/magento indexer:status` but in a compact table)
+
+### OpenSearch / Elasticsearch
+
+Magento's catalog and search indexers store data in OpenSearch (or
+Elasticsearch on older stacks). Access it through the `opensearch`
+container:
+
+- Cluster health:
+  `warden env exec -T opensearch curl -s localhost:9200/_cluster/health | python3 -m json.tool`
+- List all indices and their document counts:
+  `warden env exec -T opensearch curl -s 'localhost:9200/_cat/indices?v'`
+- Delete a specific Magento index (forces a full rebuild on next reindex):
+  `warden env exec -T opensearch curl -s -X DELETE localhost:9200/magento2_product_1`
+- Reset indexers and rebuild from inside `warden shell`:
+  ```
+  bin/magento indexer:reset catalogsearch_fulltext
+  bin/magento indexer:reindex catalogsearch_fulltext
+  ```
+- Tail OpenSearch logs:
+  `warden env logs --tail 0 -f opensearch`
+
+When a reindex fails with a connection error, check cluster health first
+before investigating the PHP layer — a yellow or red cluster status (too
+few replicas or an out-of-disk node) blocks all write operations.
+
+### RabbitMQ
+
+Magento uses RabbitMQ to process asynchronous operations (bulk API,
+Async/Bulk REST, inventory reservations). Inspect and manage queues
+through the `rabbitmq` container:
+
+- List all queues and their message counts:
+  `warden env exec -T rabbitmq rabbitmqctl list_queues name messages consumers`
+- Purge a stale queue (removes all unconsumed messages):
+  `warden env exec -T rabbitmq rabbitmqctl purge_queue async.operations.all`
+- Run a Magento consumer from inside `warden shell`:
+  `bin/magento queue:consumers:start async.operations.all --max-messages=100`
+- Run all consumers in the background (development shortcut):
+  `bin/magento queue:consumers:start --all &`
+- Management UI: available at
+  `https://rabbitmq.{WARDEN_ENV_NAME}.test` (default credentials:
+  `guest` / `guest`). Useful for inspecting bindings, exchanges, and
+  per-queue message rates without CLI commands.
+
+### File Sync (mutagen)
+
+Warden uses mutagen to keep files on the host and inside the php-fpm
+container in sync. The sync session can stall after Docker Desktop
+restarts, wakes from sleep, or following a `warden env stop/start`
+cycle.
+
+- `warden sync list` — show all active sync sessions and their state
+- `warden sync monitor` — stream live sync events (Ctrl-C to exit);
+  confirms whether the session is actively propagating changes
+- `warden sync pause` / `warden sync resume` — temporarily halt sync
+  without destroying the session (useful during large file operations)
+- `warden sync restart` — stop and recreate all sync sessions; the
+  first choice when edits on the host are not reaching the container
+- `warden sync reset` — nuke the sync state entirely and force a full
+  re-scan; use only when `warden sync restart` does not resolve the
+  conflict
+
+If a file edited on the host never appears inside `warden shell`, run
+`warden sync monitor` first to confirm sync is live before investigating
+file permissions or editor save behaviour.
 
 ### Where to Learn More
 

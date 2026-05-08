@@ -1,8 +1,18 @@
 id: devops-warden
 name: Warden Local Environment
-version: '1.0.0'
+version: '1.1.0'
 category: devops
-description: Run PHP, Composer, bin/magento, Redis, Valkey, Varnish, and database commands through Warden's containerized local development environment
+description: |
+  Run every local Magento 2 development command through Warden's Docker-based
+  environment. Covers warden shell / warden debug entry points, bin/magento and
+  composer invocations, database import and live connection, Redis / Valkey cache
+  and session management, Varnish cache invalidation via ban rules, OpenSearch
+  index operations, RabbitMQ queue inspection, n98-magerun2 convenience commands,
+  mutagen file-sync troubleshooting, and full environment lifecycle (start / stop /
+  down / logs / doctor). Use this skill whenever the user mentions warden, docker
+  local env, bin/magento, composer inside container, warden shell, cache flush,
+  database import, redis flush, varnish ban, opensearch reindex, rabbitmq queue,
+  magerun, n98, mutagen sync, or any Magento CLI task that must run in a container.
 
 tags:
   - warden
@@ -14,6 +24,18 @@ tags:
   - valkey
   - varnish
   - database
+  - mariadb
+  - opensearch
+  - elasticsearch
+  - rabbitmq
+  - n98-magerun2
+  - magerun
+  - mutagen
+  - file-sync
+  - xdebug
+  - php-fpm
+  - bin-magento
+  - composer
 
 magento_versions:
   - '2.4.x'
@@ -45,6 +67,14 @@ conventions:
     example: 'warden env down -v   # destructive — wipes all env volumes'
     rationale: 'The `-v` flag removes named volumes. Use `warden env stop` for a reversible pause. Reach for `down -v` only when resetting a corrupted DB or freeing disk — and confirm there is no unsaved state first.'
 
+  - rule: 'Use n98-magerun2 for admin tasks and one-off data queries instead of writing throwaway scripts'
+    example: 'n98-magerun2 admin:user:create  # interactive; no need for a custom PHP script'
+    rationale: 'n98-magerun2 is available inside warden shell and covers the most frequent admin tasks (user management, config reads/writes, one-off SQL, cache operations) faster and more safely than a raw bin/magento or custom PHP script.'
+
+  - rule: 'Run `warden sync monitor` when files edited on the host are not reflected inside the container'
+    example: 'warden sync monitor  # streams mutagen sync events until Ctrl-C'
+    rationale: 'Warden uses mutagen for bidirectional file sync. When the sync session stalls (common after Docker Desktop restarts or long sleep cycles), edited files silently stop reaching the container. `warden sync monitor` confirms whether sync is live; if it shows conflicts or a stalled state, restart with `warden sync restart`.'
+
 examples:
   - title: 'Entering the shell and running Magento commands'
     description: 'Canonical flow for any bin/magento, composer, or php task — enter the container, run the command, exit'
@@ -70,6 +100,26 @@ examples:
     description: 'Start, stop, inspect logs, resolve config, and run warden doctor'
     language: bash
     code_file: examples/env-lifecycle.sh
+
+  - title: 'n98-magerun2 common commands'
+    description: 'Admin user management, config reads, one-off SQL queries, and cache operations via n98-magerun2 inside warden shell'
+    language: bash
+    code_file: examples/n98-magerun2.sh
+
+  - title: 'OpenSearch / Elasticsearch operations'
+    description: 'Check cluster health, list indices, reset and reindex Magento indexers, and tail OpenSearch logs'
+    language: bash
+    code_file: examples/opensearch-operations.sh
+
+  - title: 'RabbitMQ queue management'
+    description: 'List queues, purge stale messages, run consumers, and access the Management UI'
+    language: bash
+    code_file: examples/rabbitmq-operations.sh
+
+  - title: 'File sync (mutagen) operations'
+    description: 'Start, stop, monitor, and recover the mutagen sync session that keeps host and container files in sync'
+    language: bash
+    code_file: examples/file-sync.sh
 
 anti_patterns:
   - pattern: 'Running `composer install` or `bin/magento setup:upgrade` on the host machine'
