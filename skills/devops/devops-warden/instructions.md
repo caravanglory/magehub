@@ -96,7 +96,7 @@ one-off data operations that would otherwise require a custom PHP script:
 - `n98-magerun2 config:store:get web/secure/base_url` — read a
   core_config_data value without touching the DB directly
 - `n98-magerun2 config:store:set --scope=default --scope-id=0 \
-  dev/debug/template_hints_storefront 1` — write a config value
+dev/debug/template_hints_storefront 1` — write a config value
 - `n98-magerun2 admin:user:create` — interactive wizard to create an
   admin user (avoids writing a throwaway script)
 - `n98-magerun2 admin:user:change-password admin@example.com` — reset
