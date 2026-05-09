@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.11](https://github.com/caravanglory/magehub/compare/magehub-v0.1.10...magehub-v0.1.11) (2026-05-09)
+
+
+### Bug Fixes
+
+* mock getPackageVersion in snapshot tests to prevent version bump failures ([#35](https://github.com/caravanglory/magehub/issues/35)) ([2a9f512](https://github.com/caravanglory/magehub/commit/2a9f5121fa6f39c8ac7a1a6ad5d449dcf1b88918))
+
 ## [0.1.10](https://github.com/caravanglory/magehub/compare/magehub-v0.1.9...magehub-v0.1.10) (2026-05-09)
 
 
