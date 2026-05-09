@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.10](https://github.com/caravanglory/magehub/compare/magehub-v0.1.9...magehub-v0.1.10) (2026-05-09)
+
+
+### Features
+
+* skill upgrade strategy with two-tier version checking ([#33](https://github.com/caravanglory/magehub/issues/33)) ([35c2cc8](https://github.com/caravanglory/magehub/commit/35c2cc82f7a94009ce7f5fea11a8c2911fc9798f))
+
 ## [0.1.9](https://github.com/caravanglory/magehub/compare/magehub-v0.1.8...magehub-v0.1.9) (2026-05-08)
 
 
