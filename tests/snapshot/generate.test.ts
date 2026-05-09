@@ -6,11 +6,9 @@ import type { OutputFormat } from '../../src/types/config.js';
 import type { Skill } from '../../src/types/skill.js';
 
 vi.mock('../../src/core/runtime-assets.js', async (importOriginal) => {
-  const mod = await importOriginal<
-    typeof import('../../src/core/runtime-assets.js')
-  >();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
-    ...mod,
+    ...(await importOriginal()),
     getPackageVersion: () => '0.0.0-test',
   };
 });
