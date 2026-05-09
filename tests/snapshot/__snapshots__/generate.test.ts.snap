@@ -6,7 +6,7 @@ exports[`generate snapshot tests > multi-skill output > generates stable multi-s
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -63,7 +63,7 @@ public function afterGetName(
 name: testing-phpunit
 description: Write PHPUnit tests for Magento 2 modules
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # PHPUnit Testing
@@ -113,7 +113,7 @@ exports[`generate snapshot tests > multi-skill output > generates stable multi-s
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -170,7 +170,7 @@ public function afterGetName(
 name: testing-phpunit
 description: Write PHPUnit tests for Magento 2 modules
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # PHPUnit Testing
@@ -220,7 +220,7 @@ exports[`generate snapshot tests > multi-skill output > generates stable multi-s
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -277,7 +277,7 @@ public function afterGetName(
 name: testing-phpunit
 description: Write PHPUnit tests for Magento 2 modules
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # PHPUnit Testing
@@ -327,7 +327,7 @@ exports[`generate snapshot tests > multi-skill output > generates stable multi-s
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -384,7 +384,7 @@ public function afterGetName(
 name: testing-phpunit
 description: Write PHPUnit tests for Magento 2 modules
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # PHPUnit Testing
@@ -434,7 +434,7 @@ exports[`generate snapshot tests > option variations > generates stable output w
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -488,7 +488,7 @@ exports[`generate snapshot tests > option variations > generates stable output w
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -525,7 +525,7 @@ exports[`generate snapshot tests > option variations > generates stable output w
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -557,7 +557,7 @@ exports[`generate snapshot tests > single skill output > generates stable output
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -616,7 +616,7 @@ exports[`generate snapshot tests > single skill output > generates stable output
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -675,7 +675,7 @@ exports[`generate snapshot tests > single skill output > generates stable output
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development
@@ -734,7 +734,7 @@ exports[`generate snapshot tests > single skill output > generates stable output
 name: module-plugin
 description: Implement Magento 2 plugins correctly
 installed_version: 1.0.0
-magehub_version: 0.1.9
+magehub_version: 0.0.0-test
 ---
 
 # Plugin Development

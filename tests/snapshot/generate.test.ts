@@ -1,9 +1,19 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderArtifact } from '../../src/core/renderer.js';
 import { clearSchemaValidatorCache } from '../../src/core/schema-validator.js';
 import type { OutputFormat } from '../../src/types/config.js';
 import type { Skill } from '../../src/types/skill.js';
+
+vi.mock('../../src/core/runtime-assets.js', async (importOriginal) => {
+  const mod = await importOriginal<
+    typeof import('../../src/core/runtime-assets.js')
+  >();
+  return {
+    ...mod,
+    getPackageVersion: () => '0.0.0-test',
+  };
+});
 
 function makeSkill(overrides: Partial<Skill> = {}): Skill {
   return {
