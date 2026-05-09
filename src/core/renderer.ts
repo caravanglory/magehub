@@ -1,10 +1,17 @@
 import { readFile } from 'node:fs/promises';
 
-import type { MageHubConfig, OutputFormat, SkillEntry } from '../types/config.js';
+import type {
+  MageHubConfig,
+  OutputFormat,
+  SkillEntry,
+} from '../types/config.js';
 import type { Skill } from '../types/skill.js';
 import { renderTemplate } from '../utils/template.js';
 import { getFormatMetadata } from './formats.js';
-import { getPackageVersion, resolveBundledTemplatePath } from './runtime-assets.js';
+import {
+  getPackageVersion,
+  resolveBundledTemplatePath,
+} from './runtime-assets.js';
 
 export interface RenderOptions {
   format: OutputFormat;
@@ -231,9 +238,7 @@ export async function renderPerSkillArtifact(
     includeExamples: options.includeExamples,
     includeAntipatterns: options.includeAntipatterns,
   };
-  const entryMap = new Map(
-    (options.skillEntries ?? []).map((e) => [e.id, e]),
-  );
+  const entryMap = new Map((options.skillEntries ?? []).map((e) => [e.id, e]));
   const template = await loadTemplate(options.format, 'skill');
   const files = skills.map((skill) => {
     const body = renderSkillBody(skill, bodyOptions);

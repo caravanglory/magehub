@@ -220,10 +220,7 @@ export function registerSkillUpgradeCommand(program: Command): void {
     .alias('upgrade')
     .description('Upgrade installed skills to the latest available versions')
     .argument('[skillIds...]', 'Skill identifiers to upgrade (default: all)')
-    .option(
-      '-g, --global',
-      'Upgrade globally installed skills (default)',
-    )
+    .option('-g, --global', 'Upgrade globally installed skills (default)')
     .option(
       '-c, --current',
       'Upgrade skills in the current project .magehub.yaml',

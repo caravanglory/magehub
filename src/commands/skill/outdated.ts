@@ -13,10 +13,7 @@ import { CliError } from '../../utils/cli-error.js';
 import { info, warn } from '../../utils/logger.js';
 
 function renderOutdatedTable(outdated: OutdatedSkill[]): string {
-  const idWidth = Math.max(
-    'Skill'.length,
-    ...outdated.map((s) => s.id.length),
-  );
+  const idWidth = Math.max('Skill'.length, ...outdated.map((s) => s.id.length));
   const instWidth = Math.max(
     'Installed'.length,
     ...outdated.map((s) => s.installed.length),
@@ -48,9 +45,7 @@ function renderOutdatedTable(outdated: OutdatedSkill[]): string {
 function printResult(result: UpgradeCheckResult, quiet: boolean): void {
   if (result.magehubOutdated && result.latestVersion !== undefined) {
     if (quiet) {
-      console.log(
-        `magehub ${result.currentVersion} → ${result.latestVersion}`,
-      );
+      console.log(`magehub ${result.currentVersion} → ${result.latestVersion}`);
     } else {
       warn(
         `MageHub ${result.currentVersion} → ${result.latestVersion} available. Run \`npm update -g magehub\` to upgrade.`,
@@ -95,9 +90,7 @@ async function resolveConfig(
         2,
       );
     }
-    const { getGlobalConfigDir } = await import(
-      '../../core/global-config.js'
-    );
+    const { getGlobalConfigDir } = await import('../../core/global-config.js');
     return { config, registryRootDir: getGlobalConfigDir() };
   }
 
