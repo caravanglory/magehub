@@ -11,6 +11,7 @@ export interface RemoteRegistry {
 export interface SkillEntry {
   id: string;
   format?: OutputFormat;
+  installed_version?: string;
 }
 
 export interface MageHubConfig {

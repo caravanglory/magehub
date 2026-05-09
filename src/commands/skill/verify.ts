@@ -4,6 +4,7 @@ import { loadConfig } from '../../core/config-manager.js';
 import { loadGlobalConfig } from '../../core/global-config.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { validateSkillFile } from '../../core/skill-validator.js';
+import { printUpgradeHint } from '../../core/upgrade-checker.js';
 import { CliError } from '../../utils/cli-error.js';
 import { info, warn } from '../../utils/logger.js';
 
@@ -66,6 +67,10 @@ export async function runSkillVerifyCommand(
   info(
     `All skills verified${warningCount > 0 ? ` (${warningCount} warning${warningCount === 1 ? '' : 's'})` : ''}`,
   );
+
+  if (globalConfig !== undefined) {
+    void printUpgradeHint(globalConfig, (id) => registry.getById(id));
+  }
 }
 
 export function registerSkillVerifyCommand(program: Command): void {

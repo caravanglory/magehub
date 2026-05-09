@@ -4,6 +4,7 @@ import { loadConfig, mergeConfigs } from '../core/config-manager.js';
 import { loadGlobalConfig } from '../core/global-config.js';
 import { renderArtifact } from '../core/renderer.js';
 import { createSkillRegistry } from '../core/skill-registry.js';
+import { printUpgradeHint } from '../core/upgrade-checker.js';
 import { writeArtifact } from '../core/writer.js';
 import type { SkillEntry } from '../types/config.js';
 import { CliError } from '../utils/cli-error.js';
@@ -193,6 +194,8 @@ export async function runGenerateCommand(
       );
     }
   }
+
+  void printUpgradeHint(merged, (id) => registry.getById(id));
 }
 
 export function registerGenerateCommand(program: Command): void {

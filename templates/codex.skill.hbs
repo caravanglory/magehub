@@ -1,8 +1,16 @@
 ---
 name: {{id}}
 description: {{description}}
+installed_version: {{installed_version}}
+magehub_version: {{magehub_version}}
 ---
 
 # {{name}}
 
 {{body}}
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> `magehub skill:outdated {{id}} --quiet`
+> Follow its output to upgrade MageHub or this skill if needed.

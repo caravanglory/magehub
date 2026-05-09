@@ -21,6 +21,9 @@
               "format": {
                 "type": "string",
                 "enum": ["claude", "opencode", "codex", "qoder"]
+              },
+              "installed_version": {
+                "type": "string"
               }
             },
             "additionalProperties": false

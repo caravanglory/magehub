@@ -10,4 +10,5 @@ export * from './skill-loader.js';
 export * from './skill-normalizer.js';
 export * from './skill-registry.js';
 export * from './skill-validator.js';
+export * from './upgrade-checker.js';
 export * from './writer.js';

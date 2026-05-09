@@ -3,6 +3,7 @@ import type { Command } from 'commander';
 import { loadGlobalConfig } from '../../core/global-config.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { renderSkillListTable } from '../../core/renderer.js';
+import { printUpgradeHint } from '../../core/upgrade-checker.js';
 import { info } from '../../utils/logger.js';
 import { CliError } from '../../utils/cli-error.js';
 import { parseSkillCategory } from '../../utils/validation.js';
@@ -42,6 +43,10 @@ export async function runSkillListCommand(
 
   console.log(renderSkillListTable(skills));
   info(`Total: ${skills.length} skill${skills.length === 1 ? '' : 's'}`);
+
+  if (globalConfig !== undefined) {
+    void printUpgradeHint(globalConfig, (id) => registry.getById(id));
+  }
 }
 
 export function registerSkillListCommand(program: Command): void {

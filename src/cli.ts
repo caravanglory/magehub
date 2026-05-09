@@ -6,9 +6,11 @@ import { registerConfigValidateCommand } from './commands/config/validate.js';
 import { registerSetupInitCommand } from './commands/setup/init.js';
 import { registerSkillInstallCommand } from './commands/skill/install.js';
 import { registerSkillListCommand } from './commands/skill/list.js';
+import { registerSkillOutdatedCommand } from './commands/skill/outdated.js';
 import { registerSkillRemoveCommand } from './commands/skill/remove.js';
 import { registerSkillSearchCommand } from './commands/skill/search.js';
 import { registerSkillShowCommand } from './commands/skill/show.js';
+import { registerSkillUpgradeCommand } from './commands/skill/upgrade.js';
 import { registerSkillVerifyCommand } from './commands/skill/verify.js';
 import { getPackageVersion } from './core/runtime-assets.js';
 
@@ -26,6 +28,8 @@ export function createCli(): Command {
   registerSkillShowCommand(program);
   registerSkillInstallCommand(program);
   registerSkillRemoveCommand(program);
+  registerSkillOutdatedCommand(program);
+  registerSkillUpgradeCommand(program);
   registerSkillVerifyCommand(program);
   registerConfigShowCommand(program);
   registerConfigValidateCommand(program);

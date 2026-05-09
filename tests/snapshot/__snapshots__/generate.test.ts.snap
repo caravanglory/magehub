@@ -5,6 +5,8 @@ exports[`generate snapshot tests > multi-skill output > generates stable multi-s
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -49,11 +51,19 @@ public function afterGetName(
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
 
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
+
 
 === testing-phpunit ===
 ---
 name: testing-phpunit
 description: Write PHPUnit tests for Magento 2 modules
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # PHPUnit Testing
@@ -88,6 +98,12 @@ class ProductTest extends TestCase
 ### References
 
 - [Magento Testing Guide](https://developer.adobe.com/commerce/testing/guide/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated testing-phpunit --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -96,6 +112,8 @@ exports[`generate snapshot tests > multi-skill output > generates stable multi-s
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -140,11 +158,19 @@ public function afterGetName(
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
 
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
+
 
 === testing-phpunit ===
 ---
 name: testing-phpunit
 description: Write PHPUnit tests for Magento 2 modules
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # PHPUnit Testing
@@ -179,6 +205,12 @@ class ProductTest extends TestCase
 ### References
 
 - [Magento Testing Guide](https://developer.adobe.com/commerce/testing/guide/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated testing-phpunit --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -187,6 +219,8 @@ exports[`generate snapshot tests > multi-skill output > generates stable multi-s
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -231,11 +265,19 @@ public function afterGetName(
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
 
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
+
 
 === testing-phpunit ===
 ---
 name: testing-phpunit
 description: Write PHPUnit tests for Magento 2 modules
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # PHPUnit Testing
@@ -270,6 +312,12 @@ class ProductTest extends TestCase
 ### References
 
 - [Magento Testing Guide](https://developer.adobe.com/commerce/testing/guide/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated testing-phpunit --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -278,6 +326,8 @@ exports[`generate snapshot tests > multi-skill output > generates stable multi-s
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -322,11 +372,19 @@ public function afterGetName(
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
 
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
+
 
 === testing-phpunit ===
 ---
 name: testing-phpunit
 description: Write PHPUnit tests for Magento 2 modules
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # PHPUnit Testing
@@ -361,6 +419,12 @@ class ProductTest extends TestCase
 ### References
 
 - [Magento Testing Guide](https://developer.adobe.com/commerce/testing/guide/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated testing-phpunit --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -369,6 +433,8 @@ exports[`generate snapshot tests > option variations > generates stable output w
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -407,6 +473,12 @@ public function afterGetName(
 ### References
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -415,6 +487,8 @@ exports[`generate snapshot tests > option variations > generates stable output w
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -436,6 +510,12 @@ Use the Magento 2 interceptor pattern to extend behavior.
 ### References
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -444,6 +524,8 @@ exports[`generate snapshot tests > option variations > generates stable output w
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -460,6 +542,12 @@ Use the Magento 2 interceptor pattern to extend behavior.
 ### References
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -468,6 +556,8 @@ exports[`generate snapshot tests > single skill output > generates stable output
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -511,6 +601,12 @@ public function afterGetName(
 ### References
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -519,6 +615,8 @@ exports[`generate snapshot tests > single skill output > generates stable output
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -562,6 +660,12 @@ public function afterGetName(
 ### References
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -570,6 +674,8 @@ exports[`generate snapshot tests > single skill output > generates stable output
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -613,6 +719,12 @@ public function afterGetName(
 ### References
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;
 
@@ -621,6 +733,8 @@ exports[`generate snapshot tests > single skill output > generates stable output
 ---
 name: module-plugin
 description: Implement Magento 2 plugins correctly
+installed_version: 1.0.0
+magehub_version: 0.1.9
 ---
 
 # Plugin Development
@@ -664,5 +778,11 @@ public function afterGetName(
 ### References
 
 - [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
 "
 `;

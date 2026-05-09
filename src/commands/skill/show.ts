@@ -3,6 +3,7 @@ import type { Command } from 'commander';
 import { loadGlobalConfig } from '../../core/global-config.js';
 import { renderSkillDetail } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
+import { printSkillUpgradeHint } from '../../core/upgrade-checker.js';
 import { CliError } from '../../utils/cli-error.js';
 
 export async function runSkillShowCommand(
@@ -21,6 +22,12 @@ export async function runSkillShowCommand(
   }
 
   console.log(renderSkillDetail(skill));
+
+  if (globalConfig !== undefined) {
+    void printSkillUpgradeHint(globalConfig, skillId, (id) =>
+      registry.getById(id),
+    );
+  }
 }
 
 export function registerSkillShowCommand(program: Command): void {

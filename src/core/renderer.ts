@@ -1,15 +1,16 @@
 import { readFile } from 'node:fs/promises';
 
-import type { MageHubConfig, OutputFormat } from '../types/config.js';
+import type { MageHubConfig, OutputFormat, SkillEntry } from '../types/config.js';
 import type { Skill } from '../types/skill.js';
 import { renderTemplate } from '../utils/template.js';
 import { getFormatMetadata } from './formats.js';
-import { resolveBundledTemplatePath } from './runtime-assets.js';
+import { getPackageVersion, resolveBundledTemplatePath } from './runtime-assets.js';
 
 export interface RenderOptions {
   format: OutputFormat;
   includeExamples: boolean;
   includeAntipatterns: boolean;
+  skillEntries?: SkillEntry[];
 }
 
 export interface SingleFileArtifact {
@@ -165,12 +166,14 @@ function buildSingleFileContext(
     })),
     skillCount: skills.length,
     skillList: skills.map((skill) => skill.id).join(', '),
+    magehub_version: getPackageVersion(),
   };
 }
 
 function buildPerSkillContext(
   skill: Skill,
   body: string,
+  installedVersion?: string,
 ): Record<string, unknown> {
   return {
     id: skill.id,
@@ -180,6 +183,8 @@ function buildPerSkillContext(
     category: skill.category,
     tags: skill.tags ?? [],
     body,
+    installed_version: installedVersion ?? skill.version,
+    magehub_version: getPackageVersion(),
   };
 }
 
@@ -226,12 +231,19 @@ export async function renderPerSkillArtifact(
     includeExamples: options.includeExamples,
     includeAntipatterns: options.includeAntipatterns,
   };
+  const entryMap = new Map(
+    (options.skillEntries ?? []).map((e) => [e.id, e]),
+  );
   const template = await loadTemplate(options.format, 'skill');
   const files = skills.map((skill) => {
     const body = renderSkillBody(skill, bodyOptions);
+    const entry = entryMap.get(skill.id);
     return {
       skillId: skill.id,
-      content: renderTemplate(template, buildPerSkillContext(skill, body)),
+      content: renderTemplate(
+        template,
+        buildPerSkillContext(skill, body, entry?.installed_version),
+      ),
     };
   });
   return { kind: 'per-skill-file', files };

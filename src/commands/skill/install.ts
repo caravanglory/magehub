@@ -31,11 +31,16 @@ function mergeUnique(
   existing: SkillEntry[],
   additions: string[],
   format: string,
+  getVersion: (id: string) => string | undefined,
 ): SkillEntry[] {
   const seen = new Set(existing.map((e) => e.id));
   const newEntries: SkillEntry[] = additions
     .filter((id) => !seen.has(id))
-    .map((id) => ({ id, format: format as SkillEntry['format'] }));
+    .map((id) => ({
+      id,
+      format: format as SkillEntry['format'],
+      installed_version: getVersion(id),
+    }));
   return [...existing, ...newEntries];
 }
 
@@ -125,7 +130,12 @@ async function runGlobalInstall(
   }
 
   const previous = new Set(config.skills.map((e) => e.id));
-  config.skills = mergeUnique(config.skills, allTargetIds, format);
+  config.skills = mergeUnique(
+    config.skills,
+    allTargetIds,
+    format,
+    (id) => registry.getById(id)?.version,
+  );
   await saveGlobalConfig(config);
 
   if (isNew) {
@@ -208,7 +218,12 @@ export async function runSkillInstallCommand(
 
   const format = parseOutputFormat(options.format, 'claude');
   const previous = new Set(config.skills.map((e) => e.id));
-  config.skills = mergeUnique(config.skills, allTargetIds, format);
+  config.skills = mergeUnique(
+    config.skills,
+    allTargetIds,
+    format,
+    (id) => registry.getById(id)?.version,
+  );
   await saveConfig(effectiveRootDir, config);
 
   if (bootstrapped) {
