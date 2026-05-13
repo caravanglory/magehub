@@ -48,7 +48,10 @@ const ALL_FORMATS: OutputFormat[] = ['claude', 'opencode', 'codex', 'qoder'];
 const ALL_SKILL_IDS = [
   'admin-ui-grid',
   'api-graphql-resolver',
+  'devops-warden',
   'hyva-module-compatibility',
+  'mage-review',
+  'magento-upgrade',
   'module-di',
   'module-plugin',
   'module-scaffold',
@@ -195,7 +198,7 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
     expect(existsSync(path.join(rootDir, '.magehub.yaml'))).toBe(true);
   });
 
-  it('installs all 10 bundled skills into config', async () => {
+  it('installs all 13 bundled skills into config', async () => {
     const configContent = await readFile(
       path.join(rootDir, '.magehub.yaml'),
       'utf8',

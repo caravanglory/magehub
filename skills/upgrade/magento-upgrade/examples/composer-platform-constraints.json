@@ -1,0 +1,11 @@
+{
+  "require": {
+    "magento/product-community-edition": "2.4.9"
+  },
+  "config": {
+    "platform": {
+      "php": "8.4.0"
+    },
+    "sort-packages": true
+  }
+}

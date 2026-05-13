@@ -1,0 +1,139 @@
+id: magento-upgrade
+name: Magento Upgrade
+version: '1.0.0'
+category: upgrade
+description: Plan and execute Magento 2 upgrades with UCT analysis, dependency waves, compatibility fixes, and verification gates
+
+tags:
+  - upgrade
+  - compatibility
+  - uct
+  - composer
+  - php
+  - migration
+  - dependency-graph
+
+magento_versions:
+  - '2.4.x'
+
+dependencies:
+  - devops-warden
+  - mage-review
+  - standards-coding
+
+instructions_file: instructions.md
+
+conventions:
+  - rule: 'Start with read-only inventory and target system requirements before editing Composer constraints'
+    example: 'Check package, PHP, database, search, cache, queue, and service versions before changing composer.json'
+    rationale: 'Most upgrade failures come from platform mismatch or extension constraints, not from the final setup:upgrade command.'
+
+  - rule: 'Order custom module work by dependency waves'
+    example: 'Fix Vendor_Foundation before Vendor_Checkout when checkout depends on foundation services'
+    rationale: 'Dependency order keeps compile and runtime failures attributable to the smallest possible set of changes.'
+
+  - rule: 'Treat UCT output as evidence, not as the full migration plan'
+    example: 'Correlate UCT critical/errors with manual scans for plugins, preferences, GraphQL resolvers, and PHP compatibility'
+    rationale: 'Automated checks catch many known issues, but Magento projects fail upgrades through project-specific integrations and runtime behavior.'
+
+  - rule: 'Gate HIGH impact modules on explicit approval'
+    example: 'Checkout, payment, customer auth, database migrations, and core class overrides need plan approval before edits'
+    rationale: 'High-blast-radius areas can affect revenue, data integrity, or authentication and should not be changed silently.'
+
+  - rule: 'Verify after each wave with the smallest meaningful command set'
+    example: 'Run setup:di:compile after DI signature fixes, targeted PHPUnit after service changes, and GraphQL compare after schema changes'
+    rationale: 'Fast wave-level verification localizes failures and prevents a final all-or-nothing debugging session.'
+
+  - rule: 'Keep upgrade commits free of opportunistic refactors'
+    example: 'Do not rename services or redesign repositories while replacing removed framework APIs'
+    rationale: 'Upgrade branches are already risky. Extra refactors make rollback and review harder without improving compatibility.'
+
+examples:
+  - title: 'UCT analysis runner'
+    description: 'Runs Upgrade Compatibility Tool checks for a target version and stores reports under var/upgrade-reports'
+    language: bash
+    code_file: examples/uct-analysis.sh
+
+  - title: 'Upgrade plan template'
+    description: 'Markdown template for target stack, readiness gates, wave plan, impact table, and pending manual work'
+    language: markdown
+    code_file: examples/upgrade-plan.md
+
+  - title: 'Module wave report'
+    description: 'Example wave breakdown that keeps dependency providers ahead of dependent checkout or API modules'
+    language: markdown
+    code_file: examples/module-wave-report.md
+
+  - title: 'Composer platform constraint snippet'
+    description: 'Example target package and PHP platform constraint to make dependency resolution deterministic'
+    language: json
+    code_file: examples/composer-platform-constraints.json
+
+anti_patterns:
+  - pattern: 'Running composer update to latest without a target version and platform matrix'
+    problem: 'Composer may resolve a package set that does not match the deployed PHP, database, search, or cloud service versions.'
+    solution: 'Choose the target Commerce patch line first, check Adobe system requirements, then update explicit constraints.'
+
+  - pattern: 'Running setup:upgrade before dependency conflicts and compile failures are understood'
+    problem: 'Database and generated-code changes can make rollback harder while the codebase is still incompatible.'
+    solution: 'Resolve Composer, PHP compatibility, and DI compile blockers before applying schema/data upgrades.'
+
+  - pattern: 'Fixing every custom module in one large unreviewable diff'
+    problem: 'Failures become hard to isolate, and reviewers cannot distinguish compatibility fixes from unrelated refactors.'
+    solution: 'Group modules into dependency waves and verify each wave before moving on.'
+
+  - pattern: 'Trusting UCT as the only source of upgrade truth'
+    problem: 'Project-specific integrations, payment/shipping flows, queue consumers, and frontend behavior can fail outside static compatibility checks.'
+    solution: 'Combine UCT with manual scans, targeted tests, smoke tests, and business-critical workflow verification.'
+
+  - pattern: 'Ignoring runtime service upgrades while only changing PHP code'
+    problem: 'Search, database, queue, cache, and cloud service mismatches can fail in staging or production even when code compiles locally.'
+    solution: 'Track service versions as first-class readiness gates and coordinate cloud support tickets where required.'
+
+  - pattern: 'Disabling CSP, cache, 2FA, or validation globally to make the upgrade pass'
+    problem: 'Broad disables hide compatibility defects and can reduce security or performance after launch.'
+    solution: 'Add narrow CSP rules, fix cache identities, preserve security controls, and document any temporary exception with an owner and expiry.'
+
+files:
+  - path: 'UPGRADE_PLAN.md'
+    description: 'Upgrade planning worksheet for module waves, risk assessment, verification, and pending manual work'
+    template: |
+      # Magento Upgrade Plan
+
+      ## Summary
+      - Source version: {{source_version}}
+      - Target version: {{target_version}}
+      - Edition: {{edition}}
+      - Runtime changes: {{runtime_changes}}
+
+      ## Readiness Gates
+      - [ ] Clean upgrade branch
+      - [ ] Database backup confirmed
+      - [ ] Target system requirements checked
+      - [ ] Third-party extension compatibility checked
+      - [ ] Verification commands agreed
+
+      ## Wave Plan
+      | Wave | Scope | Modules or packages | Risk | Verification |
+      | --- | --- | --- | --- | --- |
+      | 0 | Platform and Composer | {{platform_scope}} | {{platform_risk}} | composer install |
+
+      ## Pending Manual Work
+      | Owner | Module/file | Risk | Next action |
+      | --- | --- | --- | --- |
+
+references:
+  - title: 'Adobe Commerce: Upgrade Compatibility Tool'
+    url: 'https://experienceleague.adobe.com/en/docs/commerce-operations/upgrade-guide/upgrade-compatibility-tool/use-upgrade-compatibility-tool/run'
+  - title: 'Adobe Commerce: System requirements'
+    url: 'https://experienceleague.adobe.com/en/docs/commerce-operations/installation-guide/system-requirements'
+  - title: 'Adobe Commerce: Upgrade prerequisites'
+    url: 'https://experienceleague.adobe.com/en/docs/commerce-operations/upgrade-guide/prepare/prerequisites'
+  - title: 'Adobe Commerce: Released versions'
+    url: 'https://experienceleague.adobe.com/en/docs/commerce-operations/release/versions'
+
+compatibility:
+  - claude
+  - opencode
+  - codex
+  - qoder
