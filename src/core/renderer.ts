@@ -177,6 +177,10 @@ function buildSingleFileContext(
   };
 }
 
+function quoteYamlString(value: string): string {
+  return JSON.stringify(value) ?? '""';
+}
+
 function buildPerSkillContext(
   skill: Skill,
   body: string,
@@ -186,6 +190,7 @@ function buildPerSkillContext(
     id: skill.id,
     name: skill.name,
     description: skill.description,
+    descriptionYaml: quoteYamlString(skill.description),
     version: skill.version,
     category: skill.category,
     tags: skill.tags ?? [],

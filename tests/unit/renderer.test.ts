@@ -12,6 +12,7 @@ import {
 import { clearSchemaValidatorCache } from '../../src/core/schema-validator.js';
 import type { OutputFormat } from '../../src/types/config.js';
 import type { Skill } from '../../src/types/skill.js';
+import { parseFrontMatter } from '../helpers/front-matter.js';
 
 async function renderPerSkill(
   skills: Skill[],
@@ -206,7 +207,7 @@ describe('renderer', () => {
       const file = artifact.files[0];
       expect(file.skillId).toBe('test-skill');
       expect(file.content).toContain('name: test-skill');
-      expect(file.content).toContain('description: A test skill');
+      expect(file.content).toContain('description: "A test skill"');
       expect(file.content).toContain('# Test Skill');
       expect(file.content).toContain('Do something.');
     });
@@ -319,7 +320,9 @@ describe('renderer', () => {
 
       expect(artifact.files).toHaveLength(1);
       expect(artifact.files[0].content).toContain('name: test-skill');
-      expect(artifact.files[0].content).toContain('description: A test skill');
+      expect(artifact.files[0].content).toContain(
+        'description: "A test skill"',
+      );
       expect(artifact.files[0].content).toContain('# Test Skill');
     });
 
@@ -332,8 +335,34 @@ describe('renderer', () => {
 
       expect(artifact.files).toHaveLength(1);
       expect(artifact.files[0].content).toContain('name: test-skill');
-      expect(artifact.files[0].content).toContain('description: A test skill');
+      expect(artifact.files[0].content).toContain(
+        'description: "A test skill"',
+      );
       expect(artifact.files[0].content).toContain('# Test Skill');
+    });
+
+    it('quotes YAML-sensitive descriptions in frontmatter', async () => {
+      const description =
+        "Run Magento 2 CLI commands through Warden's Docker environment: warden shell, bin/magento";
+      const formats: OutputFormat[] = ['claude', 'opencode', 'codex', 'qoder'];
+
+      for (const format of formats) {
+        const artifact = await renderPerSkillArtifact(
+          [makeSkill({ description })],
+          {
+            format,
+            includeExamples: true,
+            includeAntipatterns: true,
+          },
+        );
+        const content = artifact.files[0].content;
+        const { data } = parseFrontMatter(content);
+
+        expect(content).toContain(
+          `description: ${JSON.stringify(description)}`,
+        );
+        expect(data['description']).toBe(description);
+      }
     });
   });
 

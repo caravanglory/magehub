@@ -186,7 +186,7 @@ describe('generate snapshot tests', () => {
       expect(artifact.kind).toBe('per-skill-file');
       if (artifact.kind !== 'per-skill-file') return;
       const content = artifact.files[0].content;
-      expect(content).toMatch(/^---\nname: module-plugin\ndescription: /);
+      expect(content).toMatch(/^---\nname: module-plugin\ndescription: "/);
       expect(content).toContain('# Plugin Development');
     });
 
