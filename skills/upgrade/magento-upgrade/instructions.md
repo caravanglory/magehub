@@ -18,8 +18,8 @@ Before proposing changes, collect and report:
 2. Runtime versions: PHP, Composer, MySQL or MariaDB, OpenSearch or
    Elasticsearch, Redis or Valkey, RabbitMQ, Varnish, Node tooling, and web
    server.
-3. Deployment model: on-prem, Adobe Commerce Cloud, Warden, Kubernetes, or other
-   Docker setup.
+3. Deployment model: on-prem, Adobe Commerce Cloud, Kubernetes, Docker Compose,
+   DDEV, custom container wrapper, or other runtime setup.
 4. Custom code surface: `app/code`, local Composer path repositories, custom
    themes, patches, preference/plugin/observer counts, GraphQL/Web API exposure,
    cron jobs, message queues, and payment/shipping integrations.
@@ -49,8 +49,8 @@ bin/magento config:show catalog/search/engine
 find app/code -mindepth 2 -maxdepth 2 -type d | sort
 ```
 
-If a command is environment-specific, adapt through the project's wrapper
-(`warden shell`, `ddev exec`, `docker compose exec`, CI task, or deployment
+If a command is environment-specific, adapt through the project's own wrapper
+(`ddev exec`, `docker compose exec`, container shell, CI task, or deployment
 script). Avoid running upgrade commands on production.
 
 ### Dependency And Wave Planning

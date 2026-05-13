@@ -16,10 +16,7 @@ tags:
 magento_versions:
   - '2.4.x'
 
-dependencies:
-  - devops-warden
-  - mage-review
-  - standards-coding
+dependencies: []
 
 instructions_file: instructions.md
 
