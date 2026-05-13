@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.12](https://github.com/caravanglory/magehub/compare/magehub-v0.1.11...magehub-v0.1.12) (2026-05-13)
+
+
+### Bug Fixes
+
+* make magento-upgrade skill standalone ([668929d](https://github.com/caravanglory/magehub/commit/668929d6ecc3cee0b0f79c9775e582f85a0e3dea))
+
 ## [0.1.11](https://github.com/caravanglory/magehub/compare/magehub-v0.1.10...magehub-v0.1.11) (2026-05-09)
 
 
