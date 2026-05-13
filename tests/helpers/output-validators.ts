@@ -79,7 +79,7 @@ export function assertFencedCodeBlocks(content: string): void {
 
 /**
  * Assert that Magento-specific domain terms appear in the generated output.
- * These terms come from the bundled skills and should be present when all 10 are included.
+ * These terms come from the bundled skills and should be present when all bundled skills are included.
  */
 export function assertMagentoDomainTerms(content: string): void {
   const terms = [
