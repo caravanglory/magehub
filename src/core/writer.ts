@@ -1,4 +1,4 @@
-import { rm } from 'node:fs/promises';
+import { readdir, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { OutputFormat } from '../types/config.js';
@@ -17,11 +17,92 @@ export interface WriteResult {
   written: string[];
 }
 
+export interface WriteOptions {
+  pruneStale?: boolean;
+}
+
+function isNotFoundError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    'code' in error &&
+    typeof error.code === 'string' &&
+    error.code === 'ENOENT'
+  );
+}
+
+function hasMageHubFrontmatter(content: string): boolean {
+  if (!content.startsWith('---\n')) {
+    return false;
+  }
+
+  const endIndex = content.indexOf('\n---', 4);
+  if (endIndex === -1) {
+    return false;
+  }
+
+  return content
+    .slice(4, endIndex)
+    .split('\n')
+    .some((line) => line.startsWith('magehub_version:'));
+}
+
+async function isMageHubGeneratedFile(filePath: string): Promise<boolean> {
+  const content = await readFile(filePath, 'utf8').catch((error: unknown) => {
+    if (isNotFoundError(error)) {
+      return undefined;
+    }
+    throw error;
+  });
+
+  return content !== undefined && hasMageHubFrontmatter(content);
+}
+
+async function pruneStalePerSkillFiles(
+  outputDir: string,
+  format: OutputFormat,
+  keepSkillIds: Set<string>,
+): Promise<void> {
+  const metadata = getFormatMetadata(format);
+  if (metadata.skillFileName === undefined) {
+    return;
+  }
+
+  const entries = await readdir(outputDir, { withFileTypes: true }).catch(
+    (error: unknown) => {
+      if (isNotFoundError(error)) {
+        return [];
+      }
+      throw error;
+    },
+  );
+
+  await Promise.all(
+    entries.map(async (entry) => {
+      const skillId = entry.name;
+      if (keepSkillIds.has(skillId)) {
+        return;
+      }
+
+      const filePath = resolveSkillOutputPath(outputDir, format, skillId);
+      if (!(await isMageHubGeneratedFile(filePath))) {
+        return;
+      }
+
+      const relativeEntry = metadata.skillFileName(skillId);
+      const isNestedEntry =
+        relativeEntry.includes(path.sep) || relativeEntry.includes('/');
+      const candidate = isNestedEntry ? path.dirname(filePath) : filePath;
+      await rm(candidate, { recursive: true, force: true });
+    }),
+  );
+}
+
 export async function writeArtifact(
   rootDir: string,
   format: OutputFormat,
   outputOverride: string | undefined,
   artifact: RenderArtifact,
+  options: WriteOptions = {},
 ): Promise<WriteResult> {
   const target = resolveOutputTarget(rootDir, format, outputOverride);
   const written: string[] = [];
@@ -36,6 +117,14 @@ export async function writeArtifact(
     const filePath = resolveSkillOutputPath(target.path, format, file.skillId);
     await writeUtf8(filePath, file.content);
     written.push(filePath);
+  }
+
+  if (options.pruneStale === true) {
+    await pruneStalePerSkillFiles(
+      target.path,
+      format,
+      new Set(artifact.files.map((file) => file.skillId)),
+    );
   }
 
   return { targetPath: target.path, targetKind: target.kind, written };

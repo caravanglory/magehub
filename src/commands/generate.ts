@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import { loadConfig, mergeConfigs } from '../core/config-manager.js';
+import { loadConfig } from '../core/config-manager.js';
 import { loadGlobalConfig } from '../core/global-config.js';
 import { renderArtifact } from '../core/renderer.js';
 import { createSkillRegistry } from '../core/skill-registry.js';
@@ -48,9 +48,9 @@ export async function runGenerateCommand(
   });
 
   const globalConfig = await loadGlobalConfig();
-  const merged = mergeConfigs(globalConfig, loaded.config);
   const registry = await createSkillRegistry(effectiveRootDir, globalConfig);
-  const fallbackFormat = merged.format ?? 'claude';
+  const config = loaded.config;
+  const fallbackFormat = config.format ?? 'claude';
 
   if (options.skills !== undefined) {
     const format = parseOutputFormat(options.format, fallbackFormat);
@@ -82,15 +82,15 @@ export async function runGenerateCommand(
 
     const artifact = await renderArtifact(skills, {
       format,
-      includeExamples: options.examples ?? merged.include_examples ?? true,
+      includeExamples: options.examples ?? config.include_examples ?? true,
       includeAntipatterns:
-        options.antipatterns ?? merged.include_antipatterns ?? true,
+        options.antipatterns ?? config.include_antipatterns ?? true,
     });
 
     const result = await writeArtifact(
       effectiveRootDir,
       format,
-      options.output ?? merged.output,
+      options.output ?? config.output,
       artifact,
     );
 
@@ -104,13 +104,13 @@ export async function runGenerateCommand(
     return;
   }
 
-  if (merged.skills.length === 0) {
+  if (config.skills.length === 0) {
     throw new CliError('No skills configured for generation.', 1);
   }
 
   if (options.format !== undefined) {
     const format = parseOutputFormat(options.format, fallbackFormat);
-    const allSkillIds = merged.skills.map((e) => e.id);
+    const allSkillIds = config.skills.map((e) => e.id);
     const skills = allSkillIds.map((skillId) => {
       const skill = registry.getById(skillId);
       if (skill === undefined) {
@@ -130,16 +130,17 @@ export async function runGenerateCommand(
 
     const artifact = await renderArtifact(skills, {
       format,
-      includeExamples: options.examples ?? merged.include_examples ?? true,
+      includeExamples: options.examples ?? config.include_examples ?? true,
       includeAntipatterns:
-        options.antipatterns ?? merged.include_antipatterns ?? true,
+        options.antipatterns ?? config.include_antipatterns ?? true,
     });
 
     const result = await writeArtifact(
       effectiveRootDir,
       format,
-      options.output ?? merged.output,
+      options.output ?? config.output,
       artifact,
+      { pruneStale: true },
     );
 
     if (result.targetKind === 'file') {
@@ -152,7 +153,7 @@ export async function runGenerateCommand(
     return;
   }
 
-  const grouped = groupEntriesByFormat(merged.skills, fallbackFormat);
+  const grouped = groupEntriesByFormat(config.skills, fallbackFormat);
 
   for (const [fmt, skillIds] of grouped) {
     const skills = skillIds.map((skillId) => {
@@ -174,16 +175,17 @@ export async function runGenerateCommand(
 
     const artifact = await renderArtifact(skills, {
       format: fmt,
-      includeExamples: options.examples ?? merged.include_examples ?? true,
+      includeExamples: options.examples ?? config.include_examples ?? true,
       includeAntipatterns:
-        options.antipatterns ?? merged.include_antipatterns ?? true,
+        options.antipatterns ?? config.include_antipatterns ?? true,
     });
 
     const result = await writeArtifact(
       effectiveRootDir,
       fmt,
-      options.output ?? merged.output,
+      options.output ?? config.output,
       artifact,
+      { pruneStale: true },
     );
 
     if (result.targetKind === 'file') {
@@ -195,7 +197,7 @@ export async function runGenerateCommand(
     }
   }
 
-  void printUpgradeHint(merged, (id) => registry.getById(id));
+  void printUpgradeHint(config, (id) => registry.getById(id));
 }
 
 export function registerGenerateCommand(program: Command): void {
