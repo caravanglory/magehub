@@ -194,25 +194,20 @@
               <div class="terminal-header">
                 <span></span><span></span><span></span>
               </div>
-              <pre><code><span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">module-plugin</span> <span class="t-arg">performance</span>
+              <pre><code><span class="t-prompt">$</span> <span class="t-command">npx magehub install</span> <span class="t-arg">module-plugin</span> <span class="t-arg">performance</span> <span class="t-arg">--format=codex</span>
 Created ~/.magehub/config.yaml
-<span class="t-success">&#10003;</span> module-plugin installed
-<span class="t-success">&#10003;</span> performance installed
+<span class="t-success">&#10003;</span> module-plugin
+<span class="t-success">&#10003;</span> performance
+Generated 2 skill file(s) under ~/.codex/skills
 
 <span class="t-prompt">$</span> <span class="t-command">magehub</span> <span class="t-arg">skill:list</span>
-<span class="t-skill">admin-ui-grid</span>
-<span class="t-skill">api-graphql-resolver</span>
-<span class="t-skill">devops-warden</span>
-<span class="t-skill">hyva-module-compatibility</span>
-<span class="t-skill">mage-review</span>
-<span class="t-skill">magento-upgrade</span>
-<span class="t-skill">module-di</span>
-<span class="t-skill">module-plugin</span>
-<span class="t-skill">module-scaffold</span>
-<span class="t-skill">module-setup</span>
-<span class="t-skill">performance</span>
-<span class="t-skill">standards-coding</span>
-<span class="t-skill">testing-phpunit</span></code></pre>
+ID                      Version   Description
+<span class="t-skill">admin-ui-grid</span>           1.0.0     Build Magento 2 admin grids...
+<span class="t-skill">devops-warden</span>           1.1.0     Run Magento 2 CLI commands through Warden...
+<span class="t-skill">mage-review</span>             1.0.0     Magento 2 structured code review workflow...
+<span class="t-skill">module-plugin</span>           1.0.0     Implement Magento 2 plugins...
+<span class="t-skill">performance</span>             1.0.0     Profile and optimize Magento 2 performance...
+Total: 13 skills</code></pre>
             </div>
           </div>
         </section>
@@ -221,8 +216,8 @@ Created ~/.magehub/config.yaml
         <section class="metrics-grid reveal">
           <article class="metric-card reveal reveal-delay-1">
             <strong data-count="13">0</strong>
-            <span class="lang-en">Bundled v1.0 skills</span>
-            <span class="lang-zh">v1.0 内置技能</span>
+            <span class="lang-en">Bundled Magento 2 skills</span>
+            <span class="lang-zh">内置 Magento 2 技能</span>
           </article>
           <article class="metric-card reveal reveal-delay-2">
             <strong data-count="4">0</strong>
@@ -245,11 +240,12 @@ Created ~/.magehub/config.yaml
             </p>
             <h2>
               <span class="lang-en">
-                The first 13 skills target where Magento AI workflows usually
+                The 13 bundled skills target where Magento AI workflows usually
                 <span class="text-gradient">break</span>.
               </span>
               <span class="lang-zh">
-                前13个技能针对 Magento AI 工作流通常<span class="text-gradient"
+                13 个内置技能针对 Magento AI 工作流通常<span
+                  class="text-gradient"
                   >出问题</span
                 >的地方。
               </span>
@@ -666,12 +662,13 @@ Created ~/.magehub/config.yaml
             <p>
               <span class="lang-en">
                 MageHub treats skills as versioned YAML artifacts, validates
-                them with JSON Schema, and assembles them into a generated
-                context file that matches the target assistant's expected shape.
+                them with JSON Schema, and assembles them into generated
+                per-skill context files that match the target assistant's
+                expected shape.
               </span>
               <span class="lang-zh">
                 MageHub 将技能视为版本化的 YAML 构件，通过 JSON Schema
-                验证，并将其组装成符合目标助手预期格式的生成上下文文件。
+                验证，并将其组装成符合目标助手预期格式的按技能拆分的上下文文件。
               </span>
             </p>
           </div>
@@ -686,12 +683,12 @@ Created ~/.magehub/config.yaml
                 <p>
                   <span class="lang-en">
                     Install globally by default, or use <code>-c</code> to
-                    select bundled and project-local skills in
-                    <code>.magehub.yaml</code>.
+                    create or update <code>.magehub.yaml</code> for the current
+                    project.
                   </span>
                   <span class="lang-zh">
-                    默认全局安装；使用 <code>-c</code> 时在
-                    <code>.magehub.yaml</code> 中选择内置或项目本地技能。
+                    默认全局安装；使用 <code>-c</code> 时为当前项目创建或更新
+                    <code>.magehub.yaml</code>。
                   </span>
                 </p>
               </div>
@@ -723,11 +720,11 @@ Created ~/.magehub/config.yaml
                 </h3>
                 <p>
                   <span class="lang-en">
-                    Produce tool-specific prompt/context files from the same
-                    skill set.
+                    Produce tool-specific per-skill prompt/context files from
+                    the same skill set.
                   </span>
                   <span class="lang-zh">
-                    从同一套技能集生成工具特定的提示/上下文文件。
+                    从同一套技能集生成工具特定、按技能拆分的提示/上下文文件。
                   </span>
                 </p>
               </div>
@@ -768,7 +765,9 @@ Created ~/.magehub/config.yaml
             </div>
             <div class="format-card reveal reveal-delay-1">
               <span class="format-name">Codex</span>
-              <code class="format-file">~/.codex/AGENTS.md</code>
+              <code class="format-file"
+                >~/.codex/skills/&lt;id&gt;/SKILL.md</code
+              >
             </div>
             <div class="format-card reveal reveal-delay-2">
               <span class="format-name">Qoder</span>

@@ -3,7 +3,6 @@ import type { Command } from 'commander';
 import {
   createBootstrapConfig,
   loadConfig,
-  mergeConfigs,
   saveConfig,
 } from '../../core/config-manager.js';
 import { ensureGitExcludeEntry } from '../../core/git-exclude.js';
@@ -162,7 +161,9 @@ async function runGlobalInstall(
     });
 
     const outputRoot = resolveGlobalOutputRoot();
-    const result = await writeArtifact(outputRoot, fmt, undefined, artifact);
+    const result = await writeArtifact(outputRoot, fmt, undefined, artifact, {
+      pruneStale: true,
+    });
 
     info(
       `Generated ${result.written.length} skill file(s) under ${result.targetPath}`,
@@ -240,22 +241,22 @@ export async function runSkillInstallCommand(
     return;
   }
 
-  const merged = mergeConfigs(globalConfig, config);
-  const fallbackFormat = merged.format ?? 'claude';
-  const grouped = groupSkillsByFormat(merged.skills, registry, fallbackFormat);
+  const fallbackFormat = config.format ?? 'claude';
+  const grouped = groupSkillsByFormat(config.skills, registry, fallbackFormat);
 
   for (const [fmt, skills] of grouped) {
     const artifact = await renderArtifact(skills, {
       format: fmt,
-      includeExamples: merged.include_examples ?? true,
-      includeAntipatterns: merged.include_antipatterns ?? true,
+      includeExamples: config.include_examples ?? true,
+      includeAntipatterns: config.include_antipatterns ?? true,
     });
 
     const result = await writeArtifact(
       effectiveRootDir,
       fmt,
-      merged.output,
+      config.output,
       artifact,
+      { pruneStale: true },
     );
 
     if (result.targetKind === 'file') {
@@ -267,7 +268,7 @@ export async function runSkillInstallCommand(
     }
 
     if (options.gitExclude !== false) {
-      const target = resolveOutputTarget(effectiveRootDir, fmt, merged.output);
+      const target = resolveOutputTarget(effectiveRootDir, fmt, config.output);
       const added = await ensureGitExcludeEntry(
         effectiveRootDir,
         target.path,

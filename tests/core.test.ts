@@ -304,6 +304,116 @@ describe('core services and commands', () => {
     expect(updated.config.format).toBe('claude');
   });
 
+  it('does not render global-only skills into current project output', async () => {
+    const projectRoot = await mkdtemp(
+      path.join(os.tmpdir(), 'magehub-project-'),
+    );
+    await mkdir(path.join(homeDir, '.magehub'), { recursive: true });
+    await writeFile(
+      path.join(homeDir, '.magehub', 'config.yaml'),
+      [
+        'version: "1"',
+        'skills:',
+        '  - id: magento-upgrade',
+        '    format: codex',
+        '    installed_version: 1.0.0',
+        'format: codex',
+        'include_examples: true',
+        'include_antipatterns: true',
+      ].join('\n'),
+      'utf8',
+    );
+
+    try {
+      await runSkillInstallCommand(
+        ['devops-warden', 'mage-review'],
+        { current: true, format: 'codex', gitExclude: false },
+        projectRoot,
+      );
+
+      const skillsDir = path.join(projectRoot, '.codex', 'skills');
+      await mkdir(path.join(skillsDir, 'magento-upgrade'), {
+        recursive: true,
+      });
+      await writeFile(
+        path.join(skillsDir, 'magento-upgrade', 'SKILL.md'),
+        [
+          '---',
+          'name: magento-upgrade',
+          'magehub_version: 0.1.11',
+          '---',
+          '',
+          '# Magento Upgrade',
+        ].join('\n'),
+        'utf8',
+      );
+      await mkdir(path.join(skillsDir, 'local-custom'), { recursive: true });
+      await writeFile(
+        path.join(skillsDir, 'local-custom', 'SKILL.md'),
+        '# Local Custom Skill\n',
+        'utf8',
+      );
+
+      await runGenerateCommand({}, projectRoot);
+
+      await expect(
+        readFile(path.join(skillsDir, 'devops-warden', 'SKILL.md'), 'utf8'),
+      ).resolves.toContain('Warden Local Environment');
+      await expect(
+        readFile(path.join(skillsDir, 'mage-review', 'SKILL.md'), 'utf8'),
+      ).resolves.toContain('Code Review');
+      await expect(
+        readFile(path.join(skillsDir, 'magento-upgrade', 'SKILL.md'), 'utf8'),
+      ).rejects.toThrow();
+      await expect(
+        readFile(path.join(skillsDir, 'local-custom', 'SKILL.md'), 'utf8'),
+      ).resolves.toContain('Local Custom Skill');
+
+      expect(logSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Generated 2 skill file(s)'),
+      );
+      expect(logSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('Generated 3 skill file(s)'),
+      );
+    } finally {
+      await rm(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('keeps other generated skills when using explicit generate --skills', async () => {
+    const projectRoot = await mkdtemp(
+      path.join(os.tmpdir(), 'magehub-project-'),
+    );
+    await writeFile(
+      path.join(projectRoot, '.magehub.yaml'),
+      [
+        'version: "1"',
+        'skills:',
+        '  - id: devops-warden',
+        '    format: codex',
+        '  - id: mage-review',
+        '    format: codex',
+        'format: codex',
+      ].join('\n'),
+      'utf8',
+    );
+
+    try {
+      await runGenerateCommand({}, projectRoot);
+      await runGenerateCommand({ skills: 'devops-warden' }, projectRoot);
+
+      const skillsDir = path.join(projectRoot, '.codex', 'skills');
+      await expect(
+        readFile(path.join(skillsDir, 'devops-warden', 'SKILL.md'), 'utf8'),
+      ).resolves.toContain('Warden Local Environment');
+      await expect(
+        readFile(path.join(skillsDir, 'mage-review', 'SKILL.md'), 'utf8'),
+      ).resolves.toContain('Code Review');
+    } finally {
+      await rm(projectRoot, { recursive: true, force: true });
+    }
+  });
+
   it('installs globally by default', async () => {
     await runSkillInstallCommand(['performance'], { write: false }, rootDir);
 

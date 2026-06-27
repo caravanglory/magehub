@@ -1,10 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  loadConfig,
-  mergeConfigs,
-  saveConfig,
-} from '../../core/config-manager.js';
+import { loadConfig, saveConfig } from '../../core/config-manager.js';
 import {
   getGlobalConfigDir,
   loadGlobalConfig,
@@ -122,7 +118,9 @@ async function runGlobalUpgrade(
     });
 
     const outputRoot = resolveGlobalOutputRoot();
-    const result = await writeArtifact(outputRoot, fmt, undefined, artifact);
+    const result = await writeArtifact(outputRoot, fmt, undefined, artifact, {
+      pruneStale: true,
+    });
     info(
       `Regenerated ${result.written.length} skill file(s) under ${result.targetPath}`,
     );
@@ -186,22 +184,26 @@ export async function runSkillUpgradeCommand(
     return;
   }
 
-  const merged = mergeConfigs(globalConfig, loaded.config);
-  const fallbackFormat = merged.format ?? 'claude';
-  const grouped = groupSkillsByFormat(merged.skills, getSkill, fallbackFormat);
+  const fallbackFormat = loaded.config.format ?? 'claude';
+  const grouped = groupSkillsByFormat(
+    loaded.config.skills,
+    getSkill,
+    fallbackFormat,
+  );
 
   for (const [fmt, skills] of grouped) {
     const artifact = await renderArtifact(skills, {
       format: fmt,
-      includeExamples: merged.include_examples ?? true,
-      includeAntipatterns: merged.include_antipatterns ?? true,
+      includeExamples: loaded.config.include_examples ?? true,
+      includeAntipatterns: loaded.config.include_antipatterns ?? true,
     });
 
     const result = await writeArtifact(
       effectiveRootDir,
       fmt,
-      merged.output,
+      loaded.config.output,
       artifact,
+      { pruneStale: true },
     );
 
     if (result.targetKind === 'file') {

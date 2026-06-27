@@ -1,10 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  loadConfig,
-  mergeConfigs,
-  saveConfig,
-} from '../../core/config-manager.js';
+import { loadConfig, saveConfig } from '../../core/config-manager.js';
 
 import {
   loadGlobalConfig,
@@ -99,7 +95,9 @@ async function runGlobalRemove(
       includeAntipatterns: config.include_antipatterns ?? true,
     });
 
-    const result = await writeArtifact(outputRoot, fmt, undefined, artifact);
+    const result = await writeArtifact(outputRoot, fmt, undefined, artifact, {
+      pruneStale: true,
+    });
     info(`Regenerated: ${result.targetPath}`);
   }
 }
@@ -149,19 +147,18 @@ export async function runSkillRemoveCommand(
   }
 
   const globalConfig = await loadGlobalConfig();
-  const merged = mergeConfigs(globalConfig, loaded.config);
-  const fallbackFormat = merged.format ?? 'claude';
+  const fallbackFormat = loaded.config.format ?? 'claude';
   const removedFormats = collectFormats(removedEntries, fallbackFormat);
 
   for (const fmt of removedFormats) {
-    const remainingInFormat = merged.skills.filter(
+    const remainingInFormat = loaded.config.skills.filter(
       (e) => (e.format ?? fallbackFormat) === fmt,
     );
 
     const removed = await removePerSkillFiles(
       effectiveRootDir,
       fmt,
-      merged.output,
+      loaded.config.output,
       skillIds,
     );
     for (const target of removed) {
@@ -183,15 +180,16 @@ export async function runSkillRemoveCommand(
 
     const artifact = await renderArtifact(remainingSkills, {
       format: fmt,
-      includeExamples: merged.include_examples ?? true,
-      includeAntipatterns: merged.include_antipatterns ?? true,
+      includeExamples: loaded.config.include_examples ?? true,
+      includeAntipatterns: loaded.config.include_antipatterns ?? true,
     });
 
     const result = await writeArtifact(
       effectiveRootDir,
       fmt,
-      merged.output,
+      loaded.config.output,
       artifact,
+      { pruneStale: true },
     );
     info(`Regenerated: ${result.targetPath}`);
   }
