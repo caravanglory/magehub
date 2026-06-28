@@ -15,6 +15,44 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task is to configure or review Magento dependency injection: preferences, type arguments, virtual types, proxies, factories, or area-scoped di.xml.'
+  - 'The task mentions ObjectManager, constructor injection, circular dependencies, generated proxies, or di.xml compile errors.'
+
+do_not_use_when:
+  - 'The task is only to create the initial module registration files with no DI wiring.'
+  - 'The task is a plugin/interceptor change where module-plugin provides the specific guidance.'
+
+required_inputs:
+  - 'Target class/interface, intended implementation, area scope, constructor argument names, and whether dependencies are expensive or optional.'
+  - 'Relevant compile/runtime error when troubleshooting DI failures.'
+
+workflow:
+  - 'Inspect constructor signatures, existing di.xml scopes, module sequence, and generated error messages before editing DI configuration.'
+  - 'Prefer constructor-injected interfaces and narrow area-scoped configuration over broad global preferences.'
+  - 'Use virtual types for argument variations and proxies/factories for expensive or conditional dependencies.'
+  - 'Run compile or targeted tests after changing constructor signatures or DI XML.'
+
+guardrails:
+  - rule: 'Do not add direct ObjectManager calls in services, models, controllers, observers, or tests.'
+  - rule: 'Do not create global preferences for core interfaces without checking blast radius and existing project conventions.'
+  - rule: 'Ask before replacing a core preference or changing DI for checkout, payment, customer auth, or catalog price flows.'
+    approval_required: true
+
+verification:
+  - 'Run bin/magento setup:di:compile or the project wrapper after DI XML or constructor changes.'
+  - 'Run targeted unit tests for services whose constructor dependencies changed.'
+  - 'When fixing compile errors, include the original error and the command proving it is resolved.'
+
+output_contract:
+  - 'Report each preference, virtual type, proxy, factory, or constructor signature changed and its area scope.'
+  - 'State the compile/test command run and any remaining DI risk.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Adobe Commerce 2.4.x dependency injection docs'
+
 instructions_file: instructions.md
 
 conventions:

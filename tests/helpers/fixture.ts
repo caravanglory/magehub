@@ -20,6 +20,13 @@ export function makeSkillYaml(
     instructions?: string;
     instructions_file?: string;
     tags?: string[];
+    use_when?: string[];
+    do_not_use_when?: string[];
+    required_inputs?: string[];
+    workflow?: string[];
+    guardrails?: Array<{ rule: string; approval_required?: boolean }>;
+    verification?: string[];
+    output_contract?: string[];
     conventions?: Array<{ rule: string }>;
     examples?: Array<{
       title: string;
@@ -28,7 +35,9 @@ export function makeSkillYaml(
       language?: string;
     }>;
     anti_patterns?: Array<{ pattern: string; problem: string }>;
+    files?: Array<{ path: string; description?: string; template?: string }>;
     references?: Array<{ title: string; url: string }>;
+    freshness?: { last_reviewed?: string; sources?: string[] };
     compatibility?: string[];
   } = {},
 ): string {
@@ -40,6 +49,13 @@ export function makeSkillYaml(
   const instructions = overrides.instructions ?? '### Test\n\nDo something.';
   const instructionsFile = overrides.instructions_file;
   const tags = overrides.tags ?? ['test'];
+  const useWhen = overrides.use_when;
+  const doNotUseWhen = overrides.do_not_use_when;
+  const requiredInputs = overrides.required_inputs;
+  const workflow = overrides.workflow;
+  const guardrails = overrides.guardrails;
+  const verification = overrides.verification;
+  const outputContract = overrides.output_contract;
   const conventions = overrides.conventions ?? [{ rule: 'Be consistent' }];
   const examples = overrides.examples ?? [
     { title: 'Example', code: 'echo "hi"', language: 'bash' },
@@ -47,9 +63,11 @@ export function makeSkillYaml(
   const anti_patterns = overrides.anti_patterns ?? [
     { pattern: 'Bad thing', problem: 'Causes issues' },
   ];
+  const files = overrides.files;
   const references = overrides.references ?? [
     { title: 'Docs', url: 'https://example.com' },
   ];
+  const freshness = overrides.freshness;
   const compatibility = overrides.compatibility ?? ['claude'];
 
   const lines: string[] = [
@@ -60,9 +78,42 @@ export function makeSkillYaml(
     `description: ${description}`,
     'tags:',
     ...tags.map((t) => `  - ${t}`),
+    ...(useWhen !== undefined
+      ? ['use_when:', ...useWhen.map((value) => `  - ${value}`)]
+      : []),
+    ...(doNotUseWhen !== undefined
+      ? ['do_not_use_when:', ...doNotUseWhen.map((value) => `  - ${value}`)]
+      : []),
+    ...(requiredInputs !== undefined
+      ? ['required_inputs:', ...requiredInputs.map((value) => `  - ${value}`)]
+      : []),
     ...(instructionsFile !== undefined
       ? [`instructions_file: ${instructionsFile}`]
       : [`instructions: |`, ...instructions.split('\n').map((l) => `  ${l}`)]),
+    ...(workflow !== undefined
+      ? ['workflow:', ...workflow.map((value) => `  - ${value}`)]
+      : []),
+    ...(guardrails !== undefined
+      ? [
+          'guardrails:',
+          ...guardrails.map((guardrail) =>
+            [
+              `  - rule: "${guardrail.rule}"`,
+              guardrail.approval_required !== undefined
+                ? `    approval_required: ${guardrail.approval_required}`
+                : undefined,
+            ]
+              .filter(Boolean)
+              .join('\n'),
+          ),
+        ]
+      : []),
+    ...(verification !== undefined
+      ? ['verification:', ...verification.map((value) => `  - ${value}`)]
+      : []),
+    ...(outputContract !== undefined
+      ? ['output_contract:', ...outputContract.map((value) => `  - ${value}`)]
+      : []),
     'conventions:',
     ...conventions.map((c) => `  - rule: "${c.rule}"`),
     'examples:',
@@ -84,8 +135,43 @@ export function makeSkillYaml(
     ...anti_patterns.map(
       (a) => `  - pattern: "${a.pattern}"\n    problem: "${a.problem}"`,
     ),
+    ...(files !== undefined
+      ? [
+          'files:',
+          ...files.map((file) =>
+            [
+              `  - path: "${file.path}"`,
+              file.description !== undefined
+                ? `    description: "${file.description}"`
+                : undefined,
+              file.template !== undefined
+                ? [
+                    '    template: |',
+                    ...file.template.split('\n').map((line) => `      ${line}`),
+                  ].join('\n')
+                : undefined,
+            ]
+              .filter(Boolean)
+              .join('\n'),
+          ),
+        ]
+      : []),
     'references:',
     ...references.map((r) => `  - title: "${r.title}"\n    url: ${r.url}`),
+    ...(freshness !== undefined
+      ? [
+          'freshness:',
+          freshness.last_reviewed !== undefined
+            ? `  last_reviewed: "${freshness.last_reviewed}"`
+            : undefined,
+          freshness.sources !== undefined
+            ? [
+                '  sources:',
+                ...freshness.sources.map((source) => `    - ${source}`),
+              ].join('\n')
+            : undefined,
+        ].filter((value): value is string => value !== undefined)
+      : []),
     'compatibility:',
     ...compatibility.map((c) => `  - ${c}`),
   ];

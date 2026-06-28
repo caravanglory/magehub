@@ -16,6 +16,44 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task is to review Magento code changes before merge, after conflict resolution, or around security/performance/API/database risk.'
+  - 'The user asks for review, audit, pre-landing review, PR/MR feedback, or risk triage on a Magento diff.'
+
+do_not_use_when:
+  - 'The user explicitly asks to implement changes instead of review findings.'
+  - 'There is no diff, branch, patch, or changed-file set to inspect and the user only wants general best practices.'
+
+required_inputs:
+  - 'Base branch or PR/MR target when it cannot be detected automatically.'
+  - 'Changed-file set, PR description or task intent, and project-specific verification commands if available.'
+
+workflow:
+  - 'Load prior project learnings, detect the base branch, and compute a read-only merge-base diff.'
+  - 'Read the full diff and surrounding code before producing findings.'
+  - 'Run critical passes for security, data safety, authorization, concurrency, and correctness before style or maintainability comments.'
+  - 'Attach severity, confidence, file/line evidence, concrete fix, and verification command to every finding.'
+  - 'Log only reusable, non-obvious learnings after the review.'
+
+guardrails:
+  - rule: 'Do not modify, stage, commit, push, create PRs, or switch branches as part of review.'
+  - rule: 'Use read-only git diff paths; do not create temporary merge branches to isolate review scope.'
+  - rule: 'Flag security-sensitive uncertainty explicitly instead of suppressing it as low-confidence noise.'
+
+verification:
+  - 'Verify every safety claim by citing the exact code or test that proves it.'
+  - 'Suggest concrete project commands for PHPCS, tests, static analysis, or smoke coverage relevant to each finding.'
+  - 'If no issues are found, state the review scope and remaining test gaps.'
+
+output_contract:
+  - 'Lead with findings ordered by severity, then open questions, then test gaps or residual risk.'
+  - 'Use file:line references, confidence scores, concrete fixes, and specific verification commands.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Magento Open Source and Adobe Commerce 2.4.x coding, security, cache, API, and DI docs'
+
 instructions_file: instructions.md
 
 conventions:
@@ -72,9 +110,9 @@ anti_patterns:
     problem: 'Direct echo of $_GET, request parameters, or database fields without htmlspecialchars() or Magento escaping helpers enables XSS attacks.'
     solution: 'Use $block->escapeHtml(), $escaper->escapeHtmlAttr(), or Magento\Framework\Escaper in templates. In PHP code, pass user input through the Escaper service before rendering or persisting.'
 
-  - pattern: 'Admin controller without _isAllowed() or ACL check'
-    problem: 'Any logged-in user (including customers with stolen sessions) can access admin functionality. Magento does not enforce ACL at the framework level — each controller must opt in.'
-    solution: 'Implement _isAllowed() returning $this->_authorization->isAllowed("Vendor_Module::resource_id"). Register the ACL resource in acl.xml.'
+  - pattern: 'Admin controller without ADMIN_RESOURCE, _isAllowed(), or a project-approved ACL check'
+    problem: 'Any admin user without the intended role permission may access admin functionality. Each controller must opt in to the ACL convention supported by the project and Magento version.'
+    solution: 'Define ADMIN_RESOURCE on supported controller classes or implement _isAllowed() where that is the local pattern. Register the ACL resource in acl.xml and verify the route denies users without the permission.'
 
   - pattern: 'Cacheable block without IdentityInterface or with hardcoded cache keys'
     problem: 'The block_html cache stores one copy per cache key. Without entity-specific tags, updates to underlying data do not invalidate the cached HTML, causing stale output.'
@@ -121,7 +159,7 @@ files:
       - [ ] Virtual types used instead of empty subclasses
 
       ## Security
-      - [ ] Admin controllers have _isAllowed() / ACL
+      - [ ] Admin controllers have ADMIN_RESOURCE, _isAllowed(), or the project-approved ACL mechanism
       - [ ] User input escaped before rendering
       - [ ] SQL built with parameterized queries (no string interpolation)
       - [ ] File uploads validated (type, size, path traversal)

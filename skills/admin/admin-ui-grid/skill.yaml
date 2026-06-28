@@ -15,6 +15,44 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task is to create or modify a Magento admin listing grid, mass action, grid controller, or UI component data provider.'
+  - 'The task mentions adminhtml UI components, listing XML, ACL-protected admin routes, collection factories, or grid columns.'
+
+do_not_use_when:
+  - 'The task is a storefront Hyva or Luma UI change with no admin grid surface.'
+  - 'The task is only a generic repository, API, or schema change without adminhtml listing behavior.'
+
+required_inputs:
+  - 'Entity name, database table or collection class, admin route/frontName, and desired columns or filters.'
+  - 'ACL resource and menu placement, or enough existing module context to infer them safely.'
+
+workflow:
+  - 'Inspect existing adminhtml routes, acl.xml, menu.xml, layout handles, UI component naming, and collection/data provider registrations.'
+  - 'Create or update the listing XML, data source, collection factory wiring, controller, layout handle, ACL, and menu in one coherent vertical slice.'
+  - 'Keep data source names, listing names, collection aliases, and layout handles exactly aligned.'
+  - 'Add mass actions or inline editing only when the task explicitly requires them, and route each write action through ACL-protected controllers.'
+
+guardrails:
+  - rule: 'Do not add admin controllers without an explicit ACL mechanism accepted by the target Magento version and project convention.'
+  - rule: 'Do not expose unfiltered large collections; grids must support paging, filtering, and sorting through the data provider.'
+  - rule: 'Ask before adding destructive mass actions such as delete, bulk status reset, or export of sensitive data.'
+    approval_required: true
+
+verification:
+  - 'Run XML validation or the project equivalent for view/adminhtml/ui_component, layout, acl.xml, menu.xml, and di.xml.'
+  - 'Run bin/magento setup:di:compile or the project wrapper when constructor or di.xml wiring changes.'
+  - 'Manually smoke the admin route when a browser/session is available; otherwise report that UI rendering was not verified.'
+
+output_contract:
+  - 'List every admin route, ACL resource, UI component name, data source name, and collection class touched.'
+  - 'Report verification commands run and whether the grid UI was browser-tested.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Adobe Commerce 2.4.x UI components and admin routing docs'
+
 instructions_file: instructions.md
 
 conventions:

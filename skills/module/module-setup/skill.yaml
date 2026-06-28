@@ -15,6 +15,45 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task is to create or modify Magento declarative schema, data patches, schema patches, db_schema_whitelist.json, or setup-time data migrations.'
+  - 'The task mentions db_schema.xml, DataPatchInterface, SchemaPatchInterface, patch_list, setup:upgrade, or schema whitelist generation.'
+
+do_not_use_when:
+  - 'The task is runtime repository CRUD with no schema or setup-time data change.'
+  - 'The task asks for legacy InstallSchema/UpgradeSchema for a new Magento 2.3+ module.'
+
+required_inputs:
+  - 'Table/column/index/constraint definitions or data migration intent, existing data safety requirements, and target module name.'
+  - 'Whether setup:upgrade and whitelist generation can run in the current environment.'
+
+workflow:
+  - 'Inspect existing schema, patches, resource models, setup history, and data ownership before changing database structure.'
+  - 'Represent standard DDL in db_schema.xml; use schema patches only for operations declarative schema cannot express.'
+  - 'Make data patches idempotent and dependency-ordered with getDependencies() and getAliases() where needed.'
+  - 'Regenerate db_schema_whitelist.json after schema changes and verify setup status.'
+
+guardrails:
+  - rule: 'Do not drop, rename, or narrow columns with existing data without an explicit migration plan and approval.'
+    approval_required: true
+  - rule: 'Do not hand-edit db_schema_whitelist.json except to review generated output.'
+  - rule: 'Ask before running setup:upgrade because it can apply database changes.'
+    approval_required: true
+
+verification:
+  - 'Run XML validation or bin/magento setup:db:status after schema changes.'
+  - 'Run bin/magento setup:db-declaration:generate-whitelist --module-name=Vendor_Module after db_schema.xml changes.'
+  - 'Run setup:upgrade in an approved local/staging environment and report whether data patches executed cleanly.'
+
+output_contract:
+  - 'List schema objects changed, patch classes added, idempotency checks, whitelist changes, and database commands run.'
+  - 'Flag any data-loss or rollback risk explicitly.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Adobe Commerce 2.4.x declarative schema and patch docs'
+
 instructions_file: instructions.md
 
 conventions:

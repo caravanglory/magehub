@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 import YAML from 'yaml';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -12,7 +12,7 @@ import {
   saveConfig,
   validateConfigFile,
 } from '../../src/core/config-manager.js';
-import { resolveOutputTarget } from '../../src/core/formats.js';
+import { detectFormat, resolveOutputTarget } from '../../src/core/formats.js';
 import { clearSchemaValidatorCache } from '../../src/core/schema-validator.js';
 import {
   createFixtureRepo,
@@ -84,6 +84,18 @@ describe('config-manager', () => {
       const target = resolveOutputTarget('/project', 'claude', 'custom/skills');
       expect(target.kind).toBe('directory');
       expect(target.path).toBe(path.join('/project', 'custom', 'skills'));
+    });
+  });
+
+  describe('detectFormat', () => {
+    it('detects codex projects from .codex marker directory', async () => {
+      await mkdir(path.join(rootDir, '.codex'), { recursive: true });
+
+      await expect(detectFormat(rootDir)).resolves.toBe('codex');
+    });
+
+    it('falls back to claude when no known tool marker exists', async () => {
+      await expect(detectFormat(rootDir)).resolves.toBe('claude');
     });
   });
 

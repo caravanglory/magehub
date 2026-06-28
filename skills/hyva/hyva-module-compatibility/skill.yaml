@@ -15,6 +15,45 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task is to adapt a Luma-oriented Magento module, template, layout, or JavaScript behavior for Hyva.'
+  - 'The task mentions Hyva, Alpine.js, Tailwind CSS, ViewModels, private content, or removing RequireJS/Knockout dependencies.'
+
+do_not_use_when:
+  - 'The storefront is still Luma-only and the task explicitly targets Knockout, RequireJS, or LESS implementation.'
+  - 'The task is an adminhtml UI component or backend-only module change.'
+
+required_inputs:
+  - 'Affected frontend route/template/layout handle, target Hyva theme or compatibility module, and existing Luma dependencies to replace.'
+  - 'Whether the compatibility layer should live in the theme override or a dedicated module.'
+
+workflow:
+  - 'Inspect existing layout XML, PHTML, JS dependencies, customer-data usage, block methods, and theme/module ownership.'
+  - 'Remove or replace Luma-only blocks and scripts with Hyva-compatible PHTML, Alpine.js, Tailwind classes, and ViewModels.'
+  - 'Keep dynamic customer-specific data out of cacheable HTML; use private content events or Hyva helpers.'
+  - 'Verify responsive storefront behavior and ensure Luma compatibility is not broken unless the task explicitly deprecates it.'
+
+guardrails:
+  - rule: 'Do not ship RequireJS, Knockout, jQuery UI, or LESS-only assumptions in Hyva paths.'
+  - rule: 'Do not place sensitive or customer-specific data into full-page-cacheable markup.'
+  - rule: 'Ask before removing Luma compatibility from the base module.'
+    approval_required: true
+
+verification:
+  - 'Run the project frontend build or static-content command when templates, Tailwind config, or CSS assets change.'
+  - 'Run targeted PHP tests for ViewModels or services when business logic moves out of blocks/templates.'
+  - 'Browser-smoke the affected Hyva page at desktop and mobile widths when a local storefront is available.'
+
+output_contract:
+  - 'List the Luma dependencies removed, Hyva replacements added, cache/private-content handling, and storefront verification performed.'
+  - 'State whether changes live in a theme override, compatibility module, or base module.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Hyva theme compatibility guidance'
+    - 'Adobe Commerce 2.4.x frontend and cache docs'
+
 instructions_file: instructions.md
 
 conventions:

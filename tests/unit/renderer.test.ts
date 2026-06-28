@@ -36,11 +36,44 @@ function makeSkill(overrides: Partial<Skill> = {}): Skill {
     version: '1.0.0',
     category: 'module',
     description: 'A test skill',
+    use_when: ['The task needs a test skill'],
+    do_not_use_when: ['The task is unrelated'],
+    required_inputs: ['Target class name'],
     instructions: '### Test\n\nDo something.',
-    conventions: [{ rule: 'Be consistent' }],
+    workflow: ['Inspect context', 'Apply the smallest useful change'],
+    guardrails: [
+      { rule: 'Do not edit unrelated files' },
+      { rule: 'Ask before destructive commands', approval_required: true },
+    ],
+    verification: ['Run the focused test command'],
+    output_contract: ['Report files changed and verification results'],
+    conventions: [
+      {
+        rule: 'Be consistent',
+        example: 'Follow local naming',
+        rationale: 'Keeps generated code predictable',
+      },
+    ],
     examples: [{ title: 'Example', code: 'echo "hi"', language: 'bash' }],
-    anti_patterns: [{ pattern: 'Bad thing', problem: 'Causes issues' }],
+    anti_patterns: [
+      {
+        pattern: 'Bad thing',
+        problem: 'Causes issues',
+        solution: 'Use the good thing',
+      },
+    ],
+    files: [
+      {
+        path: 'Model/{{className}}.php',
+        description: 'Generated model skeleton',
+        template: '<?php\ndeclare(strict_types=1);',
+      },
+    ],
     references: [{ title: 'Docs', url: 'https://example.com' }],
+    freshness: {
+      last_reviewed: '2026-06-28',
+      sources: ['Adobe Commerce 2.4.x docs'],
+    },
     compatibility: ['claude'],
     ...overrides,
   };
@@ -73,6 +106,18 @@ describe('renderer', () => {
 
       expect(output).toContain('Conventions:');
       expect(output).toContain('  - Be consistent');
+      expect(output).toContain('Example: Follow local naming');
+      expect(output).toContain('Rationale: Keeps generated code predictable');
+    });
+
+    it('renders agent contract summaries', () => {
+      const output = renderSkillDetail(makeSkill());
+
+      expect(output).toContain('Workflow (2):');
+      expect(output).toContain('Guardrails (2):');
+      expect(output).toContain('Ask before destructive commands');
+      expect(output).toContain('Verification (1):');
+      expect(output).toContain('File templates (1):');
     });
 
     it('renders examples as a summary list', () => {
@@ -87,6 +132,7 @@ describe('renderer', () => {
 
       expect(output).toContain('Anti-patterns (1):');
       expect(output).toContain('  - Bad thing: Causes issues');
+      expect(output).toContain('Solution: Use the good thing');
     });
 
     it('renders references', () => {
@@ -221,6 +267,35 @@ describe('renderer', () => {
 
       expect(artifact.files[0].content).toContain('### Conventions');
       expect(artifact.files[0].content).toContain('Be consistent');
+      expect(artifact.files[0].content).toContain(
+        'Example: Follow local naming',
+      );
+      expect(artifact.files[0].content).toContain(
+        'Rationale: Keeps generated code predictable',
+      );
+    });
+
+    it('includes the agent execution contract in per-skill body', async () => {
+      const artifact = await renderPerSkill([makeSkill()], {
+        format: 'claude',
+        includeExamples: true,
+        includeAntipatterns: true,
+      });
+
+      const content = artifact.files[0].content;
+      expect(content).toContain('### Activation');
+      expect(content).toContain('#### Use When');
+      expect(content).toContain('The task needs a test skill');
+      expect(content).toContain('#### Do Not Use When');
+      expect(content).toContain('### Workflow');
+      expect(content).toContain('1. Inspect context');
+      expect(content).toContain('### Guardrails');
+      expect(content).toContain(
+        'Ask before destructive commands (approval required)',
+      );
+      expect(content).toContain('### Verification');
+      expect(content).toContain('Run the focused test command');
+      expect(content).toContain('### Output Contract');
     });
 
     it('includes examples when enabled', async () => {
@@ -252,6 +327,35 @@ describe('renderer', () => {
       });
 
       expect(artifact.files[0].content).not.toContain('### Anti-patterns');
+    });
+
+    it('includes anti-pattern solutions when enabled', async () => {
+      const artifact = await renderPerSkill([makeSkill()], {
+        format: 'claude',
+        includeExamples: true,
+        includeAntipatterns: true,
+      });
+
+      expect(artifact.files[0].content).toContain(
+        'Solution: Use the good thing',
+      );
+    });
+
+    it('includes file templates and freshness metadata', async () => {
+      const artifact = await renderPerSkill([makeSkill()], {
+        format: 'claude',
+        includeExamples: true,
+        includeAntipatterns: true,
+      });
+
+      const content = artifact.files[0].content;
+      expect(content).toContain('### File Templates');
+      expect(content).toContain('#### Model/<className>.php');
+      expect(content).toContain('Model/{{className}}.php');
+      expect(content).toContain('```php');
+      expect(content).toContain('declare(strict_types=1);');
+      expect(content).toContain('### Freshness');
+      expect(content).toContain('Last reviewed: 2026-06-28');
     });
 
     it('includes references', async () => {
@@ -308,6 +412,7 @@ describe('renderer', () => {
       expect(content).not.toContain('### Conventions');
       expect(content).not.toContain('### Examples');
       expect(content).not.toContain('### Anti-patterns');
+      expect(content).not.toContain('### File Templates');
       expect(content).not.toContain('### References');
     });
 

@@ -15,6 +15,45 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task is to write or update Magento PHPUnit unit tests for isolated PHP classes without framework bootstrap.'
+  - 'The task mentions Test/Unit, PHPUnit mocks, data providers, exception assertions, or testing service logic.'
+
+do_not_use_when:
+  - 'The behavior requires Magento integration tests, database fixtures, web API functional tests, or full ObjectManager bootstrap.'
+  - 'The task is only to manually smoke-test UI behavior.'
+
+required_inputs:
+  - 'Class under test, constructor dependencies, observable behavior, edge cases, and the project PHPUnit version/config path.'
+  - 'Whether collaborators should be mocks, stubs, real value objects, or in-memory fakes.'
+
+workflow:
+  - 'Read the production class and nearby tests before deciding the test shape.'
+  - 'Instantiate the real class under test with mocks for direct dependencies only.'
+  - 'Assert behavior, return values, state changes, exceptions, and meaningful collaborator side effects.'
+  - 'Use data providers for repeated input matrices and keep test method names behavior-oriented.'
+
+guardrails:
+  - rule: 'Do not use ObjectManager, Magento bootstrap, database fixtures, or integration-test helpers in unit tests.'
+  - rule: 'Do not mock the class under test.'
+  - rule: 'Ask before refactoring production code solely to make tests pass when the behavior contract is unclear.'
+    approval_required: true
+
+verification:
+  - 'Run the targeted PHPUnit test file or Test/Unit directory through the project environment wrapper.'
+  - 'Run a broader suite when shared service behavior or public APIs are touched.'
+  - 'Report skipped tests or unavailable PHPUnit config explicitly.'
+
+output_contract:
+  - 'State test files added/updated, behaviors covered, mocks used, and exact PHPUnit command result.'
+  - 'Call out coverage gaps that remain outside unit-test scope.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'PHPUnit current documentation'
+    - 'Adobe Commerce 2.4.x testing guide'
+
 instructions_file: instructions.md
 
 conventions:

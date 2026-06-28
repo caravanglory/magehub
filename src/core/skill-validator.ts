@@ -19,8 +19,18 @@ export interface SkillValidationResult {
 function findHeadingWarnings(instructions: string): string[] {
   const lines = instructions.split('\n');
   const warnings: string[] = [];
+  let insideFence = false;
 
   lines.forEach((line, index) => {
+    if (/^```/.test(line.trim())) {
+      insideFence = !insideFence;
+      return;
+    }
+
+    if (insideFence) {
+      return;
+    }
+
     if (/^#\s/.test(line) || /^##\s/.test(line)) {
       warnings.push(
         `instructions line ${index + 1}: headings must start at ### or deeper`,

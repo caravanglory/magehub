@@ -18,6 +18,47 @@ magento_versions:
 
 dependencies: []
 
+use_when:
+  - 'The task is to plan, assess, or execute an Adobe Commerce or Magento Open Source version upgrade, patch-line move, PHP/runtime upgrade, or UCT-driven compatibility pass.'
+  - 'The task mentions composer constraints, Upgrade Compatibility Tool, dependency waves, system requirements, service upgrades, or setup:upgrade readiness.'
+
+do_not_use_when:
+  - 'The task is a normal feature change or bug fix unrelated to platform/version compatibility.'
+  - 'The user asks only for current-version module scaffolding, DI, plugin, setup, or performance work.'
+
+required_inputs:
+  - 'Current and target Magento/Adobe Commerce version, edition/package, PHP/runtime stack, deployment model, and environment wrapper.'
+  - 'Custom module/theme inventory, third-party extension constraints, UCT availability, backup/rollback policy, and verification gates.'
+
+workflow:
+  - 'Run read-only inventory first, including Composer, platform versions, module status, custom code surface, and service dependencies.'
+  - 'Check current Adobe release notes and system requirements when target requirements are unknown.'
+  - 'Build dependency waves from module.xml, Composer requires, DI/plugins/observers, API surfaces, queues, cron, and theme dependencies.'
+  - 'Apply composer/platform and code compatibility changes one wave at a time with verification after each wave.'
+  - 'Keep a pending manual-work list for skipped or approval-sensitive items.'
+
+guardrails:
+  - rule: 'Do not run composer update to latest without an explicit target version and platform matrix.'
+  - rule: 'Ask before editing HIGH impact modules such as checkout, payment, customer auth, database migrations, core preferences, or production deployment scripts.'
+    approval_required: true
+  - rule: 'Ask before running setup:upgrade, schema/data patches, or automatic UCT refactor commands.'
+    approval_required: true
+
+verification:
+  - 'Run composer validate/install/update dry-run or equivalent dependency checks appropriate to the wave.'
+  - 'Run setup:di:compile, targeted tests, GraphQL/API/schema checks, or smoke tests after each changed wave.'
+  - 'End with an exact verification matrix showing commands run, commands skipped, and residual risk.'
+
+output_contract:
+  - 'Provide upgrade summary, readiness gates, wave plan, impact table, execution log, verification matrix, and pending manual work.'
+  - 'Classify every module/package risk as HIGH, MEDIUM, or LOW with evidence.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Adobe Commerce upgrade guide, released versions, and system requirements'
+    - 'Upgrade Compatibility Tool documentation'
+
 instructions_file: instructions.md
 
 conventions:

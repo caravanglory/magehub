@@ -9,6 +9,7 @@ Project site: [magehub.org](https://magehub.org)
 MageHub now supports a complete **local v1.0 workflow**:
 
 - 13 bundled Magento 2 core skills
+- agent-oriented skill contracts for activation, workflow, guardrails, verification, and output expectations
 - skill listing, search, show, install, remove, and verification
 - config init/show/validate
 - context generation for multiple AI tool formats
@@ -53,7 +54,7 @@ magehub skill:list                     # browse bundled skills
 magehub skill:search plugin            # find skills by keyword
 magehub skill:remove -g module-plugin  # uninstall globally and clean output
 magehub generate                       # re-render current project from .magehub.yaml
-magehub setup:init --format=cursor     # optional: create .magehub.yaml without installing skills
+magehub setup:init --format=codex      # optional: create .magehub.yaml without installing skills
 ```
 
 Global output layout by format:

@@ -15,6 +15,44 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task is to write, refactor, or review Magento PHP code for coding standards, service contracts, repositories, strict types, PHPCS, or extension attributes.'
+  - 'The task mentions Magento coding standard, Api interfaces, repository pattern, phpcs.xml, strict_types, or maintainability conventions.'
+
+do_not_use_when:
+  - 'The task is purely operational, performance profiling, frontend Hyva migration, or database schema work with a more specific skill.'
+  - 'The user explicitly wants a quick prototype and accepts non-production scaffolding.'
+
+required_inputs:
+  - 'Target module/path, project coding standard command, and whether the code is public API, internal service, model, controller, or setup code.'
+  - 'Existing project conventions for service contracts, repositories, data interfaces, and static analysis.'
+
+workflow:
+  - 'Inspect nearby module code and project PHPCS/static-analysis configuration before changing style or architecture.'
+  - 'Add strict types, explicit visibility, constructor injection, interface-oriented APIs, and repository boundaries consistent with the module.'
+  - 'Keep refactors narrowly tied to the requested change; avoid opportunistic architecture rewrites.'
+  - 'Run formatting, PHPCS, static analysis, or targeted tests appropriate to the touched files.'
+
+guardrails:
+  - rule: 'Do not introduce service contracts or repositories for one-off internal code unless they remove real coupling or match project conventions.'
+  - rule: 'Do not change public interfaces without backward-compatibility review and downstream implementer impact.'
+    approval_required: true
+  - rule: 'Do not suppress PHPCS/static-analysis errors without a local justification.'
+
+verification:
+  - 'Run vendor/bin/phpcs --standard=Magento2 or the project equivalent for touched PHP/XML files.'
+  - 'Run targeted PHPUnit/static-analysis commands when method signatures or service behavior change.'
+  - 'Report any standard command that is unavailable in the current project.'
+
+output_contract:
+  - 'List style/API changes, public contract changes, and exact quality commands run.'
+  - 'Flag any intentionally deferred PHPCS/static-analysis issue.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Magento coding standard and Adobe Commerce 2.4.x PHP development docs'
+
 instructions_file: instructions.md
 
 conventions:

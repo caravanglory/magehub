@@ -43,10 +43,20 @@ export interface SkillAntiPattern {
   solution?: string;
 }
 
+export interface SkillGuardrail {
+  rule: string;
+  approval_required?: boolean;
+}
+
 export interface SkillFileTemplate {
   path: string;
   template?: string;
   description?: string;
+}
+
+export interface SkillFreshness {
+  last_reviewed?: string;
+  sources?: string[];
 }
 
 export interface SkillReference {
@@ -63,12 +73,20 @@ export interface Skill {
   tags?: string[];
   magento_versions?: string[];
   dependencies?: string[];
+  use_when?: string[];
+  do_not_use_when?: string[];
+  required_inputs?: string[];
   instructions: string;
+  workflow?: string[];
+  guardrails?: SkillGuardrail[];
+  verification?: string[];
+  output_contract?: string[];
   conventions?: SkillConvention[];
   examples?: SkillExample[];
   anti_patterns?: SkillAntiPattern[];
   files?: SkillFileTemplate[];
   references?: SkillReference[];
+  freshness?: SkillFreshness;
   compatibility?: SupportedTool[];
 }
 

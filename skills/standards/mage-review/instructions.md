@@ -1,15 +1,15 @@
-# Magento 2 Code Review Workflow
+### Magento 2 Code Review Workflow
 
 Run this review before every merge. The goal is not to find every possible issue — it is to find the issues that tests and static analysis miss, and to produce actionable fixes, not just observations.
 
-## When to Use
+### When to Use
 
 - Before merging any feature branch
 - After a significant rebase or conflict resolution
 - When a PR touches security-sensitive areas (auth, input handling, payment, checkout)
 - When a PR modifies framework-level code (di.xml, events.xml, db_schema.xml)
 
-## Review Methodology
+### Review Methodology
 
 ### Fix-First
 
@@ -29,7 +29,7 @@ Rate every finding 1-10:
 
 Format: `[SEVERITY] (confidence: N/10) file:line — description`
 
-Example: `[CRITICAL] (confidence: 9/10) Controller/Admin/Export.php:22 — missing _isAllowed() enables unauthorized data export`
+Example: `[CRITICAL] (confidence: 9/10) Controller/Admin/Export.php:22 — missing admin ACL check enables unauthorized data export`
 
 ### Specificity Standard
 
@@ -85,7 +85,7 @@ Project slug is derived from the git remote URL or directory name: `owner-repo` 
   "timestamp": "2026-04-22T10:30:00Z",
   "type": "pattern",
   "key": "missing-acl-admin-controller",
-  "insight": "Every admin controller extending Action\\Adminhtml\\Action must override _isAllowed(). Magento does not enforce this at the framework level.",
+  "insight": "Every admin controller must declare the project-approved ACL mechanism, such as ADMIN_RESOURCE on supported Magento versions or _isAllowed() where the project uses it.",
   "confidence": 9,
   "source": "observed",
   "files": ["Controller/Admin/Export.php"],
@@ -164,7 +164,7 @@ for f in ~/.magehub/learnings/*.jsonl; do
 done
 ```
 
-## Step-by-Step Review
+### Step-by-Step Review
 
 ### Step 0: Detect platform and base branch
 
@@ -221,7 +221,7 @@ If B or C: use the branch name the user provides as `<base_branch>`.
 
 If the user does not respond or cancels: fall back to `main` and proceed, but add a note to the review output: "Base branch assumed to be `main` — verify this is correct."
 
-Print the detected (or user-confirmed) base branch name. In every subsequent `git diff`, `git log`, `git fetch`, `git merge`, and PR/MR creation command, **substitute the detected branch name** wherever the instructions say `<base_branch>`.
+Print the detected (or user-confirmed) base branch name. In every subsequent read-only `git diff`, `git log`, and `git fetch` command, **substitute the detected branch name** wherever the instructions say `<base_branch>`.
 
 **If on the base branch:** Output "Nothing to review — you're on the base branch." and stop.
 
@@ -252,62 +252,30 @@ If no learnings exist, proceed normally.
 
 ### Step 2: Get the diff
 
-Fetch and check whether the current branch is behind `<base_branch>`:
+Fetch the base branch and compute a read-only merge-base diff:
 
 ```bash
 git fetch origin <base_branch> --quiet
 
-# How many commits is the current branch behind base?
+MERGE_BASE=$(git merge-base HEAD origin/<base_branch>)
+git diff "$MERGE_BASE"..HEAD --stat
+git diff "$MERGE_BASE"..HEAD
+```
+
+Also report whether the branch is behind base so the author knows if the review
+was performed on an outdated branch:
+
+```bash
 BEHIND=$(git rev-list --count HEAD..origin/<base_branch> 2>/dev/null || echo 0)
-```
-
-**If `BEHIND` is 0** (current branch is up-to-date with base):
-
-```bash
-git diff origin/<base_branch> --stat
-git diff origin/<base_branch>
-```
-
-**If `BEHIND` > 0** (current branch is behind base):
-
-The current branch is missing commits from `<base_branch>`. Diffing directly against `origin/<base_branch>` would include those upstream changes — reviewing them is wasted effort and produces false positives.
-
-Instead, create a temporary merge branch so the diff only contains the branch's own changes:
-
-```bash
-# Create temp branch from current HEAD
-REVIEW_TEMP="review-temp-$(date +%s)"
-git branch "$REVIEW_TEMP"
-
-# Merge base into temp branch (prefer merge so we keep both histories)
-git checkout "$REVIEW_TEMP"
-git merge origin/<base_branch> --no-edit
-
-# If conflicts occur, abort and fall back to direct diff
-if [ $? -ne 0 ]; then
-  git merge --abort
-  git checkout -
-  git branch -D "$REVIEW_TEMP"
-  echo "WARNING: Merge conflict with <base_branch>. Falling back to direct diff (may include upstream changes)."
-  git diff origin/<base_branch> --stat
-  git diff origin/<base_branch>
-  DIFF_REF="origin/<base_branch>"
-else
-  # Diff the merged temp branch against base — this shows ONLY branch-specific changes
-  git diff origin/<base_branch> --stat
-  git diff origin/<base_branch>
-  DIFF_REF="origin/<base_branch>"
-
-  # Return to the original branch
-  git checkout -
-  # Clean up temp branch
-  git branch -D "$REVIEW_TEMP"
-fi
+echo "Behind origin/<base_branch>: $BEHIND commit(s)"
 ```
 
 If on the base branch or no diff exists, stop: "Nothing to review."
 
-**Why this matters:** Without the merge step, a branch 50 commits behind `main` would produce a diff that includes all 50 upstream changes — most of which were already reviewed when they landed on `main`. The temporary merge isolates the branch's unique contribution.
+**Why this matters:** Directly diffing against `origin/<base_branch>` can include
+upstream changes when the branch is behind base. The merge-base diff isolates
+the branch's unique contribution without checking out branches, merging, or
+touching the worktree.
 
 ### Step 3: Scope check (informational)
 
@@ -393,12 +361,12 @@ Check all entry points (controllers, API endpoints, GraphQL resolvers):
 
 Check every admin-facing entry point:
 
-- Controller extends `Action\Adminhtml\Action` but does not override `_isAllowed()`
+- Controller extends an admin action class but does not declare `ADMIN_RESOURCE`, `_isAllowed()`, or the project-approved ACL mechanism
 - API endpoint in `webapi.xml` without `aclResource` attribute
 - GraphQL resolver performs admin-only operations without ACL check
 - Frontend controller exposes admin data without store-scoping
 
-**Fix pattern:** Implement `_isAllowed()` in every admin controller. Add `<resource ref="Vendor_Module::action"/>` to webapi.xml routes. Use `$this->_authorization->isAllowed()` in resolvers and services.
+**Fix pattern:** Follow the project's Magento-version convention: define `ADMIN_RESOURCE` on controllers that support it, or implement `_isAllowed()` returning `$this->_authorization->isAllowed("Vendor_Module::resource_id")` where that is the local pattern. Add `<resource ref="Vendor_Module::action"/>` to webapi.xml routes. Use `$this->_authorization->isAllowed()` in resolvers and services.
 
 ### Step 5: Informational pass
 
@@ -557,7 +525,7 @@ vendor/bin/phpunit dev/tests/api-functional/testsuite/Magento/WebApi
 vendor/bin/phpstan analyse app/code/Vendor/Module
 ```
 
-## Important Rules
+### Important Rules
 
 - Read the FULL diff before commenting. Do not flag issues already addressed.
 - Fix-first, not read-only. Suggest concrete fixes, not just problems.
@@ -584,7 +552,7 @@ LEARN_FILE="$HOME/.magehub/learnings/${SLUG}.jsonl"
 mkdir -p ~/.magehub/learnings
 
 # Example: log a discovered pitfall
-echo '{"timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","type":"pitfall","key":"missing-acl-in-export-controllers","insight":"Export controllers in this project consistently omit _isAllowed(). The pattern is: any admin controller with a download action needs explicit ACL. Check every new admin controller.","confidence":9,"source":"observed","files":["Controller/Admin/Export.php","Controller/Admin/Download.php"],"branch":"'$(git branch --show-current)'"}' >> "$LEARN_FILE"
+echo '{"timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","type":"pitfall","key":"missing-acl-in-export-controllers","insight":"Export controllers in this project consistently omit admin ACL declarations. The pattern is: any admin controller with a download action needs explicit ACL through ADMIN_RESOURCE or the project-approved _isAllowed() pattern.","confidence":9,"source":"observed","files":["Controller/Admin/Export.php","Controller/Admin/Download.php"],"branch":"'$(git branch --show-current)'"}' >> "$LEARN_FILE"
 ```
 
 **What to log:**

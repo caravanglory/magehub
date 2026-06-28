@@ -43,6 +43,48 @@ describe('skill-validator', () => {
     expect(result.skill).toBeDefined();
   });
 
+  it('validates optional agent contract fields', async () => {
+    const skillDir = path.join(rootDir, 'skills', 'module', 'contract-skill');
+    await mkdir(skillDir, { recursive: true });
+    await writeFile(
+      path.join(skillDir, 'skill.yaml'),
+      makeSkillYaml({
+        id: 'contract-skill',
+        use_when: ['The task needs a module scaffold'],
+        do_not_use_when: ['The task is a code review'],
+        required_inputs: ['Vendor name'],
+        workflow: ['Read the current module structure', 'Create files'],
+        guardrails: [
+          { rule: 'Do not run destructive commands' },
+          { rule: 'Ask before database resets', approval_required: true },
+        ],
+        verification: ['Run bin/magento module:status'],
+        output_contract: ['List files changed and verification results'],
+        files: [
+          {
+            path: 'registration.php',
+            description: 'Module registration file',
+            template: '<?php\ndeclare(strict_types=1);',
+          },
+        ],
+        freshness: {
+          last_reviewed: '2026-06-28',
+          sources: ['Adobe Commerce 2.4.x docs'],
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await validateSkillFile(path.join(skillDir, 'skill.yaml'));
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+    expect(result.skill?.workflow).toHaveLength(2);
+    expect(result.skill?.guardrails?.[1].approval_required).toBe(true);
+    expect(result.skill?.files?.[0].template).toContain('strict_types');
+    expect(result.skill?.freshness?.last_reviewed).toBe('2026-06-28');
+  });
+
   it('warns on # heading in instructions', async () => {
     const skillDir = path.join(rootDir, 'skills', 'module', 'heading-h1');
     await mkdir(skillDir, { recursive: true });

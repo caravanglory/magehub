@@ -15,6 +15,44 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task is to create a new Magento module skeleton or repair missing registration.php, etc/module.xml, or composer.json metadata.'
+  - 'The task mentions app/code, module registration, module.xml sequence, Composer autoloading, or enabling a new module.'
+
+do_not_use_when:
+  - 'The module already exists and the task is about DI, plugins, setup scripts, API, or admin UI behavior.'
+  - 'The task is to package an existing module for Marketplace or Composer distribution beyond the basic skeleton.'
+
+required_inputs:
+  - 'Vendor name, module name, install path strategy (app/code or Composer package), and direct module dependencies if any.'
+  - 'Whether the module should be enabled immediately and which environment wrapper runs Magento commands.'
+
+workflow:
+  - 'Inspect the repository structure and naming conventions before creating files.'
+  - 'Create the minimal module skeleton: registration.php, etc/module.xml, composer.json, and sequence entries only for direct config/schema dependencies.'
+  - 'Keep the scaffold free of business logic, setup scripts, DI wiring, and frontend/admin artifacts unless the task explicitly asks for them.'
+  - 'Run the smallest command that proves Magento can discover the module.'
+
+guardrails:
+  - rule: 'Do not add broad module sequence dependencies just to force load order.'
+  - rule: 'Do not run module:enable or setup:upgrade without confirming the project environment wrapper and working tree state.'
+  - rule: 'Ask before enabling a module or running setup:upgrade because it changes generated config/database state.'
+    approval_required: true
+
+verification:
+  - 'Run composer validate when composer.json is created or changed.'
+  - 'Run bin/magento module:status Vendor_Module through the project wrapper when Magento is available.'
+  - 'Run setup:di:compile only when scaffold includes DI-bearing classes or the project requires compile as a discovery gate.'
+
+output_contract:
+  - 'List created scaffold files, module name, dependency sequence entries, autoload mapping, and commands run.'
+  - 'State whether module enable/setup:upgrade was executed or intentionally skipped.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Adobe Commerce 2.4.x module file structure and registration docs'
+
 instructions_file: instructions.md
 
 conventions:

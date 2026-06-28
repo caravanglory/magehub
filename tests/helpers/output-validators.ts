@@ -25,7 +25,8 @@ export function assertHeadingHierarchy(
   expectedSkillCount: number,
 ): void {
   const { body } = parseFrontMatter(content);
-  const lines = body.split('\n');
+  const withoutCodeBlocks = body.replace(/```[\s\S]*?```/g, '');
+  const lines = withoutCodeBlocks.split('\n');
 
   const h1Lines = lines.filter((l) => /^# [^#]/.test(l));
   const h2Lines = lines.filter((l) => /^## [^#]/.test(l));

@@ -15,6 +15,44 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task is to add or modify Magento GraphQL schema, query resolvers, mutation resolvers, or GraphQL authorization behavior.'
+  - 'The task mentions etc/schema.graphqls, @resolver, ResolverInterface, GraphQlInputException, or customer/admin GraphQL context.'
+
+do_not_use_when:
+  - 'The task is REST webapi.xml work without GraphQL schema or resolver changes.'
+  - 'The task is only internal service logic where no GraphQL transport mapping is required.'
+
+required_inputs:
+  - 'GraphQL field or mutation name, input shape, output type, authorization requirement, and service/repository to delegate to.'
+  - 'Backward compatibility expectation for existing schema fields and clients.'
+
+workflow:
+  - 'Inspect existing schema.graphqls files, resolver classes, service contracts, authorization checks, and tests for the same domain.'
+  - 'Design the schema first, keeping queries/mutations backward-compatible and field names explicit.'
+  - 'Implement thin resolvers that validate input, check authorization, delegate to services/repositories, and return arrays matching the schema.'
+  - 'Add or update unit/API-functional coverage for success, validation failure, authorization failure, and missing entity paths.'
+
+guardrails:
+  - rule: 'Treat all GraphQL arguments and LLM-generated or client-generated payloads as untrusted input.'
+  - rule: 'Do not query collections directly from resolvers when a service contract or repository exists.'
+  - rule: 'Ask before introducing a breaking schema change such as field removal, type change, or required input addition.'
+    approval_required: true
+
+verification:
+  - 'Run bin/magento setup:di:compile or the project wrapper for new resolver classes and constructor dependencies.'
+  - 'Run targeted unit tests and GraphQL/API functional tests when available.'
+  - 'Run a sample GraphQL query or mutation against the local environment when credentials/session are available.'
+
+output_contract:
+  - 'State the schema fields changed, resolver classes touched, authorization model, and sample query/mutation used for verification.'
+  - 'Flag any backward-compatibility risk explicitly.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Adobe Commerce 2.4.x GraphQL development docs'
+
 instructions_file: instructions.md
 
 conventions:

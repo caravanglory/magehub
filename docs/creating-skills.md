@@ -27,10 +27,19 @@ Project-local custom skills can live in any project-local directory referenced b
 
 - `tags`
 - `magento_versions`
+- `use_when`
+- `do_not_use_when`
+- `required_inputs`
+- `workflow`
+- `guardrails`
+- `verification`
+- `output_contract`
 - `conventions`
 - `examples`
 - `anti_patterns`
+- `files`
 - `references`
+- `freshness`
 - `compatibility`
 
 Valid `compatibility` values are `claude`, `opencode`, `codex`, and `qoder`.
@@ -76,6 +85,29 @@ description: Implement Magento 2 plugins following best practices
 
 instructions_file: instructions.md
 
+use_when:
+  - Creating or modifying Magento plugin/interceptor behavior
+do_not_use_when:
+  - The target method is final, static, private, protected, or a constructor
+required_inputs:
+  - Target class, public method, desired behavior, and area scope
+workflow:
+  - Inspect target method signature and existing plugins
+  - Choose before, after, or around plugin based on the least invasive change
+  - Register the plugin in the narrowest applicable di.xml scope
+guardrails:
+  - rule: Around plugins must call and return $proceed() unless deliberately blocking execution
+  - rule: Ask before pluginizing checkout, payment, customer auth, inventory, or price calculation flows
+    approval_required: true
+verification:
+  - Run bin/magento setup:di:compile or the project wrapper
+output_contract:
+  - State target class/method, plugin type, di.xml scope, and verification result
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - Adobe Commerce plugin/interceptor docs
+
 tags:
   - plugin
   - interceptor
@@ -111,6 +143,18 @@ skills/module/my-skill/
     after-plugin.php
     di-xml-configuration.xml
 ```
+
+#### Agent Contract Fields
+
+Use the agent contract fields to make a skill executable, not just informative:
+
+- `use_when` and `do_not_use_when` define activation boundaries.
+- `required_inputs` tells the agent what context to collect before editing.
+- `workflow` is the minimal ordered path from discovery to implementation.
+- `guardrails` captures risky actions; set `approval_required: true` for destructive, data-changing, or high-blast-radius operations.
+- `verification` lists concrete proof expected before reporting completion.
+- `output_contract` defines what the final answer must include.
+- `freshness` records when domain assumptions were last reviewed and which sources should be re-checked for version-sensitive guidance.
 
 #### Mutual Exclusivity Rules
 

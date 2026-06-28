@@ -25,6 +25,46 @@ magento_versions:
 
 dependencies: []
 
+use_when:
+  - 'The task is to investigate, profile, or optimize Magento performance in backend, database, cache, search, queue, or frontend layers.'
+  - 'The task mentions TTFB, query count, N+1, slow queries, block cache, FPC, Varnish, New Relic, Blackfire, Lighthouse, or WebPageTest.'
+
+do_not_use_when:
+  - 'The task is a correctness bug with no measured latency, throughput, memory, or resource symptom.'
+  - 'The user asks for a code style review rather than a performance baseline and optimization cycle.'
+
+required_inputs:
+  - 'Affected page/API/CLI transaction, environment, dataset realism, cache mode, current symptom, and success metric.'
+  - 'Available profiler/APM/logging tools and whether production traffic is in scope.'
+
+workflow:
+  - 'Reproduce the symptom in production-like conditions and capture baseline metrics before editing code.'
+  - 'Profile one layer at a time and form a falsifiable hypothesis for the largest bottleneck.'
+  - 'Apply the smallest change that targets that bottleneck only.'
+  - 'Re-measure with the same method and compare baseline vs result; revert or revisit if no improvement is proven.'
+
+guardrails:
+  - rule: 'Do not claim a performance improvement without before/after evidence.'
+  - rule: 'Do not enable Magento profiler, SQL logging, or verbose APM tracing on production customer-facing traffic.'
+    approval_required: true
+  - rule: 'Ask before cache flushes, reindex-all commands, or service restarts that can affect shared environments.'
+    approval_required: true
+
+verification:
+  - 'Report baseline and post-change metrics using the same URL, command, dataset, cache state, and measurement tool.'
+  - 'Run targeted tests for any changed code path plus a smoke test for the measured transaction.'
+  - 'When cache behavior changes, prove invalidation correctness with cache tags, key info, or a stale-data check.'
+
+output_contract:
+  - 'Provide baseline, hypothesis, change made, post-change measurement, delta, commands/tools used, and unresolved measurement risk.'
+  - 'State any production-only assumptions that were not verified locally.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Adobe Commerce 2.4.x cache and performance docs'
+    - 'New Relic and Blackfire profiling guidance'
+
 instructions_file: instructions.md
 
 conventions:

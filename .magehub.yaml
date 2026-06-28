@@ -1,6 +1,7 @@
 version: '1'
 skills:
   - module-scaffold
+  - module-plugin
   - module-di
   - module-setup
   - admin-ui-grid
@@ -8,7 +9,10 @@ skills:
   - hyva-module-compatibility
   - testing-phpunit
   - performance
+  - magento-upgrade
   - standards-coding
+  - mage-review
+  - devops-warden
 format: claude
 include_examples: true
 include_antipatterns: true

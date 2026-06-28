@@ -57,11 +57,63 @@
         "type": "string"
       }
     },
+    "use_when": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "do_not_use_when": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "instructions": {
       "type": "string"
     },
     "instructions_file": {
       "type": "string"
+    },
+    "workflow": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "guardrails": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule"],
+        "properties": {
+          "rule": {
+            "type": "string"
+          },
+          "approval_required": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "verification": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "output_contract": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
     "conventions": {
       "type": "array",
@@ -161,6 +213,21 @@
         },
         "additionalProperties": false
       }
+    },
+    "freshness": {
+      "type": "object",
+      "properties": {
+        "last_reviewed": {
+          "type": "string"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "compatibility": {
       "type": "array",

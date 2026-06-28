@@ -32,11 +32,148 @@ export interface PerSkillArtifact {
 
 export type RenderArtifact = SingleFileArtifact | PerSkillArtifact;
 
+function hasItems<T>(items: T[] | undefined): items is T[] {
+  return items !== undefined && items.length > 0;
+}
+
+function appendStringListSection(
+  sections: string[],
+  heading: string,
+  items: string[] | undefined,
+): void {
+  if (!hasItems(items)) {
+    return;
+  }
+
+  sections.push('', heading, '');
+  sections.push(...items.map((item) => `- ${item}`));
+}
+
+function appendNumberedListSection(
+  sections: string[],
+  heading: string,
+  items: string[] | undefined,
+): void {
+  if (!hasItems(items)) {
+    return;
+  }
+
+  sections.push('', heading, '');
+  items.forEach((item, index) => {
+    sections.push(`${index + 1}. ${item}`);
+  });
+}
+
+function appendActivationSection(sections: string[], skill: Skill): void {
+  const hasActivation =
+    hasItems(skill.use_when) ||
+    hasItems(skill.do_not_use_when) ||
+    hasItems(skill.required_inputs);
+
+  if (!hasActivation) {
+    return;
+  }
+
+  sections.push('### Activation');
+  appendStringListSection(sections, '#### Use When', skill.use_when);
+  appendStringListSection(
+    sections,
+    '#### Do Not Use When',
+    skill.do_not_use_when,
+  );
+  appendStringListSection(
+    sections,
+    '#### Required Inputs',
+    skill.required_inputs,
+  );
+}
+
+function appendGuardrails(sections: string[], skill: Skill): void {
+  if (!hasItems(skill.guardrails)) {
+    return;
+  }
+
+  sections.push('', '### Guardrails', '');
+  for (const guardrail of skill.guardrails) {
+    const approval =
+      guardrail.approval_required === true ? ' (approval required)' : '';
+    sections.push(`- ${guardrail.rule}${approval}`);
+  }
+}
+
+function inferTemplateLanguage(filePath: string): string {
+  if (filePath.endsWith('.php')) return 'php';
+  if (filePath.endsWith('.xml')) return 'xml';
+  if (filePath.endsWith('.json')) return 'json';
+  if (filePath.endsWith('.graphqls') || filePath.endsWith('.graphql')) {
+    return 'graphql';
+  }
+  if (filePath.endsWith('.md')) return 'markdown';
+  if (filePath.endsWith('.yaml') || filePath.endsWith('.yml')) return 'yaml';
+  if (filePath.endsWith('.sh')) return 'bash';
+  return 'text';
+}
+
+function formatTemplateDisplayPath(filePath: string): string {
+  return filePath.replace(/\{\{\s*([^}\s]+)\s*\}\}/g, '<$1>');
+}
+
+function appendFileTemplates(sections: string[], skill: Skill): void {
+  if (!hasItems(skill.files)) {
+    return;
+  }
+
+  sections.push('', '### File Templates', '');
+  for (const file of skill.files) {
+    sections.push(`#### ${formatTemplateDisplayPath(file.path)}`, '');
+    sections.push('Path template:', '', '```text', file.path, '```', '');
+    if (file.description !== undefined) {
+      sections.push(file.description, '');
+    }
+    if (file.template !== undefined) {
+      const language = inferTemplateLanguage(file.path);
+      sections.push('```' + language, file.template.trim(), '```', '');
+    }
+  }
+}
+
+function appendFreshness(sections: string[], skill: Skill): void {
+  if (skill.freshness === undefined) {
+    return;
+  }
+
+  const lines: string[] = [];
+  if (skill.freshness.last_reviewed !== undefined) {
+    lines.push(`- Last reviewed: ${skill.freshness.last_reviewed}`);
+  }
+  if (hasItems(skill.freshness.sources)) {
+    lines.push(`- Sources to re-check: ${skill.freshness.sources.join(', ')}`);
+  }
+
+  if (lines.length > 0) {
+    sections.push('', '### Freshness', '', ...lines);
+  }
+}
+
 function renderSkillBody(
   skill: Skill,
   options: Pick<RenderOptions, 'includeExamples' | 'includeAntipatterns'>,
 ): string {
   const sections: string[] = [];
+
+  appendActivationSection(sections, skill);
+  appendNumberedListSection(sections, '### Workflow', skill.workflow);
+  appendGuardrails(sections, skill);
+  appendStringListSection(sections, '### Verification', skill.verification);
+  appendStringListSection(
+    sections,
+    '### Output Contract',
+    skill.output_contract,
+  );
+
+  if (sections.length > 0) {
+    sections.push('');
+  }
 
   sections.push(skill.instructions.trim());
 
@@ -44,6 +181,12 @@ function renderSkillBody(
     sections.push('', '### Conventions', '');
     for (const convention of skill.conventions ?? []) {
       sections.push(`- ${convention.rule}`);
+      if (convention.example !== undefined) {
+        sections.push(`  Example: ${convention.example}`);
+      }
+      if (convention.rationale !== undefined) {
+        sections.push(`  Rationale: ${convention.rationale}`);
+      }
     }
   }
 
@@ -63,8 +206,13 @@ function renderSkillBody(
     sections.push('', '### Anti-patterns', '');
     for (const antiPattern of skill.anti_patterns ?? []) {
       sections.push(`- ${antiPattern.pattern}: ${antiPattern.problem}`);
+      if (antiPattern.solution !== undefined) {
+        sections.push(`  Solution: ${antiPattern.solution}`);
+      }
     }
   }
+
+  appendFileTemplates(sections, skill);
 
   if ((skill.references?.length ?? 0) > 0) {
     sections.push('', '### References', '');
@@ -72,6 +220,8 @@ function renderSkillBody(
       sections.push(`- [${reference.title}](${reference.url})`);
     }
   }
+
+  appendFreshness(sections, skill);
 
   return sections.join('\n').trim();
 }
@@ -104,6 +254,35 @@ export function renderSkillDetail(skill: Skill): string {
     lines.push('', 'Conventions:');
     for (const convention of skill.conventions ?? []) {
       lines.push(`  - ${convention.rule}`);
+      if (convention.example !== undefined) {
+        lines.push(`    Example: ${convention.example}`);
+      }
+      if (convention.rationale !== undefined) {
+        lines.push(`    Rationale: ${convention.rationale}`);
+      }
+    }
+  }
+
+  if ((skill.workflow?.length ?? 0) > 0) {
+    lines.push('', `Workflow (${(skill.workflow ?? []).length}):`);
+    for (const step of skill.workflow ?? []) {
+      lines.push(`  - ${step}`);
+    }
+  }
+
+  if ((skill.guardrails?.length ?? 0) > 0) {
+    lines.push('', `Guardrails (${(skill.guardrails ?? []).length}):`);
+    for (const guardrail of skill.guardrails ?? []) {
+      const approval =
+        guardrail.approval_required === true ? ' (approval required)' : '';
+      lines.push(`  - ${guardrail.rule}${approval}`);
+    }
+  }
+
+  if ((skill.verification?.length ?? 0) > 0) {
+    lines.push('', `Verification (${(skill.verification ?? []).length}):`);
+    for (const item of skill.verification ?? []) {
+      lines.push(`  - ${item}`);
     }
   }
 
@@ -118,6 +297,16 @@ export function renderSkillDetail(skill: Skill): string {
     lines.push('', `Anti-patterns (${(skill.anti_patterns ?? []).length}):`);
     for (const antiPattern of skill.anti_patterns ?? []) {
       lines.push(`  - ${antiPattern.pattern}: ${antiPattern.problem}`);
+      if (antiPattern.solution !== undefined) {
+        lines.push(`    Solution: ${antiPattern.solution}`);
+      }
+    }
+  }
+
+  if ((skill.files?.length ?? 0) > 0) {
+    lines.push('', `File templates (${(skill.files ?? []).length}):`);
+    for (const file of skill.files ?? []) {
+      lines.push(`  - ${file.path}`);
     }
   }
 

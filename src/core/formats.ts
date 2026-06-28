@@ -74,6 +74,7 @@ const FORMAT_DETECTION_ORDER: ReadonlyArray<{
 }> = [
   { format: 'claude', marker: '.claude' },
   { format: 'opencode', marker: '.opencode' },
+  { format: 'codex', marker: '.codex' },
   { format: 'qoder', marker: '.qoder' },
 ];
 

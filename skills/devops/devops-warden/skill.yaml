@@ -30,6 +30,46 @@ tags:
 magento_versions:
   - '2.4.x'
 
+use_when:
+  - 'The task needs Magento CLI, Composer, PHP, database, cache, search, queue, or filesystem-sync work inside a Warden-managed local environment.'
+  - 'The user mentions warden, Docker local stack, Redis/Valkey, Varnish, OpenSearch/Elasticsearch, RabbitMQ, Mutagen, or n98-magerun2.'
+
+do_not_use_when:
+  - 'The project uses DDEV, docker compose, Kubernetes, Adobe Cloud tooling, or another wrapper and no Warden files or commands are present.'
+  - 'The request is purely code editing and does not require running Magento/runtime commands.'
+
+required_inputs:
+  - 'Project root containing the Warden .env file and the specific service or Magento command to operate.'
+  - 'Whether the operation is read-only, cache-clearing, data-changing, or destructive.'
+
+workflow:
+  - 'Start with read-only environment discovery from the project root: git status, Warden env name, service status, and relevant logs.'
+  - 'Run PHP, Composer, bin/magento, and n98-magerun2 only through warden shell or the project wrapper.'
+  - 'Prefer targeted service operations over broad restarts or full cache/storage resets.'
+  - 'After any operational change, run the smallest command that proves the service or Magento state recovered.'
+
+guardrails:
+  - rule: 'Never run project PHP, Composer, or bin/magento directly on the host when a Warden environment is in use.'
+  - rule: 'Ask before running warden env down -v, deleting search indices, purging RabbitMQ queues, flushing Redis/Valkey, or importing a database.'
+    approval_required: true
+  - rule: 'Do not run destructive or data-changing commands against production or shared staging environments.'
+    approval_required: true
+
+verification:
+  - 'For shell/Magento work, report the exact warden shell command or wrapper used and the command exit result.'
+  - 'For cache/search/queue changes, run a read-only status command afterward, such as cache:status, indexer:status, cluster health, or list_queues.'
+  - 'For sync issues, confirm warden sync list or warden sync monitor output before and after recovery.'
+
+output_contract:
+  - 'Classify commands as read-only, reversible, data-changing, or destructive.'
+  - 'Report the environment name, service touched, command results, and any approval-sensitive command skipped or executed.'
+
+freshness:
+  last_reviewed: '2026-06-28'
+  sources:
+    - 'Warden local development documentation'
+    - 'Adobe Commerce 2.4.x operations docs'
+
 instructions_file: instructions.md
 
 conventions:
