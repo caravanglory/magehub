@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.13](https://github.com/caravanglory/magehub/compare/magehub-v0.1.12...magehub-v0.1.13) (2026-06-28)
+
+
+### Features
+
+* update skills ([ac6adc3](https://github.com/caravanglory/magehub/commit/ac6adc3dbe4e88d0d45e8ee431693277dc501dcc))
+
 ## [0.1.12](https://github.com/caravanglory/magehub/compare/magehub-v0.1.11...magehub-v0.1.12) (2026-05-13)
 
 
