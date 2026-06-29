@@ -56,7 +56,7 @@ function makeSkill(overrides: Partial<Skill> = {}): Skill {
         url: 'https://developer.adobe.com/commerce/php/development/components/plugins/',
       },
     ],
-    compatibility: ['claude', 'opencode', 'codex', 'qoder'],
+    compatibility: ['agents', 'claude', 'opencode', 'codex', 'qoder'],
     ...overrides,
   };
 }
@@ -92,11 +92,12 @@ const twoSkills: Skill[] = [
         url: 'https://developer.adobe.com/commerce/testing/guide/',
       },
     ],
-    compatibility: ['claude', 'opencode', 'codex', 'qoder'],
+    compatibility: ['agents', 'claude', 'opencode', 'codex', 'qoder'],
   },
 ];
 
 const perSkillFormats: OutputFormat[] = [
+  'agents',
   'claude',
   'opencode',
   'codex',

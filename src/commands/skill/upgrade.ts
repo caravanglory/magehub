@@ -11,7 +11,11 @@ import { renderArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { findOutdatedSkills } from '../../core/upgrade-checker.js';
 import { writeArtifact } from '../../core/writer.js';
-import type { MageHubConfig, SkillEntry } from '../../types/config.js';
+import {
+  DEFAULT_OUTPUT_FORMAT,
+  type MageHubConfig,
+  type SkillEntry,
+} from '../../types/config.js';
 import type { Skill } from '../../types/skill.js';
 import { CliError } from '../../utils/cli-error.js';
 import { info } from '../../utils/logger.js';
@@ -107,7 +111,7 @@ async function runGlobalUpgrade(
     return;
   }
 
-  const format = config.format ?? 'claude';
+  const format = config.format ?? DEFAULT_OUTPUT_FORMAT;
   const grouped = groupSkillsByFormat(config.skills, getSkill, format);
 
   for (const [fmt, skills] of grouped) {
@@ -184,7 +188,7 @@ export async function runSkillUpgradeCommand(
     return;
   }
 
-  const fallbackFormat = loaded.config.format ?? 'claude';
+  const fallbackFormat = loaded.config.format ?? DEFAULT_OUTPUT_FORMAT;
   const grouped = groupSkillsByFormat(
     loaded.config.skills,
     getSkill,

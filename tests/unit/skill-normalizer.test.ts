@@ -121,7 +121,7 @@ describe('skill-normalizer', () => {
         tags: ['a', 'b'],
         conventions: [{ rule: 'Be good' }],
         references: [{ title: 'Docs', url: 'https://example.com' }],
-        compatibility: ['claude'],
+        compatibility: ['agents'],
       });
       const skill = await normalizeRawSkill(raw, rootDir);
 

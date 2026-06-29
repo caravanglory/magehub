@@ -43,13 +43,19 @@ describe('config-manager', () => {
 
       expect(config.version).toBe('1');
       expect(config.skills).toEqual([]);
-      expect(config.format).toBe('claude');
+      expect(config.format).toBe('agents');
       expect(config.include_examples).toBe(true);
       expect(config.include_antipatterns).toBe(true);
     });
   });
 
   describe('resolveOutputTarget', () => {
+    it('resolves agents output to a .agents/skills directory', () => {
+      const target = resolveOutputTarget('/project', 'agents');
+      expect(target.kind).toBe('directory');
+      expect(target.path).toBe(path.join('/project', '.agents', 'skills'));
+    });
+
     it('resolves claude output to a .claude/skills directory', () => {
       const target = resolveOutputTarget('/project', 'claude');
       expect(target.kind).toBe('directory');
@@ -94,8 +100,8 @@ describe('config-manager', () => {
       await expect(detectFormat(rootDir)).resolves.toBe('codex');
     });
 
-    it('falls back to claude when no known tool marker exists', async () => {
-      await expect(detectFormat(rootDir)).resolves.toBe('claude');
+    it('falls back to agents when no known tool marker exists', async () => {
+      await expect(detectFormat(rootDir)).resolves.toBe('agents');
     });
   });
 

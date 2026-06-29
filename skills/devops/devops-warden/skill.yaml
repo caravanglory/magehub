@@ -177,6 +177,7 @@ references:
     url: 'https://docs.warden.dev/environments/databases.html'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

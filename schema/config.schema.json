@@ -20,7 +20,7 @@
               },
               "format": {
                 "type": "string",
-                "enum": ["claude", "opencode", "codex", "qoder"]
+                "enum": ["agents", "claude", "opencode", "codex", "qoder"]
               },
               "installed_version": {
                 "type": "string"
@@ -36,8 +36,8 @@
     },
     "format": {
       "type": "string",
-      "enum": ["claude", "opencode", "codex", "qoder"],
-      "default": "claude"
+      "enum": ["agents", "claude", "opencode", "codex", "qoder"],
+      "default": "agents"
     },
     "output": {
       "type": "string"

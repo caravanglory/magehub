@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import type { OutputFormat } from '../types/config.js';
+import { DEFAULT_OUTPUT_FORMAT, type OutputFormat } from '../types/config.js';
 import { pathExists } from '../utils/fs.js';
 
 export type RenderStrategy = 'single-file' | 'per-skill-file';
@@ -17,6 +17,11 @@ export interface OutputTarget {
 }
 
 const FORMAT_METADATA: Record<OutputFormat, FormatMetadata> = {
+  agents: {
+    strategy: 'per-skill-file',
+    outputPath: path.join('.agents', 'skills'),
+    skillFileName: (skillId) => path.join(skillId, 'SKILL.md'),
+  },
   claude: {
     strategy: 'per-skill-file',
     outputPath: path.join('.claude', 'skills'),
@@ -72,6 +77,7 @@ const FORMAT_DETECTION_ORDER: ReadonlyArray<{
   format: OutputFormat;
   marker: string;
 }> = [
+  { format: 'agents', marker: '.agents' },
   { format: 'claude', marker: '.claude' },
   { format: 'opencode', marker: '.opencode' },
   { format: 'codex', marker: '.codex' },
@@ -80,7 +86,7 @@ const FORMAT_DETECTION_ORDER: ReadonlyArray<{
 
 export async function detectFormat(
   rootDir: string,
-  fallback: OutputFormat = 'claude',
+  fallback: OutputFormat = DEFAULT_OUTPUT_FORMAT,
 ): Promise<OutputFormat> {
   for (const { format, marker } of FORMAT_DETECTION_ORDER) {
     if (await pathExists(path.join(rootDir, marker))) {

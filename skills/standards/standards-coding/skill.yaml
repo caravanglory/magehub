@@ -139,6 +139,7 @@ references:
     url: 'https://developer.adobe.com/commerce/php/development/components/service-contracts/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

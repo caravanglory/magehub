@@ -171,6 +171,7 @@ references:
     url: 'https://experienceleague.adobe.com/en/docs/commerce-operations/release/versions'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

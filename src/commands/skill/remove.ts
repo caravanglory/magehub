@@ -10,7 +10,7 @@ import {
 import { renderArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { removePerSkillFiles, writeArtifact } from '../../core/writer.js';
-import type { SkillEntry } from '../../types/config.js';
+import { DEFAULT_OUTPUT_FORMAT, type SkillEntry } from '../../types/config.js';
 import { CliError } from '../../utils/cli-error.js';
 import { info } from '../../utils/logger.js';
 
@@ -39,7 +39,7 @@ async function runGlobalRemove(
     );
   }
 
-  const format = config.format ?? 'claude';
+  const format = config.format ?? DEFAULT_OUTPUT_FORMAT;
 
   const removedEntries = config.skills.filter((e) => skillIds.includes(e.id));
   config.skills = config.skills.filter((e) => !skillIds.includes(e.id));
@@ -147,7 +147,7 @@ export async function runSkillRemoveCommand(
   }
 
   const globalConfig = await loadGlobalConfig();
-  const fallbackFormat = loaded.config.format ?? 'claude';
+  const fallbackFormat = loaded.config.format ?? DEFAULT_OUTPUT_FORMAT;
   const removedFormats = collectFormats(removedEntries, fallbackFormat);
 
   for (const fmt of removedFormats) {

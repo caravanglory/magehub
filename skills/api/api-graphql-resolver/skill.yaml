@@ -154,6 +154,7 @@ references:
     url: 'https://developer.adobe.com/commerce/webapi/graphql/develop/create-graphqls-file/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

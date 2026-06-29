@@ -43,6 +43,7 @@ describe('parseSkillCategory', () => {
 
 describe('parseOutputFormat', () => {
   it('returns format when valid', () => {
+    expect(parseOutputFormat('agents', 'claude')).toBe('agents');
     expect(parseOutputFormat('claude', 'claude')).toBe('claude');
     expect(parseOutputFormat('opencode', 'claude')).toBe('opencode');
     expect(parseOutputFormat('codex', 'claude')).toBe('codex');

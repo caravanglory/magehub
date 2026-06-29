@@ -127,6 +127,7 @@ references:
     url: 'https://developer.adobe.com/commerce/php/development/build/component-file-structure/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

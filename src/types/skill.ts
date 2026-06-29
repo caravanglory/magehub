@@ -11,7 +11,13 @@ export const skillCategories = [
   'standards',
 ] as const;
 
-export const supportedTools = ['claude', 'opencode', 'codex', 'qoder'] as const;
+export const supportedTools = [
+  'agents',
+  'claude',
+  'opencode',
+  'codex',
+  'qoder',
+] as const;
 
 export type SkillCategory = (typeof skillCategories)[number];
 export type SupportedTool = (typeof supportedTools)[number];

@@ -162,6 +162,7 @@ references:
     url: 'https://developer.adobe.com/commerce/php/development/components/declarative-schema/patches/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

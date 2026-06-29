@@ -214,6 +214,7 @@ references:
     url: 'https://developer.adobe.com/commerce/webapi/graphql/best-practices/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

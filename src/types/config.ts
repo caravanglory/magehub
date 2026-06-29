@@ -2,6 +2,8 @@ import type { SupportedTool } from './skill.js';
 
 export type OutputFormat = SupportedTool;
 
+export const DEFAULT_OUTPUT_FORMAT: OutputFormat = 'agents';
+
 export interface RemoteRegistry {
   name: string;
   url: string;

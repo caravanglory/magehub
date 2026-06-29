@@ -137,6 +137,7 @@ references:
     url: 'https://developer.adobe.com/commerce/php/best-practices/extensions/plugins/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

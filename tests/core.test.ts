@@ -289,7 +289,7 @@ describe('core services and commands', () => {
     expect(loaded.config.skills).toEqual([]);
   });
 
-  it('defaults current project installs to claude when format is omitted', async () => {
+  it('defaults current project installs to agents when format is omitted', async () => {
     const loaded = await loadConfig(rootDir);
     loaded.config.format = 'qoder';
     await saveConfig(rootDir, loaded.config);
@@ -301,7 +301,7 @@ describe('core services and commands', () => {
     );
 
     const updated = await loadConfig(rootDir);
-    expect(updated.config.format).toBe('claude');
+    expect(updated.config.format).toBe('agents');
   });
 
   it('does not render global-only skills into current project output', async () => {
@@ -424,11 +424,11 @@ describe('core services and commands', () => {
     const projectConfig = await loadConfig(rootDir);
 
     expect(globalConfig).toContain('performance');
-    expect(globalConfig).toContain('format: claude');
+    expect(globalConfig).toContain('format: agents');
     expect(projectConfig.config.skills).toEqual([{ id: 'module-plugin' }]);
   });
 
-  it('defaults global installs to claude when format is omitted', async () => {
+  it('defaults global installs to agents when format is omitted', async () => {
     await runSkillInstallCommand(['module-plugin'], {
       global: true,
       format: 'qoder',
@@ -444,7 +444,24 @@ describe('core services and commands', () => {
 
     expect(globalConfig).toContain('module-plugin');
     expect(globalConfig).toContain('performance');
-    expect(globalConfig).toContain('format: claude');
+    expect(globalConfig).toContain('format: agents');
+  });
+
+  it('ignores non-directory files when pruning global per-skill output', async () => {
+    await runSkillInstallCommand(['mage-review'], { global: true });
+    await writeFile(path.join(homeDir, '.agents', 'skills', '.DS_Store'), '');
+
+    await runSkillInstallCommand(['mage-review'], { global: true });
+
+    await expect(
+      readFile(
+        path.join(homeDir, '.agents', 'skills', 'mage-review', 'SKILL.md'),
+        'utf8',
+      ),
+    ).resolves.toContain('Code Review');
+    await expect(
+      readFile(path.join(homeDir, '.agents', 'skills', '.DS_Store'), 'utf8'),
+    ).resolves.toBe('');
   });
 
   it('installs and removes global codex output under Codex home', async () => {

@@ -88,7 +88,7 @@ describe('global-config', () => {
 
       expect(config.version).toBe('1');
       expect(config.skills).toEqual([]);
-      expect(config.format).toBe('claude');
+      expect(config.format).toBe('agents');
       expect(config.custom_skills_path).toBe('skills');
       expect(config.include_examples).toBe(true);
       expect(config.include_antipatterns).toBe(true);
@@ -117,7 +117,7 @@ describe('global-config', () => {
 
       expect(loaded).toBeDefined();
       expect(loaded!.skills).toEqual([{ id: 'test-skill' }]);
-      expect(loaded!.format).toBe('claude');
+      expect(loaded!.format).toBe('agents');
       expect(loaded!.custom_skills_path).toBe('skills');
     });
   });

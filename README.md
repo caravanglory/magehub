@@ -1,6 +1,6 @@
 # MageHub
 
-MageHub is a TypeScript CLI for packaging Magento 2 AI coding skills as reusable context files for tools like Claude Code, OpenCode, Codex, and Qoder.
+MageHub is a TypeScript CLI for packaging Magento 2 AI coding skills as reusable context files for tools like Agents, Claude Code, OpenCode, Codex, and Qoder.
 
 Project site: [magehub.org](https://magehub.org)
 
@@ -37,7 +37,7 @@ By default, MageHub installs skills globally for the current user:
 magehub install module-plugin performance
 ```
 
-On first global run, MageHub creates `~/.magehub/config.yaml` and writes the rendered output to the selected tool's global location. If `--format` is omitted, MageHub uses `claude`.
+On first global run, MageHub creates `~/.magehub/config.yaml` and writes the rendered output to the selected tool's global location. If `--format` is omitted, MageHub uses `agents`.
 
 Use `-c` / `--current` to install into the current project instead:
 
@@ -45,7 +45,7 @@ Use `-c` / `--current` to install into the current project instead:
 magehub install -c module-plugin performance
 ```
 
-Project installs create or update `.magehub.yaml`, write the rendered files into the current project, and update `.git/info/exclude` so generated output stays local to your clone. If `--format` is omitted, MageHub uses `claude`; pass `--format=codex` or another supported format when you want a different target.
+Project installs create or update `.magehub.yaml`, write the rendered files into the current project, and update `.git/info/exclude` so generated output stays local to your clone. If `--format` is omitted, MageHub uses `agents`; pass `--format=codex` or another supported format when you want a different target.
 
 Other common tasks:
 
@@ -61,6 +61,7 @@ Global output layout by format:
 
 | Format     | Strategy       | Global output                      |
 | ---------- | -------------- | ---------------------------------- |
+| `agents`   | per-skill file | `~/.agents/skills/<id>/SKILL.md`   |
 | `claude`   | per-skill file | `~/.claude/skills/<id>/SKILL.md`   |
 | `opencode` | per-skill file | `~/.opencode/skills/<id>/SKILL.md` |
 | `codex`    | per-skill file | `~/.codex/skills/<id>/SKILL.md`    |

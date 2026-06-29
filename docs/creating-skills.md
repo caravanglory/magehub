@@ -42,7 +42,7 @@ Project-local custom skills can live in any project-local directory referenced b
 - `freshness`
 - `compatibility`
 
-Valid `compatibility` values are `claude`, `opencode`, `codex`, and `qoder`.
+Valid `compatibility` values are `agents`, `claude`, `opencode`, `codex`, and `qoder`.
 
 ## Heading Rule
 

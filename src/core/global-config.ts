@@ -4,7 +4,11 @@ import path from 'node:path';
 
 import YAML from 'yaml';
 
-import type { MageHubConfig, OutputFormat } from '../types/config.js';
+import {
+  DEFAULT_OUTPUT_FORMAT,
+  type MageHubConfig,
+  type OutputFormat,
+} from '../types/config.js';
 import { ensureDirectory } from '../utils/fs.js';
 import { resolveProjectRelativePath } from './runtime-assets.js';
 import { validateConfigSchema } from './schema-validator.js';
@@ -57,7 +61,7 @@ export function resolveGlobalOutputRoot(): string {
 }
 
 export function createDefaultGlobalConfig(
-  format: OutputFormat = 'claude',
+  format: OutputFormat = DEFAULT_OUTPUT_FORMAT,
 ): MageHubConfig {
   return {
     version: '1',

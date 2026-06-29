@@ -1295,7 +1295,7 @@ properties:
       - opencode
       - codex
       - qoder
-    default: claude
+    default: agents
     description: Default output format
 
   output:

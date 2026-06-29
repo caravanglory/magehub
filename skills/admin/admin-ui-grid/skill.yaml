@@ -168,6 +168,7 @@ references:
     url: 'https://developer.adobe.com/commerce/php/development/components/routing/custom-admin-router/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

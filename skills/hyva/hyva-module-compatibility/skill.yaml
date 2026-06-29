@@ -147,6 +147,7 @@ references:
     url: 'https://docs.hyva.io/hyva-themes/writing-compatible-extensions/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

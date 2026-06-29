@@ -274,6 +274,7 @@ references:
     url: 'https://developer.adobe.com/commerce/php/development/cache/page/public-content/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

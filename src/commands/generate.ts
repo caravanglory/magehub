@@ -6,7 +6,7 @@ import { renderArtifact } from '../core/renderer.js';
 import { createSkillRegistry } from '../core/skill-registry.js';
 import { printUpgradeHint } from '../core/upgrade-checker.js';
 import { writeArtifact } from '../core/writer.js';
-import type { SkillEntry } from '../types/config.js';
+import { DEFAULT_OUTPUT_FORMAT, type SkillEntry } from '../types/config.js';
 import { CliError } from '../utils/cli-error.js';
 import { info } from '../utils/logger.js';
 import { parseOutputFormat } from '../utils/validation.js';
@@ -50,7 +50,7 @@ export async function runGenerateCommand(
   const globalConfig = await loadGlobalConfig();
   const registry = await createSkillRegistry(effectiveRootDir, globalConfig);
   const config = loaded.config;
-  const fallbackFormat = config.format ?? 'claude';
+  const fallbackFormat = config.format ?? DEFAULT_OUTPUT_FORMAT;
 
   if (options.skills !== undefined) {
     const format = parseOutputFormat(options.format, fallbackFormat);

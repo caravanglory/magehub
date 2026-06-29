@@ -1,5 +1,112 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`generate snapshot tests > multi-skill output > generates stable multi-skill output for agents format 1`] = `
+"=== module-plugin ===
+---
+name: module-plugin
+description: "Implement Magento 2 plugins correctly"
+installed_version: 1.0.0
+magehub_version: 0.0.0-test
+---
+
+# Plugin Development
+
+### Plugin System
+
+Use the Magento 2 interceptor pattern to extend behavior.
+
+### Conventions
+
+- Prefer before plugins over after plugins when possible
+- Never plugin on __construct methods
+
+### Examples
+
+#### Plugin di.xml Declaration
+
+\`\`\`xml
+<type name="Magento\\Catalog\\Model\\Product">
+  <plugin name="vendor_module_product" type="Vendor\\Module\\Plugin\\ProductPlugin" />
+</type>
+\`\`\`
+
+#### After Plugin Method
+
+\`\`\`php
+public function afterGetName(
+    \\Magento\\Catalog\\Model\\Product $subject,
+    string $result
+): string {
+    return $result . ' (Modified)';
+}
+\`\`\`
+
+
+### Anti-patterns
+
+- Plugin on __construct: Constructor plugins are not supported by Magento
+- Plugin on final methods: Final methods cannot be intercepted
+
+### References
+
+- [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
+
+
+=== testing-phpunit ===
+---
+name: testing-phpunit
+description: "Write PHPUnit tests for Magento 2 modules"
+installed_version: 1.0.0
+magehub_version: 0.0.0-test
+---
+
+# PHPUnit Testing
+
+### PHPUnit Testing
+
+Write unit and integration tests for Magento 2 modules.
+
+### Conventions
+
+- Place unit tests in Test/Unit directory
+
+### Examples
+
+#### Basic Unit Test
+
+\`\`\`php
+class ProductTest extends TestCase
+{
+    public function testGetName(): void
+    {
+        $this->assertEquals('Test', $this->product->getName());
+    }
+}
+\`\`\`
+
+
+### Anti-patterns
+
+- Testing private methods directly: Use public API instead
+
+### References
+
+- [Magento Testing Guide](https://developer.adobe.com/commerce/testing/guide/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated testing-phpunit --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
+"
+`;
+
 exports[`generate snapshot tests > multi-skill output > generates stable multi-skill output for claude format 1`] = `
 "=== module-plugin ===
 ---
@@ -538,6 +645,65 @@ Use the Magento 2 interceptor pattern to extend behavior.
 
 - Prefer before plugins over after plugins when possible
 - Never plugin on __construct methods
+
+### References
+
+- [Adobe Developer Docs — Plugins](https://developer.adobe.com/commerce/php/development/components/plugins/)
+
+---
+
+> **MageHub Pre-use Check**: Before first use in this session, run:
+> \`magehub skill:outdated module-plugin --quiet\`
+> Follow its output to upgrade MageHub or this skill if needed.
+"
+`;
+
+exports[`generate snapshot tests > single skill output > generates stable output for agents format 1`] = `
+"=== module-plugin ===
+---
+name: module-plugin
+description: "Implement Magento 2 plugins correctly"
+installed_version: 1.0.0
+magehub_version: 0.0.0-test
+---
+
+# Plugin Development
+
+### Plugin System
+
+Use the Magento 2 interceptor pattern to extend behavior.
+
+### Conventions
+
+- Prefer before plugins over after plugins when possible
+- Never plugin on __construct methods
+
+### Examples
+
+#### Plugin di.xml Declaration
+
+\`\`\`xml
+<type name="Magento\\Catalog\\Model\\Product">
+  <plugin name="vendor_module_product" type="Vendor\\Module\\Plugin\\ProductPlugin" />
+</type>
+\`\`\`
+
+#### After Plugin Method
+
+\`\`\`php
+public function afterGetName(
+    \\Magento\\Catalog\\Model\\Product $subject,
+    string $result
+): string {
+    return $result . ' (Modified)';
+}
+\`\`\`
+
+
+### Anti-patterns
+
+- Plugin on __construct: Constructor plugins are not supported by Magento
+- Plugin on final methods: Final methods cannot be intercepted
 
 ### References
 

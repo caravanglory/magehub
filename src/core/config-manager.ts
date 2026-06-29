@@ -2,10 +2,11 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 import YAML from 'yaml';
 
-import type {
-  MageHubConfig,
-  OutputFormat,
-  SkillEntry,
+import {
+  DEFAULT_OUTPUT_FORMAT,
+  type MageHubConfig,
+  type OutputFormat,
+  type SkillEntry,
 } from '../types/config.js';
 import { detectFormat } from './formats.js';
 import { createMageHubPaths } from './paths.js';
@@ -21,7 +22,7 @@ export interface ConfigLoadResult {
 }
 
 export function createDefaultConfig(
-  format: OutputFormat = 'claude',
+  format: OutputFormat = DEFAULT_OUTPUT_FORMAT,
 ): MageHubConfig {
   return {
     version: '1',

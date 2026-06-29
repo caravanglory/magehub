@@ -17,7 +17,11 @@ import {
 import { renderArtifact } from '../../core/renderer.js';
 import { createSkillRegistry } from '../../core/skill-registry.js';
 import { writeArtifact } from '../../core/writer.js';
-import type { MageHubConfig, SkillEntry } from '../../types/config.js';
+import {
+  DEFAULT_OUTPUT_FORMAT,
+  type MageHubConfig,
+  type SkillEntry,
+} from '../../types/config.js';
 import type { Skill } from '../../types/skill.js';
 import { CliError } from '../../utils/cli-error.js';
 import { info } from '../../utils/logger.js';
@@ -60,12 +64,15 @@ async function loadOrBootstrapConfig(
   });
 
   if (loaded !== undefined) {
-    loaded.config.format = parseOutputFormat(formatOverride, 'claude');
+    loaded.config.format = parseOutputFormat(
+      formatOverride,
+      DEFAULT_OUTPUT_FORMAT,
+    );
     return { config: loaded.config, bootstrapped: false };
   }
 
   const bootstrap = await createBootstrapConfig(rootDir);
-  bootstrap.format = parseOutputFormat(formatOverride, 'claude');
+  bootstrap.format = parseOutputFormat(formatOverride, DEFAULT_OUTPUT_FORMAT);
   return { config: bootstrap, bootstrapped: true };
 }
 
@@ -101,7 +108,7 @@ async function runGlobalInstall(
   const globalConfigDir = getGlobalConfigDir();
 
   let config = await loadGlobalConfig();
-  const format = parseOutputFormat(options.format, 'claude');
+  const format = parseOutputFormat(options.format, DEFAULT_OUTPUT_FORMAT);
   const isNew = config === undefined;
   if (isNew) {
     config = createDefaultGlobalConfig(format);
@@ -217,7 +224,7 @@ export async function runSkillInstallCommand(
     }
   }
 
-  const format = parseOutputFormat(options.format, 'claude');
+  const format = parseOutputFormat(options.format, DEFAULT_OUTPUT_FORMAT);
   const previous = new Set(config.skills.map((e) => e.id));
   config.skills = mergeUnique(
     config.skills,
@@ -241,7 +248,7 @@ export async function runSkillInstallCommand(
     return;
   }
 
-  const fallbackFormat = config.format ?? 'claude';
+  const fallbackFormat = config.format ?? DEFAULT_OUTPUT_FORMAT;
   const grouped = groupSkillsByFormat(config.skills, registry, fallbackFormat);
 
   for (const [fmt, skills] of grouped) {
@@ -293,7 +300,7 @@ export function registerSkillInstallCommand(program: Command): void {
     )
     .argument('[skillIds...]', 'Skill identifiers to install')
     .option('--category <category>', 'Install all skills from a category')
-    .option('--format <format>', 'Output format (default: claude)')
+    .option('--format <format>', 'Output format (default: agents)')
     .option(
       '-g, --global',
       'Install skill globally (~/.magehub/config.yaml; default)',

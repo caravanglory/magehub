@@ -7,6 +7,7 @@ import {
 } from '../../core/config-manager.js';
 import { resolveOutputTarget } from '../../core/formats.js';
 import { ensureGitExcludeEntry } from '../../core/git-exclude.js';
+import { DEFAULT_OUTPUT_FORMAT } from '../../types/config.js';
 import { CliError } from '../../utils/cli-error.js';
 import { info } from '../../utils/logger.js';
 import { parseOutputFormat } from '../../utils/validation.js';
@@ -41,7 +42,10 @@ export async function runSetupInitCommand(
   }
 
   const config = await createBootstrapConfig(effectiveRootDir);
-  config.format = parseOutputFormat(options.format, config.format ?? 'claude');
+  config.format = parseOutputFormat(
+    options.format,
+    config.format ?? DEFAULT_OUTPUT_FORMAT,
+  );
 
   await saveConfig(effectiveRootDir, config);
   info('Created .magehub.yaml');

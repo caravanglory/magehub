@@ -151,6 +151,7 @@ references:
     url: 'https://developer.adobe.com/commerce/testing/guide/unit/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex

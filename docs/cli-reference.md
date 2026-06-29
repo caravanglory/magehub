@@ -8,7 +8,7 @@ The fastest path installs skills globally for the current user:
 magehub install module-plugin performance
 ```
 
-This creates or updates `~/.magehub/config.yaml` and renders the selected skills to the target tool's global location. If `--format` is omitted, MageHub uses `claude`.
+This creates or updates `~/.magehub/config.yaml` and renders the selected skills to the target tool's global location. If `--format` is omitted, MageHub uses `agents`.
 
 Use `-c` / `--current` to install into the current project:
 
@@ -16,7 +16,7 @@ Use `-c` / `--current` to install into the current project:
 magehub install -c module-plugin performance
 ```
 
-Current-project installs create `.magehub.yaml` if missing, render the selected skills to disk, and update `.git/info/exclude` (the repo-local, untracked ignore file) so generated output is ignored without touching the shared `.gitignore`. If `--format` is omitted, MageHub uses `claude`.
+Current-project installs create `.magehub.yaml` if missing, render the selected skills to disk, and update `.git/info/exclude` (the repo-local, untracked ignore file) so generated output is ignored without touching the shared `.gitignore`. If `--format` is omitted, MageHub uses `agents`.
 
 ## Commands
 
@@ -113,6 +113,7 @@ magehub generate [--format=<format>] [--output=<path>] [--skills=<id,id>] [--no-
 
 | Format     | Strategy       | Default output                   |
 | ---------- | -------------- | -------------------------------- |
+| `agents`   | per-skill file | `.agents/skills/<id>/SKILL.md`   |
 | `claude`   | per-skill file | `.claude/skills/<id>/SKILL.md`   |
 | `opencode` | per-skill file | `.opencode/skills/<id>/SKILL.md` |
 | `codex`    | per-skill file | `.codex/skills/<id>/SKILL.md`    |

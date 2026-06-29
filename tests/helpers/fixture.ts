@@ -68,7 +68,7 @@ export function makeSkillYaml(
     { title: 'Docs', url: 'https://example.com' },
   ];
   const freshness = overrides.freshness;
-  const compatibility = overrides.compatibility ?? ['claude'];
+  const compatibility = overrides.compatibility ?? ['agents'];
 
   const lines: string[] = [
     `id: ${id}`,
@@ -194,7 +194,7 @@ export function makeConfigYaml(
 ): string {
   const version = overrides.version ?? '1';
   const skills = overrides.skills ?? [];
-  const format = overrides.format ?? 'claude';
+  const format = overrides.format ?? 'agents';
 
   const skillLines = skills.map((s) => {
     if (typeof s === 'string') {

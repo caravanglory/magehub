@@ -74,7 +74,7 @@ function makeSkill(overrides: Partial<Skill> = {}): Skill {
       last_reviewed: '2026-06-28',
       sources: ['Adobe Commerce 2.4.x docs'],
     },
-    compatibility: ['claude'],
+    compatibility: ['agents', 'claude'],
     ...overrides,
   };
 }
@@ -449,7 +449,13 @@ describe('renderer', () => {
     it('quotes YAML-sensitive descriptions in frontmatter', async () => {
       const description =
         "Run Magento 2 CLI commands through Warden's Docker environment: warden shell, bin/magento";
-      const formats: OutputFormat[] = ['claude', 'opencode', 'codex', 'qoder'];
+      const formats: OutputFormat[] = [
+        'agents',
+        'claude',
+        'opencode',
+        'codex',
+        'qoder',
+      ];
 
       for (const format of formats) {
         const artifact = await renderPerSkillArtifact(

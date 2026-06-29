@@ -78,6 +78,10 @@ async function pruneStalePerSkillFiles(
 
   await Promise.all(
     entries.map(async (entry) => {
+      if (!entry.isDirectory()) {
+        return;
+      }
+
       const skillId = entry.name;
       if (keepSkillIds.has(skillId)) {
         return;

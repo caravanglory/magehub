@@ -43,7 +43,13 @@ import {
   type FormatResult,
 } from '../helpers/smoke-report.js';
 
-const ALL_FORMATS: OutputFormat[] = ['claude', 'opencode', 'codex', 'qoder'];
+const ALL_FORMATS: OutputFormat[] = [
+  'agents',
+  'claude',
+  'opencode',
+  'codex',
+  'qoder',
+];
 
 const ALL_SKILL_IDS = [
   'admin-ui-grid',
@@ -263,7 +269,7 @@ describe('E2E smoke test — full lifecycle against simulated Magento 2 project'
         }
         return;
       }
-      // claude, opencode, codex: all per-skill with name+description frontmatter
+      // agents, claude, opencode, codex: all per-skill with name+description frontmatter
       for (const file of result!.files) {
         const { data } = parseFrontMatter(file.content);
         expect(data).toHaveProperty('name');

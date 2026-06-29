@@ -142,6 +142,7 @@ references:
     url: 'https://developer.adobe.com/commerce/php/development/components/object-manager/'
 
 compatibility:
+  - agents
   - claude
   - opencode
   - codex
