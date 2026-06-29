@@ -29,6 +29,22 @@ Or run ad-hoc without installing:
 npx magehub --help
 ```
 
+## Install with the Skills CLI
+
+MageHub also ships Vercel skills-compatible `SKILL.md` files, so the repository
+can be installed directly with the open `skills` CLI:
+
+```bash
+npx skills add caravanglory/magehub --skill mage-review
+npx skills add caravanglory/magehub --skill '*' -a codex
+```
+
+Use `--list` to inspect available skills without installing:
+
+```bash
+npx skills add caravanglory/magehub --list
+```
+
 ## Quick Start
 
 By default, MageHub installs skills globally for the current user:
@@ -103,6 +119,8 @@ npm install
 npm run build
 npm run test
 npm run lint
+npm run skills:sync   # refresh generated SKILL.md files for npx skills add
+npm run skills:check  # verify generated SKILL.md files are up to date
 ```
 
 ## Local Custom Skills

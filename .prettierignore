@@ -1,3 +1,4 @@
 *.hbs
+skills/**/SKILL.md
 CHANGELOG.md
 .context/

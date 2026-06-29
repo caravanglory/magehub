@@ -13,6 +13,7 @@ describe('createCli', () => {
     expect(names).toContain('skill:show');
     expect(names).toContain('skill:install');
     expect(names).toContain('skill:remove');
+    expect(names).toContain('skill:sync-agents');
     expect(names).toContain('skill:verify');
     expect(names).toContain('config:show');
     expect(names).toContain('config:validate');

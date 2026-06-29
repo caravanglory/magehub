@@ -18,6 +18,7 @@ export interface RenderOptions {
   includeExamples: boolean;
   includeAntipatterns: boolean;
   skillEntries?: SkillEntry[];
+  templateVariant?: string;
 }
 
 export interface SingleFileArtifact {
@@ -433,7 +434,10 @@ export async function renderPerSkillArtifact(
     includeAntipatterns: options.includeAntipatterns,
   };
   const entryMap = new Map((options.skillEntries ?? []).map((e) => [e.id, e]));
-  const template = await loadTemplate(options.format, 'skill');
+  const template = await loadTemplate(
+    options.format,
+    options.templateVariant ?? 'skill',
+  );
   const files = skills.map((skill) => {
     const body = renderSkillBody(skill, bodyOptions);
     const entry = entryMap.get(skill.id);

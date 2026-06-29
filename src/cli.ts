@@ -10,6 +10,7 @@ import { registerSkillOutdatedCommand } from './commands/skill/outdated.js';
 import { registerSkillRemoveCommand } from './commands/skill/remove.js';
 import { registerSkillSearchCommand } from './commands/skill/search.js';
 import { registerSkillShowCommand } from './commands/skill/show.js';
+import { registerSkillSyncAgentsCommand } from './commands/skill/sync-agents.js';
 import { registerSkillUpgradeCommand } from './commands/skill/upgrade.js';
 import { registerSkillVerifyCommand } from './commands/skill/verify.js';
 import { getPackageVersion } from './core/runtime-assets.js';
@@ -30,6 +31,7 @@ export function createCli(): Command {
   registerSkillRemoveCommand(program);
   registerSkillOutdatedCommand(program);
   registerSkillUpgradeCommand(program);
+  registerSkillSyncAgentsCommand(program);
   registerSkillVerifyCommand(program);
   registerConfigShowCommand(program);
   registerConfigValidateCommand(program);

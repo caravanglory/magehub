@@ -20,6 +20,24 @@ Current-project installs create `.magehub.yaml` if missing, render the selected 
 
 ## Commands
 
+### Vercel `skills` CLI Compatibility
+
+MageHub commits generated `SKILL.md` files beside each bundled `skill.yaml`, so
+the repository can be consumed by `npx skills add`:
+
+```bash
+npx skills add caravanglory/magehub --list
+npx skills add caravanglory/magehub --skill mage-review
+npx skills add caravanglory/magehub --skill '*' -a codex
+```
+
+Maintainers can refresh and verify those generated files with:
+
+```bash
+npm run skills:sync
+npm run skills:check
+```
+
 ### `setup:init` (optional)
 
 Create `.magehub.yaml` without installing skills. Skipping this is fine — `skill:install --current` bootstraps the config on first use.
