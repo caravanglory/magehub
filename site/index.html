@@ -23,7 +23,8 @@
       <div class="bg-noise"></div>
       <div class="bg-grid"></div>
       <div class="bg-grid-fine"></div>
-      <canvas class="bg-particles" id="particles"></canvas>
+      <div class="bg-bottom-flow"></div>
+      <canvas class="bg-particles" id="particles" aria-hidden="true"></canvas>
       <div class="bg-vignette"></div>
     </div>
 
@@ -1123,18 +1124,33 @@ Total: 13 skills</code></pre>
         const canvas = document.getElementById('particles');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const reduceMotion = window.matchMedia(
+          '(prefers-reduced-motion: reduce)',
+        );
 
         let w,
           h,
-          particles = [];
+          dpr,
+          particles = [],
+          streamers = [],
+          sparks = [];
         const PARTICLE_COUNT = 60;
+        const STREAM_COUNT = 68;
+        const SPARK_COUNT = 24;
         const CONNECTION_DIST = 120;
         const MOUSE_DIST = 200;
         let mouse = { x: null, y: null };
 
         function resize() {
-          w = canvas.width = window.innerWidth;
-          h = canvas.height = window.innerHeight;
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          w = window.innerWidth;
+          h = window.innerHeight;
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          canvas.style.width = `${w}px`;
+          canvas.style.height = `${h}px`;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
         resize();
         window.addEventListener('resize', resize);
@@ -1194,8 +1210,121 @@ Total: 13 skills</code></pre>
           }
         }
 
+        class Streamer {
+          constructor() {
+            this.reset(true);
+          }
+          reset(initial = false) {
+            const bottomBand = h * (0.66 + Math.random() * 0.24);
+            this.x = initial
+              ? Math.random() * w
+              : -120 - Math.random() * w * 0.2;
+            this.y = bottomBand + Math.random() * 48;
+            this.vx = 1.35 + Math.random() * 2.25;
+            this.vy = -0.34 - Math.random() * 0.7;
+            this.length = 96 + Math.random() * 170;
+            this.radius = 0.95 + Math.random() * 1.85;
+            this.alpha = 0.26 + Math.random() * 0.5;
+            this.curve = Math.random() * Math.PI * 2;
+            this.color = Math.random() > 0.16 ? '96, 165, 250' : '250, 204, 21';
+          }
+          update() {
+            this.curve += 0.018;
+            this.x += this.vx;
+            this.y += this.vy + Math.sin(this.curve) * 0.12;
+
+            if (this.x > w + this.length || this.y < h * 0.42) {
+              this.reset();
+            }
+          }
+          draw() {
+            const tailX = this.x - this.length;
+            const tailY = this.y + this.length * 0.28;
+            const gradient = ctx.createLinearGradient(
+              tailX,
+              tailY,
+              this.x,
+              this.y,
+            );
+            gradient.addColorStop(0, `rgba(${this.color}, 0)`);
+            gradient.addColorStop(
+              0.45,
+              `rgba(${this.color}, ${this.alpha * 0.24})`,
+            );
+            gradient.addColorStop(1, `rgba(${this.color}, ${this.alpha})`);
+
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.quadraticCurveTo(
+              (tailX + this.x) / 2,
+              this.y + Math.sin(this.curve) * 18,
+              this.x,
+              this.y,
+            );
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = this.radius;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${this.color}, ${Math.min(
+              this.alpha + 0.18,
+              0.75,
+            )})`;
+            ctx.shadowBlur = 14;
+            ctx.shadowColor = `rgba(${this.color}, 0.55)`;
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+
+        class Spark {
+          constructor() {
+            this.reset(true);
+          }
+          reset(initial = false) {
+            this.x = initial ? Math.random() * w : -40 - Math.random() * 80;
+            this.y = h * (0.72 + Math.random() * 0.24);
+            this.vx = 0.45 + Math.random() * 0.85;
+            this.vy = -0.1 - Math.random() * 0.22;
+            this.radius = 0.9 + Math.random() * 1.8;
+            this.alpha = 0.26 + Math.random() * 0.34;
+            this.pulse = Math.random() * Math.PI * 2;
+          }
+          update() {
+            this.pulse += 0.025;
+            this.x += this.vx;
+            this.y += this.vy + Math.sin(this.pulse) * 0.08;
+
+            if (this.x > w + 80 || this.y < h * 0.5) {
+              this.reset();
+            }
+          }
+          draw() {
+            const pulseAlpha = this.alpha + Math.sin(this.pulse) * 0.06;
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.shadowBlur = 9;
+            ctx.shadowColor = `rgba(250, 204, 21, ${pulseAlpha})`;
+            ctx.fillStyle = `rgba(250, 204, 21, ${pulseAlpha})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+
         for (let i = 0; i < PARTICLE_COUNT; i++) {
           particles.push(new Particle());
+        }
+        for (let i = 0; i < STREAM_COUNT; i++) {
+          streamers.push(new Streamer());
+        }
+        for (let i = 0; i < SPARK_COUNT; i++) {
+          sparks.push(new Spark());
         }
 
         function drawConnections() {
@@ -1217,16 +1346,68 @@ Total: 13 skills</code></pre>
           }
         }
 
-        function animate() {
+        function drawBottomMesh() {
+          const baseY = h * 0.84;
+          ctx.save();
+          ctx.globalCompositeOperation = 'lighter';
+          for (let i = 0; i < 14; i++) {
+            const offset = i * 34;
+            const alpha = 0.024 + i * 0.0028;
+            ctx.beginPath();
+            ctx.moveTo(-80, baseY + offset);
+            ctx.bezierCurveTo(
+              w * 0.24,
+              baseY - 110 + offset * 0.18,
+              w * 0.56,
+              baseY + 80 - offset * 0.22,
+              w + 120,
+              baseY - 40 + offset * 0.08,
+            );
+            ctx.strokeStyle = `rgba(96, 165, 250, ${alpha})`;
+            ctx.lineWidth = 0.7;
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        function drawBottomMask() {
+          const mask = ctx.createLinearGradient(0, h * 0.35, 0, h);
+          mask.addColorStop(0, 'rgba(5, 5, 8, 0)');
+          mask.addColorStop(0.62, 'rgba(5, 5, 8, 0.02)');
+          mask.addColorStop(1, 'rgba(5, 5, 8, 0.08)');
+          ctx.fillStyle = mask;
+          ctx.fillRect(0, h * 0.35, w, h * 0.65);
+        }
+
+        function renderFrame() {
           ctx.clearRect(0, 0, w, h);
+          drawBottomMesh();
           particles.forEach((p) => {
             p.update();
             p.draw();
           });
           drawConnections();
+          streamers.forEach((streamer) => {
+            streamer.update();
+            streamer.draw();
+          });
+          sparks.forEach((spark) => {
+            spark.update();
+            spark.draw();
+          });
+          drawBottomMask();
+        }
+
+        function animate() {
+          renderFrame();
           requestAnimationFrame(animate);
         }
-        animate();
+
+        if (reduceMotion.matches) {
+          renderFrame();
+        } else {
+          animate();
+        }
       })();
     </script>
   </body>
